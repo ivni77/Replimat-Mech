@@ -7,5 +7,6 @@ out="Release/Replimat Mech"
 # id предмета Steam игра пишет в копию при первой выгрузке — забрать в проект, чтобы обновления шли в тот же предмет
 [ -f "$out/About/PublishedFileId.txt" ] && cp "$out/About/PublishedFileId.txt" About/
 mkdir -p "$out"
-rsync -a --delete --exclude .DS_Store About Assemblies Defs Languages Patches Sounds Textures LICENSE.md "$out/"
+# системный rsync с обеих сторон: rsync 3.5.1 из Homebrew (2026-10-09) не заходит в папку внутри «Документов» — Operation not permitted
+/usr/bin/rsync -a --delete --exclude .DS_Store --rsync-path=/usr/bin/rsync About Assemblies Defs Languages Patches Sounds Textures LICENSE.md "$out/"
 echo "$out: $(du -sh "$out" | cut -f1)"
