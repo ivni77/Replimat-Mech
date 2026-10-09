@@ -8,21 +8,21 @@ A mechanitor sets up the print queues through a comms console.
 Mechanoids are printed like in a gestator.
 Nothing living is printed.
 
-[b]Incompatible with Replimat and Replimat Universal: do not run them together.[/b]
+[b]Incompatible with Replimat and Replimat Universal.[/b]
 
 [img]https://raw.githubusercontent.com/ivni77/Replimat-Mech/main/Workshop/Images/1.jpg[/img]
 
 [h2]Features[/h2]
 [list]
-[*][b]Matter splitter[/b]: instantly splits what haulers bring into matter and records each item's pattern at the best quality seen. Corpses split like cremation, without mood penalties; a mech corpse gives its pattern if you can gestate that mech. What it accepts is set in its filter, like a stockpile. [b]Scan[/b] on an item has one piece brought in even if the filter does not accept it.
-[*][b]Replimat tanks[/b] store mass up to their capacity and value without limit, shared across the network by capacity. The large tank holds four times more.
+[*][b]Matter splitter[/b]: splits what haulers bring into matter and records each pattern at the best quality seen. Corpses split like cremation, without mood penalties; a mech corpse gives its pattern if you can gestate that mech. It takes what its filter allows, like a stockpile; [b]Scan[/b] has one piece brought in past the filter.
+[*][b]Replimat tanks[/b] store mass up to capacity and value without limit, shared across the network; the large one holds four times more.
 [*][b]Replicators[/b] (standing and wall) print in batches of up to a stack. The [b]animal replicator[/b] prints feed into itself.
-[*][b]Computer window[/b] from a comms console: [b]Home[/b] (matter, equipment, replicators), [b]Patterns[/b] (vanilla category tree, search, bill form), [b]Queue[/b] (all bills, edited right in the row).
+[*][b]Computer window[/b] from a comms console: [b]Home[/b], [b]Patterns[/b] (vanilla category tree, bill form), [b]Queue[/b] (all bills, edited in the row).
 [*][b]Bills like vanilla[/b]: Do X times, Do until you have X, Do forever; first and second queue; pause; drag to reorder; move to another replicator.
 [*][b]Sliders[/b]: print faster for more value or cheaper for more time, up to 40%.
-[*][b]Print speed[/b] is the mechanitor's mech forming speed: it grows with crafting and gestation processors.
-[*][b]Only researched things are printed[/b], like vanilla: a building needs its research, a crafted item or mech needs a researched recipe and workbench, a crop needs its planting research, a chip needs the research its analysis unlocks, a techprint needs its project done; mined, wild and found things need none.
-[*]Paid matter is never lost: deleting or moving a bill returns the unprinted batch, editing reprices it.
+[*][b]Print speed[/b] is the mechanitor's mech forming speed (crafting, gestation processors).
+[*][b]Only researched things are printed[/b], like vanilla: buildings, recipes, crops, chips and techprints need their research; mined, wild and found things need none.
+[*]Paid matter is never lost: deleting or moving a bill returns the unprinted batch.
 [/list]
 
 [img]https://raw.githubusercontent.com/ivni77/Replimat-Mech/main/Workshop/Images/2.png[/img]
@@ -41,12 +41,12 @@ Nothing living is printed.
 [img]https://raw.githubusercontent.com/ivni77/Replimat-Mech/main/Workshop/Images/5.jpg[/img]
 
 [h2]Settings[/h2]
-Mass and value collected on splitting (value 5–60%: printing at the 40% discount costs at least 60%, so print-and-split never profits), replimat color, print quality cap, special items (allow and markup), whether a mechanitor is needed (off: no print speed, no mechanoid printing), movable tanks, tank capacity, power use.
-Stored value adds to colony wealth; to collect mass only, turn off [b]Collect value[/b] on the Home tab.
+Mass and value collected on splitting (value 5–60%, so print-and-split never profits), color, print quality cap, special items (allow, markup), mechanitor required (off: no print speed or mechanoids), movable tanks, tank capacity, power use.
+Stored value adds to colony wealth; [b]Collect value[/b] on the Home tab turns it off.
 
 [h2]Compatibility[/h2]
 RimWorld [b]1.6[/b]. Requires [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2009463077]Harmony[/url] and [b]Biotech[/b]. Languages: English, Russian.
-Works with [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2606448745]Multiplayer[/url]: every edit is synced, the computer window opens only for the player who gave the order. Mod settings must match the host (Multiplayer can sync configs on join).
+Works with [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2606448745]Multiplayer[/url]: edits are synced, the computer window opens only for the player who gave the order; mod settings must match the host.
 
 [h2]Credits and license[/h2]
 [list]
@@ -54,7 +54,7 @@ Works with [url=https://steamcommunity.com/sharedfiles/filedetails/?id=260644874
 [*][b]Replimat Universal[/b] changes and art: [b]Omnot[/b].
 [*][b]Replimat Mech[/b]: textures recolored blue. Source code on [url=https://github.com/ivni77/Replimat-Mech]GitHub[/url].
 [/list]
-Licensed under [url=https://creativecommons.org/licenses/by-sa/4.0/]CC BY-SA 4.0[/url], like the original Replimat. Full attribution and list of changes: LICENSE.md in the mod folder.
+Licensed under [url=https://creativecommons.org/licenses/by-sa/4.0/]CC BY-SA 4.0[/url], like the original Replimat. Attribution and changes: LICENSE.md in the mod folder.
 
 [hr][/hr]
 
@@ -72,12 +72,12 @@ Licensed under [url=https://creativecommons.org/licenses/by-sa/4.0/]CC BY-SA 4.0
 
 [h2]Возможности[/h2]
 [list]
-[*][b]Расщепитель материи[/b] расщепляет принесённое и записывает шаблоны. Труп механоида даёт его шаблон, если такого механоида можно вырастить в гестаторе. Что принимать — фильтр, как у склада; [b]«Сканировать»[/b] приносит одну штуку даже мимо фильтра.
+[*][b]Расщепитель материи[/b] расщепляет принесённое по фильтру (как склад) и записывает шаблоны; труп механоида даёт шаблон, если его можно вырастить в гестаторе. [b]«Сканировать»[/b] приносит одну штуку мимо фильтра.
 [*][b]Баки реплимата[/b]: масса — сколько влезет, стоимость — без предела.
 [*][b]Репликаторы[/b] (обычный, настенный, для животных) печатают пачками до стопки.
 [*][b]Окно компьютера[/b]: «Главная», «Шаблоны», «Очередь»; задания как в ванили, первая и вторая очередь, ползунки времени и стоимости.
 [*][b]Скорость печати[/b] растёт с навыком ремесла и гестационными процессорами механитора.
-[*]Печатается только изученное, как в ванили: постройка — после её исследования, предмет и механоид — после исследования рецепта и верстака, урожай — после исследования посадки, чип — после исследования, которое открывает его анализ, техпринт — после его проекта; добываемое, дикорастущее и найденное — без исследований.
+[*]Печатается только изученное, как в ванили: постройки, рецепты, урожай, чипы и техпринты — после своих исследований; добываемое, дикорастущее и найденное — без них.
 [*]Удаление или перенос задания возвращает недопечатанное в баки.
 [/list]
 
@@ -90,5 +90,5 @@ Licensed under [url=https://creativecommons.org/licenses/by-sa/4.0/]CC BY-SA 4.0
 [/olist]
 
 Нужны Harmony и Biotech, RimWorld 1.6.
-Работает в Multiplayer: окно компьютера открывается только у того, кто отдал приказ; настройки мода — как у хоста.
+Работает в Multiplayer; настройки мода — как у хоста.
 Лицензия CC BY-SA 4.0, как у Replimat; атрибуция и список изменений — LICENSE.md в папке мода.
