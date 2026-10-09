@@ -137,7 +137,8 @@ public class ReplimatMechMod : Mod
     {
         var view = new Rect(0f, 0f, inRect.width - 20f, height);
         Widgets.BeginScrollView(inRect, ref scroll, view);
-        var l = new Listing_Standard();
+        // Одна колонка: иначе не влезшее уходит во вторую, за правый край, и высота прокрутки (с прошлого кадра) сжимается до первой строки.
+        var l = new Listing_Standard { maxOneColumn = true };
         l.Begin(view);
         S.massReturn = Slider(l, "RM_SetMassReturn", S.massReturn, 0, 100, 5);
         S.valueReturn = Slider(l, "RM_SetValueReturn", S.valueReturn, 0, 50, 5);
