@@ -255,7 +255,8 @@ public class CompPrinter : ThingComp, IRenameable
         if (o.paid) return null;
         if (!Rules.CanPrint(o.pattern)) return "RM_StForbidden";
         if (o.pattern.IsMech && !MechanitorOk(o.mechanitor)) return "RM_StNoMechanitor";
-        if (Remaining(o) <= 0) return "RM_StDone";
+        // мех напечатан, но не вышел (не хватает пропускной способности или механитора) — не «готово»
+        if (Remaining(o) <= 0) return o.pattern.IsMech && waiting.Any(w => w.kind == o.pattern.mechKind) ? "RM_StMechWaits" : "RM_StDone";
         if (Feeder && Room(o.pattern) <= 0) return "RM_StNoRoom";
         return null;
     }

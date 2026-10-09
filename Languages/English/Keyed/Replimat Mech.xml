@@ -31,6 +31,8 @@
 	<!-- bill statuses: short (inspect pane) and full (windows) -->
 	<RM_StDone>done</RM_StDone>
 	<RM_StDoneFull>Done: {0} of {1} in stock</RM_StDoneFull>
+	<RM_StMechWaits>waiting for mechanitor</RM_StMechWaits>
+	<RM_StMechWaitsFull>Printed, waiting for mechanitor</RM_StMechWaitsFull>
 	<RM_StWait>waiting</RM_StWait>
 	<RM_StWaitFull>Waiting: other bills go first</RM_StWaitFull>
 	<RM_StLowMass>low mass</RM_StLowMass>

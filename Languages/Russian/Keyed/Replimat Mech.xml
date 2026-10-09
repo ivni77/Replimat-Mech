@@ -31,6 +31,8 @@
 	<!-- статусы заданий: коротко (осмотр здания) и полностью (окна) -->
 	<RM_StDone>готово</RM_StDone>
 	<RM_StDoneFull>Готово: есть {0} из {1}</RM_StDoneFull>
+	<RM_StMechWaits>ждёт механитора</RM_StMechWaits>
+	<RM_StMechWaitsFull>Напечатан, ждёт механитора</RM_StMechWaitsFull>
 	<RM_StWait>ждёт</RM_StWait>
 	<RM_StWaitFull>Ждёт: впереди другие задания</RM_StWaitFull>
 	<RM_StLowMass>мало массы</RM_StLowMass>

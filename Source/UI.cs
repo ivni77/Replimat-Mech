@@ -255,6 +255,7 @@ public static class RMUI
             "RM_StLowMass" or "RM_StLowSilver" => (o.status.Translate().CapitalizeFirst(), ColorLibrary.RedReadable),
             "RM_StNoMechanitor" => ("RM_StNoMechanitorFull".Translate(), ColorLibrary.RedReadable),
             "RM_StDone" => (Tr("RM_StDoneFull", c.Have(o), o.target), ColorLibrary.Green),
+            "RM_StMechWaits" => ("RM_StMechWaitsFull".Translate(), Yellow),
             null => ("RM_StWaitFull".Translate(), RMUI.Muted),
             _ => ((o.status + "Full").Translate(), RMUI.Muted),
         };
