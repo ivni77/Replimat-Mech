@@ -393,6 +393,13 @@ public class CompPrinter : ThingComp, IRenameable
 
     public void Refund(float mass, float value) => Tanks.Add(Net, mass, value);
 
+    /// Ждущий механоид отменён: материя — обратно в баки, пропускная способность механитора свободна.
+    public void CancelWaiting(int i)
+    {
+        Refund(waiting[i].mass, waiting[i].value);
+        waiting.RemoveAt(i);
+    }
+
     /// Оплаченная пачка — обратно в баки, задание ждёт оплаты заново.
     void Unpay(Order o)
     {

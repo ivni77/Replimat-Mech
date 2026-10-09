@@ -46,10 +46,16 @@ public static class Edit
         Done(c);
     }
 
+    /// Удаление задания; механоид по нему уже напечатан и ждёт механитора — отменяется с возвратом, как кнопкой «Отменить»:
+    /// задания нет — нет и пропускной способности под него. Осталось другое задание на того же механоида — ждущий его.
     [SyncMethod(cancelIfAnyArgNull = true)]
     public static void Remove(CompPrinter c, Order o)
     {
         c.Remove(o);
+        PawnKindDef kind = o.pattern?.mechKind;
+        if (kind != null && !c.orders.Any(x => x.pattern?.mechKind == kind))
+            for (int i = c.waiting.Count - 1; i >= 0; i--)
+                if (c.waiting[i].kind == kind) c.CancelWaiting(i);
         Done(c);
     }
 
@@ -90,9 +96,7 @@ public static class Edit
     [SyncMethod]
     public static void CancelMech(CompPrinter c, int i)
     {
-        if (i < 0 || i >= c.waiting.Count) return;
-        c.Refund(c.waiting[i].mass, c.waiting[i].value);
-        c.waiting.RemoveAt(i);
+        if (i >= 0 && i < c.waiting.Count) c.CancelWaiting(i);
     }
 
     /// Задание из очереди — репликатор и номер; черновик формы (ещё не в очереди) — его настройки.
