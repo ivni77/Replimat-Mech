@@ -415,6 +415,7 @@ public class ITab_Queue : ITab
 
 /// Окно компьютера: «Главная» (всегда первая), «Шаблоны» (дерево категорий ванили, справа одно задание),
 /// «Очередь» (вкладка на каждый репликатор, правка прямо в строке — как в Replimat Universal).
+[StaticConstructorOnStartup]
 public class Dialog_Computer : Window
 {
     enum Tab { Home, Patterns, Queue }
@@ -457,8 +458,7 @@ public class Dialog_Computer : Window
     static Settings S => ReplimatMechMod.S;
     static string SliderKey(Order o, int i) => i == 0 ? "RM_SliderTime" : o.MassSlider ? "RM_SliderMass" : "RM_SliderValue";
     const float LabelW = 140f, ControlsW = 672f;
-    static Texture2D gear;
-    static Texture2D Gear => gear ??= ContentFinder<Texture2D>.Get("UI/Icons/Options/OptionsGeneral");
+    static readonly Texture2D Gear = ContentFinder<Texture2D>.Get("UI/Icons/Options/OptionsGeneral");
 
     /// Ваниль окно под экран не ужимает — не выше экрана.
     public override Vector2 InitialSize => new(1080f, Mathf.Min(840f, UI.screenHeight));
