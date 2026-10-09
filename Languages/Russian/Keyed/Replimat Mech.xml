@@ -72,7 +72,7 @@
 	<RM_TotalAll>Все репликаторы</RM_TotalAll>
 	<RM_GroupImportant>Первая очередь</RM_GroupImportant>
 	<RM_GroupNormal>Вторая очередь</RM_GroupNormal>
-	<RM_GroupDesc>Очередь — определяет порядок печати, приоритет у Первой очереди.</RM_GroupDesc>
+	<RM_GroupDesc>Очередь — определяет порядок печати, приоритет у Первой очереди.\nПечать одна: задание Первой очереди прерывает начатое во Второй, оно продолжит с того же места.</RM_GroupDesc>
 	<RM_GroupEmpty>Пусто — перетащите задание сюда</RM_GroupEmpty>
 
 	<!-- компьютер: общее -->

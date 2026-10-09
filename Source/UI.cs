@@ -957,8 +957,8 @@ public class Dialog_Computer : Window
         // почему печатать нельзя — красным (и «Создать» не нажать); мех задания напечатан и ждёт механитора — жёлтым
         string why = !Rules.Allowed(p) ? "RM_StForbiddenFull".Translate().ToString()
             : Rules.MissingResearch(p) is { } rp ? RMUI.Tr("RM_StNoResearchFull", rp.LabelCap.ToString()) : null;
-        // механоид, которого не начнут: у выбранного механитора нет свободной пропускной способности (печатающийся её уже занял)
-        bool lowBandwidth = p.IsMech && existing?.paid != true && CompPrinter.NoBandwidth(d.mechanitor, p);
+        // механоид не начнут или начатый стоит: у выбранного механитора не хватает пропускной способности
+        bool lowBandwidth = p.IsMech && CompPrinter.NoBandwidth(d.mechanitor, p, existing is { paid: true } && existing.mechanitor == d.mechanitor);
         string note = why ?? (lowBandwidth ? "RM_StNoBandwidthFull".Translate().ToString()
             : existing?.status == "RM_StMechWaits" ? "RM_StMechWaitsFull".Translate().ToString() : null);
         if (note != null)

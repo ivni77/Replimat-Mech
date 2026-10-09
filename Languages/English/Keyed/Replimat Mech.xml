@@ -72,7 +72,7 @@
 	<RM_TotalAll>All replicators</RM_TotalAll>
 	<RM_GroupImportant>First queue</RM_GroupImportant>
 	<RM_GroupNormal>Second queue</RM_GroupNormal>
-	<RM_GroupDesc>Queue — sets the print order, the first queue has priority.</RM_GroupDesc>
+	<RM_GroupDesc>Queue — sets the print order, the first queue has priority.\nOne print at a time: a first-queue bill interrupts one started in the second queue, which resumes where it stopped.</RM_GroupDesc>
 	<RM_GroupEmpty>Empty — drag a bill here</RM_GroupEmpty>
 
 	<!-- computer: common -->

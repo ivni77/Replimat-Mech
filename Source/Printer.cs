@@ -253,16 +253,16 @@ public class CompPrinter : ThingComp, IRenameable
         (o.batchTicks, o.paidMass, o.paidValue, o.paidQuality) = (t, m, v, o.Quality);
     }
 
-    /// Почему строка не может начать штуку; начатая доделывается (сверх цели Trim вернул в баки).
+    /// Почему строка не может начать штуку; начатая доделывается (сверх цели Trim вернул в баки). Как гестатор: механоида без свободной
+    /// пропускной способности не начинают, а начатый стоит, пока её не хватает (её заняли уже во время печати).
     string Blocked(Order o)
     {
-        if (o.paid) return null;
+        if (o.paid) return o.pattern.IsMech && NoBandwidth(o.mechanitor, o.pattern, true) ? "RM_StNoBandwidth" : null;
         if (!Rules.Allowed(o.pattern)) return "RM_StForbidden";
         if (Rules.MissingResearch(o.pattern) != null) return "RM_StNoResearch";
         if (o.pattern.IsMech && !MechanitorOk(o.mechanitor)) return "RM_StNoMechanitor";
         // мех напечатан, но не вышел (не хватает пропускной способности или механитора) — не «готово»
         if (Remaining(o) <= 0) return o.pattern.IsMech && waiting.Any(w => w.kind == o.pattern.mechKind) ? "RM_StMechWaits" : "RM_StDone";
-        // как гестатор: без свободной пропускной способности механоид не начинают (печатаемые и ждущие её уже заняли)
         if (o.pattern.IsMech && NoBandwidth(o.mechanitor, o.pattern)) return "RM_StNoBandwidth";
         if (Feeder && Room(o.pattern) <= 0) return "RM_StNoRoom";
         return null;
@@ -270,8 +270,9 @@ public class CompPrinter : ThingComp, IRenameable
 
     static bool MechanitorOk(Pawn p) => p is { Dead: false } && MechanitorUtility.IsMechanitor(p);
 
-    public static bool NoBandwidth(Pawn mechanitor, Pattern p) =>
-        mechanitor?.mechanitor is { } m && m.UsedBandwidth + (int)Pricing.Bandwidth(p) > m.TotalBandwidth;
+    /// Механоид не влезает в пропускную способность механитора; started — уже начат, она занята им самим.
+    public static bool NoBandwidth(Pawn mechanitor, Pattern p, bool started = false) =>
+        mechanitor?.mechanitor is { } m && m.UsedBandwidth + (started ? 0 : (int)Pricing.Bandwidth(p)) > m.TotalBandwidth;
 
     /// Сколько ещё нужно, с начатой пачкой: «сделать X» — само количество (убывает с каждой готовой пачкой), «повторять до X» — до цели
     /// на складе. «Бесконечно» — без предела.
