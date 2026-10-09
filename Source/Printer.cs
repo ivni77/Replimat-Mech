@@ -209,6 +209,7 @@ public class CompPrinter : ThingComp, IRenameable
         foreach (Order o in Ordered.ToList())
         {
             o.running = false;
+            if (o.paid) Trim(o);
             if (o.paid) Reprice(o);
             o.status = o.paused ? "RM_StSuspended" : Blocked(o);
             if (o.status != null) continue;
@@ -217,6 +218,16 @@ public class CompPrinter : ThingComp, IRenameable
         }
         if (run != null) run.running = true;
         return run;
+    }
+
+    /// Пачка не больше, чем осталось до цели: цель уже есть (сделано или на складе) — вся пачка в баки, осталось меньше пачки —
+    /// лишнее в баки (разницу вернёт Reprice). На паузе пачка ждёт как есть.
+    void Trim(Order o)
+    {
+        if (o.paused || o.mode == OrderMode.Forever) return;
+        int left = o.target - Have(o);
+        if (left <= 0) Unpay(o);
+        else if (left < o.batch) o.batch = left;
     }
 
     /// Оплаченная пачка — по текущим настройкам задания и скорости того, кто его правил: время — с той же долей готовности, разница массы
@@ -235,7 +246,7 @@ public class CompPrinter : ThingComp, IRenameable
         (o.batchTicks, o.paidMass, o.paidValue, o.paidQuality) = (t, m, v, o.Quality);
     }
 
-    /// Почему строка не может начать штуку; начатая доделывается всегда.
+    /// Почему строка не может начать штуку; начатая доделывается (сверх цели Trim вернул в баки).
     string Blocked(Order o)
     {
         if (o.paid) return null;
