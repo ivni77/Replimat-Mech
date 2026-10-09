@@ -41,6 +41,8 @@
 	<RM_StNoMechanitorFull>Нет механитора: выберите его в компьютере</RM_StNoMechanitorFull>
 	<RM_StForbidden>запрещено</RM_StForbidden>
 	<RM_StForbiddenFull>Печать запрещена в настройках мода</RM_StForbiddenFull>
+	<RM_StNoResearch>не изучено</RM_StNoResearch>
+	<RM_StNoResearchFull>Не изучено: {0}</RM_StNoResearchFull>
 	<RM_StNoRoom>нет места</RM_StNoRoom>
 	<RM_StNoRoomFull>Нет места: репликатор для животных заполнен</RM_StNoRoomFull>
 	<RM_StOff>выключен</RM_StOff>
@@ -162,8 +164,10 @@
 	<RM_SetMassReturn>Возврат массы при расщеплении: {0}</RM_SetMassReturn>
 	<RM_SetValueReturn>Возврат стоимости при расщеплении (от материалов): {0}</RM_SetValueReturn>
 	<RM_Color>Цвет реплимата</RM_Color>
-	<RM_ColorDesc>Цвет реплимата — нажмите на квадрат: палитра как у механоидов.\nОдин цвет на все здания реплимата: полосы баков и расщепителя, экраны, свечение печати и расщепления, свет.</RM_ColorDesc>
 	<RM_SetQualityCap>Предел качества печати</RM_SetQualityCap>
+	<RM_SetSecPrint>Печать</RM_SetSecPrint>
+	<RM_SetSecSplit>Расщепление</RM_SetSecSplit>
+	<RM_SetSecBuildings>Здания</RM_SetSecBuildings>
 	<RM_SetGroups>Особые предметы</RM_SetGroups>
 	<RM_ColPrint>печатать</RM_ColPrint>
 	<RM_ColMarkup>наценка, ×</RM_ColMarkup>
@@ -174,6 +178,7 @@
 	<RM_GroupGenes>гены и уникальное</RM_GroupGenes>
 	<RM_GroupGenesDesc>Гены и уникальное — генпаки, ксеногермы, техпринты, персональное и уникальное оружие.</RM_GroupGenesDesc>
 	<RM_SetNeedMechanitor>Нужен механитор для связи с компьютером</RM_SetNeedMechanitor>
+	<RM_SetNeedMechanitorDesc>Выключено — с компьютером связывается любой колонист, но механоидов печатать нельзя.</RM_SetNeedMechanitorDesc>
 	<RM_SetMoveTanks>Переносить баки (вместе с содержимым)</RM_SetMoveTanks>
 	<RM_SetTankCapacity>Объём бака реплимата, кг (большой — ×4)</RM_SetTankCapacity>
 	<RM_SetPower>Потребляемая мощность, Вт</RM_SetPower>

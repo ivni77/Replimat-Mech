@@ -256,6 +256,7 @@ public static class RMUI
             "RM_StNoMechanitor" => ("RM_StNoMechanitorFull".Translate(), ColorLibrary.RedReadable),
             "RM_StDone" => (Tr("RM_StDoneFull", c.Have(o), o.target), ColorLibrary.Green),
             "RM_StMechWaits" => ("RM_StMechWaitsFull".Translate(), Yellow),
+            "RM_StNoResearch" => (Tr("RM_StNoResearchFull", Rules.MissingResearch(o.pattern)?.LabelCap.ToString()), ColorLibrary.RedReadable),
             null => ("RM_StWaitFull".Translate(), RMUI.Muted),
             _ => ((o.status + "Full").Translate(), RMUI.Muted),
         };
@@ -932,6 +933,17 @@ public class Dialog_Computer : Window
             Text.Anchor = TextAnchor.UpperLeft;
             y += box.height + 8f;
         }
+        // почему печатать нельзя — красным (и «Создать» не нажать); мех задания напечатан и ждёт механитора — жёлтым
+        string why = !Rules.Allowed(p) ? "RM_StForbiddenFull".Translate().ToString()
+            : Rules.MissingResearch(p) is { } rp ? RMUI.Tr("RM_StNoResearchFull", rp.LabelCap.ToString()) : null;
+        string note = why ?? (existing?.status == "RM_StMechWaits" ? "RM_StMechWaitsFull".Translate().ToString() : null);
+        if (note != null)
+        {
+            GUI.color = why != null ? ColorLibrary.RedReadable : RMUI.Yellow;
+            RMUI.Label(new Rect(r.x, y, r.width, 24f), note);
+            GUI.color = Color.white;
+            y += 30f;
+        }
         y += RMUI.Plan(new Rect(r.x, y, r.width, 0f), (n * d.UnitTicks, n * d.UnitMass, n * d.UnitValue), Net);
 
         Rect Field(string key)
@@ -1049,7 +1061,7 @@ public class Dialog_Computer : Window
                 Messages.Message("RM_MsgApplied".Translate(p.Label), MessageTypeDefOf.SilentInput, false);
             }
         }
-        else if (Widgets.ButtonText(left, "RM_Create".Translate()))
+        else if (Widgets.ButtonText(left, "RM_Create".Translate(), active: why == null) && why == null)
         {
             Edit.Create(c, d);
             Messages.Message("RM_MsgAdded".Translate(p.Label, c.RenamableLabel, RMUI.Group(d.important)), MessageTypeDefOf.SilentInput, false);

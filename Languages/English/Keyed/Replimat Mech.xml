@@ -41,6 +41,8 @@
 	<RM_StNoMechanitorFull>No mechanitor: pick one at the computer</RM_StNoMechanitorFull>
 	<RM_StForbidden>forbidden</RM_StForbidden>
 	<RM_StForbiddenFull>Printing is disabled in the mod settings</RM_StForbiddenFull>
+	<RM_StNoResearch>not researched</RM_StNoResearch>
+	<RM_StNoResearchFull>Not researched: {0}</RM_StNoResearchFull>
 	<RM_StNoRoom>no room</RM_StNoRoom>
 	<RM_StNoRoomFull>No room: the animal replicator is full</RM_StNoRoomFull>
 	<RM_StOff>off</RM_StOff>
@@ -162,8 +164,10 @@
 	<RM_SetMassReturn>Mass returned on splitting: {0}</RM_SetMassReturn>
 	<RM_SetValueReturn>Value returned on splitting (of materials): {0}</RM_SetValueReturn>
 	<RM_Color>Replimat color</RM_Color>
-	<RM_ColorDesc>Replimat color — click the square for a palette like the mechs'.\nOne color for all replimat buildings: tank and splitter bars, screens, print and splitting glow, light.</RM_ColorDesc>
 	<RM_SetQualityCap>Print quality cap</RM_SetQualityCap>
+	<RM_SetSecPrint>Printing</RM_SetSecPrint>
+	<RM_SetSecSplit>Splitting</RM_SetSecSplit>
+	<RM_SetSecBuildings>Buildings</RM_SetSecBuildings>
 	<RM_SetGroups>Special items</RM_SetGroups>
 	<RM_ColPrint>print</RM_ColPrint>
 	<RM_ColMarkup>markup, ×</RM_ColMarkup>
@@ -174,6 +178,7 @@
 	<RM_GroupGenes>genes and unique</RM_GroupGenes>
 	<RM_GroupGenesDesc>Genes and unique — genepacks, xenogerms, techprints, persona and unique weapons.</RM_GroupGenesDesc>
 	<RM_SetNeedMechanitor>A mechanitor is needed to contact the computer</RM_SetNeedMechanitor>
+	<RM_SetNeedMechanitorDesc>Off — any colonist can contact the computer, but mechanoids cannot be printed.</RM_SetNeedMechanitorDesc>
 	<RM_SetMoveTanks>Tanks can be moved (with their contents)</RM_SetMoveTanks>
 	<RM_SetTankCapacity>Replimat tank capacity, kg (large ×4)</RM_SetTankCapacity>
 	<RM_SetPower>Power use, W</RM_SetPower>

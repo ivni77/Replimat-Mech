@@ -31,6 +31,8 @@ public class Settings : ModSettings
     /// Поменялись умолчания — сохранённые настройки сбрасываются на новые.
     const int Version = 6;
     public static readonly Color DefaultAccent = new(0.20f, 0.45f, 1.00f);
+    /// Возврат стоимости не ниже: при 0 расщепитель не даёт стоимости — печатать нечем.
+    public const int MinValueReturn = 5;
 
     /// Свечение и свет — цвет реплимата, чуть разбавленный белым, чтобы горело ярко.
     public static Color GlowColor => Color.Lerp(ReplimatMechMod.S.accent, Color.white, 0.25f);
@@ -59,6 +61,7 @@ public class Settings : ModSettings
         Scribe_Collections.Look(ref groupMarkup, "groupMarkup", LookMode.Value);
         Scribe_Collections.Look(ref power, "power", LookMode.Value);
         if (Scribe.mode != LoadSaveMode.PostLoadInit) return;
+        valueReturn = Mathf.Max(valueReturn, MinValueReturn);
         if (version != Version || groupAllowed?.Count != d.groupAllowed.Count || groupMarkup?.Count != d.groupMarkup.Count || power?.Count != d.power.Count) Reset();
         version = Version;
     }
@@ -133,6 +136,16 @@ public class ReplimatMechMod : Mod
         Widgets.TextFieldNumeric(new Rect(r.xMax - 84f, r.y, 80f, 26f), ref val, ref buf[b], min, max);
     }
 
+    /// Заголовок группы — крупным шрифтом, над ним черта (у первой группы — нет).
+    static void Section(Listing_Standard l, string key, bool line = true)
+    {
+        if (line) l.GapLine();
+        Text.Font = GameFont.Medium;
+        l.Label(key.Translate());
+        Text.Font = GameFont.Small;
+    }
+
+    /// Группы: печать (предел качества, особые предметы), расщепление, здания, мощность; «Сбросить всё» — внизу справа.
     public override void DoSettingsWindowContents(Rect inRect)
     {
         var view = new Rect(0f, 0f, inRect.width - 20f, height);
@@ -140,29 +153,12 @@ public class ReplimatMechMod : Mod
         // Одна колонка: иначе не влезшее уходит во вторую, за правый край, и высота прокрутки (с прошлого кадра) сжимается до первой строки.
         var l = new Listing_Standard { maxOneColumn = true };
         l.Begin(view);
-        S.massReturn = Slider(l, "RM_SetMassReturn", S.massReturn, 0, 100, 5);
-        S.valueReturn = Slider(l, "RM_SetValueReturn", S.valueReturn, 0, 50, 5);
-        Rect color = l.GetRect(30f);
-        RMUI.Label(color.LeftPart(0.6f), "RM_Color".Translate());
-        // Квадрат цвета — сам кнопка; палитра та же, что у мехов (все ColorDef + цвета фракций, если игра идёт).
-        Rect swatch = new(color.x + color.width * 0.6f, color.y, 60f, 30f);
-        Widgets.DrawBoxSolidWithOutline(swatch, S.accent, Color.white);
-        Widgets.DrawHighlightIfMouseover(swatch);
-        if (Widgets.ButtonInvisible(swatch))
-        {
-            IEnumerable<Color> all = DefDatabase<ColorDef>.AllDefs.Select(c => c.color).Append(Settings.DefaultAccent);
-            if (Current.Game != null) all = all.Concat(Find.FactionManager.AllFactionsVisible.Select(f => f.Color));
-            List<Color> colors = all.Distinct().ToList();
-            colors.SortByColor(c => c);
-            Find.WindowStack.Add(new Dialog_ChooseColor("RM_Color".Translate(), S.accent, colors, c => S.accent = c));
-        }
-        l.Gap(6f);
+
+        Section(l, "RM_SetSecPrint", false);
         if (l.ButtonTextLabeledPct("RM_SetQualityCap".Translate(), Q(S.qualityCap), 0.6f))
             Find.WindowStack.Add(new FloatMenu(QualityUtility.AllQualityCategories.OrderBy(q => q == QualityCategory.Legendary ? -1 : (int)q)
                 .Select(q => new FloatMenuOption(Q(q), () => S.qualityCap = q)).ToList()));
-        Help(l, "RM_ColorDesc".Translate());
-
-        l.GapLine();
+        l.Gap(6f);
         Rect head = l.GetRect(22f);
         GUI.color = ColorLibrary.Grey;
         RMUI.Label(head, "RM_SetGroups".Translate());
@@ -180,15 +176,34 @@ public class ReplimatMechMod : Mod
             S.groupAllowed[g] = allowed;
             l.Gap(2f);
         }
-        Help(l, string.Join("\n\n", Settings.Groups.Select(g => (g + "Desc").Translate().ToString())));
+        Help(l, string.Join("\n", Settings.Groups.Select(g => (g + "Desc").Translate().ToString())));
 
-        l.GapLine();
+        Section(l, "RM_SetSecSplit");
+        S.massReturn = Slider(l, "RM_SetMassReturn", S.massReturn, 0, 100, 5);
+        S.valueReturn = Slider(l, "RM_SetValueReturn", S.valueReturn, Settings.MinValueReturn, 50, 5);
+
+        Section(l, "RM_SetSecBuildings");
+        Rect color = l.GetRect(30f);
+        RMUI.Label(color.LeftPart(0.6f), "RM_Color".Translate());
+        // Квадрат цвета — сам кнопка; палитра та же, что у мехов (все ColorDef + цвета фракций, если игра идёт).
+        Rect swatch = new(color.x + color.width * 0.6f, color.y, 60f, 30f);
+        Widgets.DrawBoxSolidWithOutline(swatch, S.accent, Color.white);
+        Widgets.DrawHighlightIfMouseover(swatch);
+        if (Widgets.ButtonInvisible(swatch))
+        {
+            IEnumerable<Color> all = DefDatabase<ColorDef>.AllDefs.Select(c => c.color).Append(Settings.DefaultAccent);
+            if (Current.Game != null) all = all.Concat(Find.FactionManager.AllFactionsVisible.Select(f => f.Color));
+            List<Color> colors = all.Distinct().ToList();
+            colors.SortByColor(c => c);
+            Find.WindowStack.Add(new Dialog_ChooseColor("RM_Color".Translate(), S.accent, colors, c => S.accent = c));
+        }
+        l.Gap(6f);
         l.CheckboxLabeled("RM_SetNeedMechanitor".Translate(), ref S.needMechanitor);
         l.CheckboxLabeled("RM_SetMoveTanks".Translate(), ref S.moveTanks);
         Number(l.GetRect(28f), "RM_SetTankCapacity".Translate(), ref S.tankCapacity, buf.Length - 1, 10, 1000000);
+        Help(l, "RM_SetNeedMechanitorDesc".Translate());
 
-        l.GapLine();
-        l.Label("RM_SetPower".Translate().ToString());
+        Section(l, "RM_SetPower");
         Rect grid = l.GetRect(24f + Settings.PowerGroups.Max(g => g.count) * 30f);
         float cw = (grid.width - 40f) / Settings.PowerGroups.Length;
         for (int g = 0, i = 0; g < Settings.PowerGroups.Length; g++)
@@ -206,7 +221,7 @@ public class ReplimatMechMod : Mod
         }
         l.Gap();
         Rect reset = l.GetRect(32f);
-        if (Widgets.ButtonText(new Rect(reset.x, reset.y, 160f, 32f), "RM_SetReset".Translate()))
+        if (Widgets.ButtonText(new Rect(reset.xMax - 160f, reset.y, 160f, 32f), "RM_SetReset".Translate()))
         {
             S.Reset();
             buf = new string[buf.Length];

@@ -253,7 +253,8 @@ public class CompPrinter : ThingComp, IRenameable
     string Blocked(Order o)
     {
         if (o.paid) return null;
-        if (!Rules.CanPrint(o.pattern)) return "RM_StForbidden";
+        if (!Rules.Allowed(o.pattern)) return "RM_StForbidden";
+        if (Rules.MissingResearch(o.pattern) != null) return "RM_StNoResearch";
         if (o.pattern.IsMech && !MechanitorOk(o.mechanitor)) return "RM_StNoMechanitor";
         // мех напечатан, но не вышел (не хватает пропускной способности или механитора) — не «готово»
         if (Remaining(o) <= 0) return o.pattern.IsMech && waiting.Any(w => w.kind == o.pattern.mechKind) ? "RM_StMechWaits" : "RM_StDone";

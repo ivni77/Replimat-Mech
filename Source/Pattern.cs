@@ -256,14 +256,42 @@ public static class Rules
         return g < 0 ? 1f : ReplimatMechMod.S.groupMarkup[g];
     }
 
+    /// Печатать можно: разрешено настройками и исследование изучено.
+    public static bool CanPrint(Pattern p) => Allowed(p) && MissingResearch(p) == null;
+
     /// Группа разрешена в настройках; упакованное печатается, только если постройку можно упаковать.
-    public static bool CanPrint(Pattern p)
+    public static bool Allowed(Pattern p)
     {
         if (p.minified && !p.def.Minifiable) return false;
         if (p.IsMech) return ReplimatMechMod.S.needMechanitor;
         int g = Group(p.def);
         return g < 0 || ReplimatMechMod.S.groupAllowed[g];
     }
+
+    static readonly Dictionary<ThingDef, List<(RecipeDef recipe, List<ThingDef> users)>> recipes = new();
+
+    /// Какое исследование не изучено (null — изучено всё), как в ванили: постройка — её исследования; мех и предмет по рецепту — хоть один
+    /// рецепт, у которого изучено и само исследование рецепта, и верстак; добываемое из породы (сталь, компоненты) и сделанное не по рецепту —
+    /// без исследований. Рецепты с верстаками — один раз на шаблон: ванильный AllRecipeUsers перебирает все вещи.
+    public static ResearchProjectDef MissingResearch(Pattern p)
+    {
+        if (p.def.category == ThingCategory.Building) return Missing(p.def);
+        if (!recipes.TryGetValue(p.def, out var rs))
+            recipes[p.def] = rs = DefDatabase<ThingDef>.AllDefs.Any(b => b.building?.mineableThing == p.def) ? new()
+                : DefDatabase<RecipeDef>.AllDefs.Where(r => r.products.Any(x => x.thingDef == p.def))
+                    .Select(r => (r, r.AllRecipeUsers.ToList())).Where(x => x.Item2.Count > 0).ToList();
+        ResearchProjectDef first = null;
+        foreach (var (r, users) in rs)
+        {
+            ResearchProjectDef m = r.researchPrerequisite is { IsFinished: false } one ? one
+                : r.researchPrerequisites?.FirstOrDefault(x => !x.IsFinished) ?? (users.Any(u => u.IsResearchFinished) ? null : Missing(users[0]));
+            if (m == null) return null;
+            first ??= m;
+        }
+        return first;
+    }
+
+    static ResearchProjectDef Missing(BuildableDef d) => d.researchPrerequisites?.FirstOrDefault(r => !r.IsFinished);
 
     public static bool FeederFood(ThingDef def) => def.IsNutritionGivingIngestible && !def.IsDrug;
 }
