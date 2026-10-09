@@ -76,7 +76,10 @@ public class Pattern : IExposable
         Rand.PushState();
         try
         {
-            return Make(q, null);
+            Thing t = Make(q, null);
+            // из окна Multiplayer даёт вещам отрицательные номера, а ваниль по номеру выбирает картинку (Graphic_Random) — за краем списка
+            t.thingIDNumber = t.GetInnerIfMinified().thingIDNumber = 0;
+            return t;
         }
         finally
         {
