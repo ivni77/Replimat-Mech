@@ -370,7 +370,7 @@ public static class RMUI
     }
 }
 
-/// Вкладка «Очередь» на самом репликаторе — только просмотр: менять — в компьютере.
+/// Вкладка «Очередь» на самом репликаторе (всегда, и у пустого) — только просмотр: менять — в компьютере.
 public class ITab_Queue : ITab
 {
     Vector2 scroll;
@@ -380,8 +380,6 @@ public class ITab_Queue : ITab
         size = new Vector2(460f, 520f);
         labelKey = "RM_TabQueue";
     }
-
-    public override bool IsVisible => SelThing.TryGetComp<CompPrinter>()?.orders.Count > 0;
 
     /// Ширина — как у панели осмотра под вкладкой.
     protected override void UpdateSize() => size = new Vector2(InspectPaneUtility.PaneWidthFor(Find.WindowStack.WindowOfType<IInspectPane>()), size.y);
@@ -394,6 +392,13 @@ public class ITab_Queue : ITab
         const float countW = 90f;
         Rect r = new Rect(0f, 0f, size.x, size.y).ContractedBy(10f);
         r.yMin += RMUI.TanksLines(new Rect(r.x, r.y, r.width - 16f, 0f), c.Net);  // правый край — по столбцу под ним (без полосы прокрутки)
+        if (c.orders.Count == 0)
+        {
+            GUI.color = RMUI.Muted;
+            RMUI.Label(r, "RM_QueueEmpty".Translate());
+            GUI.color = Color.white;
+            return;
+        }
         RMUI.Queue(r, c, ref scroll, _ => true, false, false, countW, (cell, o) => RMUI.CountCell(cell, c, o),
             (t, draw) => RMUI.ColumnsHead(t, 40f, new[] { ("RM_ColHave", t.width - countW, countW) }, draw));
     }

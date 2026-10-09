@@ -168,6 +168,9 @@ public class CompPrinter : ThingComp, IRenameable
     public string BaseLabel => parent.def.LabelCap;
     public string InspectLabel => RenamableLabel;
 
+    /// Имя репликатора — и названием здания: в осмотре, подсказках, меню (переименовывается компонент, не здание).
+    public override string TransformLabel(string label) => name.NullOrEmpty() ? label : name;
+
     public static CompPrinter QueuedIn(ThingDef def, bool minified = false) =>
         All.FirstOrDefault(c => c.orders.Any(o => o.pattern is { IsMech: false } p && p.def == def && p.minified == minified));
 
