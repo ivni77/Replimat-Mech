@@ -212,6 +212,8 @@ public class CompPrinter : ThingComp, IRenameable
         foreach (Order o in Ordered.ToList())
         {
             o.running = false;
+            // запретили в настройках или не изучено — начатая пачка в баки
+            if (o.paid && !Rules.CanPrint(o.pattern)) Unpay(o);
             if (o.paid) Trim(o);
             if (o.paid) Reprice(o);
             o.status = o.paused ? "RM_StSuspended" : Blocked(o);

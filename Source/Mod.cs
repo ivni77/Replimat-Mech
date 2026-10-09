@@ -90,13 +90,12 @@ public class Settings : ModSettings
     }
 }
 
-/// Настройки: ползунки с шагом, числа — полями ввода (предел сбора стоимости — Settings.MaxValueReturn). Скорости печати нет:
+/// Настройки карточками, как «Главная» компьютера: ползунки с шагом, числа — полями ввода (предел сбора стоимости — Settings.MaxValueReturn). Скорости печати нет:
 /// время — валюта ползунков.
 public class ReplimatMechMod : Mod
 {
     public static Settings S;
     Vector2 scroll;
-    float height = 700f;
     string[] buf = new string[Settings.Groups.Length + Settings.PowerDefs.Length + 1];
 
     public static ModContentPack Pack;
@@ -116,120 +115,175 @@ public class ReplimatMechMod : Mod
         S.Apply();
     }
 
-    static int Slider(Listing_Standard l, string key, int val, int min, int max, int step) =>
-        Mathf.Clamp(Mathf.RoundToInt(l.SliderLabeled(key.Translate(val + "%"), val, min, max, 0.6f) / step) * step, min, max);
+    /// Ширина столбца полей справа — у всех карточек; галки — по его центру.
+    const float FieldW = 64f, ColGap = 24f;
+
+    static Rect FieldCol(Rect r) => new(r.xMax - FieldW, r.y, FieldW, r.height);
+    static Rect CheckCol(Rect r) => new(r.x, r.y, r.width - (FieldW - 24f) / 2f, r.height);
+
+    static void Label(Rect r, string s, TextAnchor a = TextAnchor.MiddleLeft)
+    {
+        Text.Anchor = a;
+        RMUI.Label(r, s);
+        Text.Anchor = TextAnchor.UpperLeft;
+    }
 
     static string Q(QualityCategory q) => q == QualityCategory.Legendary ? "RM_None".Translate().ToString() : q.GetLabel();
-
-    /// Справка внизу раздела — приглушённым текстом после отступа, всплывающих подсказок нет.
-    static void Help(Listing_Standard l, string text)
-    {
-        l.Gap(RMUI.HelpGap);
-        GUI.color = RMUI.Muted;
-        l.Label(text);
-        GUI.color = Color.white;
-    }
 
     /// Поле числа справа от подписи.
     void Number(Rect r, string label, ref int val, int b, int min, int max)
     {
-        RMUI.Label(r.LeftPartPixels(r.width - 90f), label);
-        Widgets.TextFieldNumeric(new Rect(r.xMax - 84f, r.y, 80f, 26f), ref val, ref buf[b], min, max);
+        Label(r.LeftPartPixels(r.width - FieldW - 8f), label);
+        Widgets.TextFieldNumeric(FieldCol(r), ref val, ref buf[b], min, max);
     }
 
-    /// Заголовок группы — крупным шрифтом, над ним черта (у первой группы — нет).
-    static void Section(Listing_Standard l, string key, bool line = true)
+    /// Ползунок с шагом 5% — от конца подписи lw до правого края.
+    static int Slider(Rect r, float lw, string key, int val, int min, int max)
     {
-        if (line) l.GapLine();
-        Text.Font = GameFont.Medium;
-        l.Label(key.Translate());
-        Text.Font = GameFont.Small;
+        Label(r, key.Translate(val + "%"));
+        float v = Widgets.HorizontalSlider(new Rect(r.x + lw, r.y, r.width - lw, r.height), val, min, max, true);
+        return Mathf.Clamp(Mathf.RoundToInt(v / 5f) * 5, min, max);
     }
 
-    /// Группы: печать (предел качества, особые предметы), расщепление, здания, мощность; «Сбросить всё» — внизу справа.
+    /// Слева «Печать», справа «Расщепление» и «Здания», ниже во всю ширину — мощность; «Сбросить всё» — внизу справа.
+    /// Высоты карточек — сначала измерить (draw: false), потом рисовать: нижние края колонок вровень.
     public override void DoSettingsWindowContents(Rect inRect)
     {
-        var view = new Rect(0f, 0f, inRect.width - 20f, height);
+        float full = inRect.width - 16f, colW = (full - RMUI.Gap) / 2f, x2 = colW + RMUI.Gap;
+        var cards = new (string title, List<Line> lines, string help)[]
+        {
+            ("RM_SetSecPrint".Translate(), PrintLines(), string.Join("\n", Settings.Groups.Select(g => (g + "Desc").Translate().ToString()))),
+            ("RM_SetSecSplit".Translate(), SplitLines(), null),
+            ("RM_SetSecBuildings".Translate(), BuildingLines(), "RM_SetNeedMechanitorDesc".Translate()),
+            ("RM_SetPower".Translate(), PowerLines(), null),
+        };
+        float Card(int i, Rect at, bool draw = true) => RMUI.Card(at, cards[i].title, cards[i].lines, draw, help: cards[i].help);
+        float split = Card(1, new Rect(0f, 0f, colW, 0f), false), top = Mathf.Max(Card(0, new Rect(0f, 0f, colW, 0f), false),
+            split + RMUI.Gap + Card(2, new Rect(0f, 0f, colW, 0f), false)), power = Card(3, new Rect(0f, 0f, full, 0f), false);
+        var view = new Rect(0f, 0f, full, top + power + 2f * RMUI.Gap + 30f);
         Widgets.BeginScrollView(inRect, ref scroll, view);
-        // Одна колонка: иначе не влезшее уходит во вторую, за правый край, и высота прокрутки (с прошлого кадра) сжимается до первой строки.
-        var l = new Listing_Standard { maxOneColumn = true };
-        l.Begin(view);
-
-        Section(l, "RM_SetSecPrint", false);
-        if (l.ButtonTextLabeledPct("RM_SetQualityCap".Translate(), Q(S.qualityCap), 0.6f))
-            Find.WindowStack.Add(new FloatMenu(QualityUtility.AllQualityCategories.OrderBy(q => q == QualityCategory.Legendary ? -1 : (int)q)
-                .Select(q => new FloatMenuOption(Q(q), () => S.qualityCap = q)).ToList()));
-        l.Gap(6f);
-        Rect head = l.GetRect(22f);
-        GUI.color = ColorLibrary.Grey;
-        RMUI.Label(head, "RM_SetGroups".Translate());
-        RMUI.Label(new Rect(head.xMax - 180f, head.y, 90f, 22f), "RM_ColPrint".Translate());
-        RMUI.Label(new Rect(head.xMax - 84f, head.y, 84f, 22f), "RM_ColMarkup".Translate());
-        GUI.color = Color.white;
-        for (int g = 0; g < Settings.Groups.Length; g++)
-        {
-            Rect r = l.GetRect(28f);
-            int markup = S.groupMarkup[g];
-            bool allowed = S.groupAllowed[g];
-            Number(r, Settings.Groups[g].Translate().CapitalizeFirst(), ref markup, g, 1, 100);
-            Widgets.Checkbox(r.xMax - 150f, r.y + 1f, ref allowed);
-            S.groupMarkup[g] = markup;
-            S.groupAllowed[g] = allowed;
-            l.Gap(2f);
-        }
-        Help(l, string.Join("\n", Settings.Groups.Select(g => (g + "Desc").Translate().ToString())));
-
-        Section(l, "RM_SetSecSplit");
-        S.massReturn = Slider(l, "RM_SetMassReturn", S.massReturn, 0, 100, 5);
-        S.valueReturn = Slider(l, "RM_SetValueReturn", S.valueReturn, Settings.MinValueReturn, Settings.MaxValueReturn, 5);
-
-        Section(l, "RM_SetSecBuildings");
-        Rect color = l.GetRect(30f);
-        RMUI.Label(color.LeftPart(0.6f), "RM_Color".Translate());
-        // Квадрат цвета — сам кнопка; палитра та же, что у мехов (все ColorDef + цвета фракций, если игра идёт).
-        Rect swatch = new(color.x + color.width * 0.6f, color.y, 60f, 30f);
-        Widgets.DrawBoxSolidWithOutline(swatch, S.accent, Color.white);
-        Widgets.DrawHighlightIfMouseover(swatch);
-        if (Widgets.ButtonInvisible(swatch))
-        {
-            IEnumerable<Color> all = DefDatabase<ColorDef>.AllDefs.Select(c => c.color).Append(Settings.DefaultAccent);
-            if (Current.Game != null) all = all.Concat(Find.FactionManager.AllFactionsVisible.Select(f => f.Color));
-            List<Color> colors = all.Distinct().ToList();
-            colors.SortByColor(c => c);
-            Find.WindowStack.Add(new Dialog_ChooseColor("RM_Color".Translate(), S.accent, colors, c => S.accent = c));
-        }
-        l.Gap(6f);
-        l.CheckboxLabeled("RM_SetNeedMechanitor".Translate(), ref S.needMechanitor);
-        l.CheckboxLabeled("RM_SetMoveTanks".Translate(), ref S.moveTanks);
-        Number(l.GetRect(28f), "RM_SetTankCapacity".Translate(), ref S.tankCapacity, buf.Length - 1, 10, 1000000);
-        Help(l, "RM_SetNeedMechanitorDesc".Translate());
-
-        Section(l, "RM_SetPower");
-        Rect grid = l.GetRect(24f + Settings.PowerGroups.Max(g => g.count) * 30f);
-        float cw = (grid.width - 40f) / Settings.PowerGroups.Length;
-        for (int g = 0, i = 0; g < Settings.PowerGroups.Length; g++)
-        {
-            float x = grid.x + g * (cw + 20f);
-            GUI.color = ColorLibrary.Grey;
-            RMUI.Label(new Rect(x, grid.y, cw, 22f), Settings.PowerGroups[g].key.Translate());
-            GUI.color = Color.white;
-            for (int k = 0; k < Settings.PowerGroups[g].count; k++, i++)
-            {
-                int w = S.power[i];
-                Number(new Rect(x, grid.y + 24f + k * 30f, cw, 28f), DefDatabase<ThingDef>.GetNamed(Settings.PowerDefs[i]).LabelCap, ref w, Settings.Groups.Length + i, 0, 100000);
-                S.power[i] = w;
-            }
-        }
-        l.Gap();
-        Rect reset = l.GetRect(32f);
-        if (Widgets.ButtonText(new Rect(reset.xMax - 160f, reset.y, 160f, 32f), "RM_SetReset".Translate()))
+        Card(0, new Rect(0f, 0f, colW, top));
+        Card(1, new Rect(x2, 0f, colW, split));
+        Card(2, new Rect(x2, split + RMUI.Gap, colW, top - split - RMUI.Gap));
+        Card(3, new Rect(0f, top + RMUI.Gap, full, power));
+        if (RMUI.Button(new Rect(full - 160f, view.height - 30f, 160f, 30f), "RM_SetReset".Translate()))
         {
             S.Reset();
             buf = new string[buf.Length];
         }
-        height = l.CurHeight + 10f;
-        l.End();
         Widgets.EndScrollView();
+    }
+
+    /// Предел качества и таблица особых предметов: печатать ли, наценка.
+    List<Line> PrintLines()
+    {
+        float PrintX(Rect r) => r.xMax - FieldW - 60f;
+        var lines = new List<Line>
+        {
+            new()
+            {
+                check = r =>
+                {
+                    Label(r, "RM_SetQualityCap".Translate());
+                    if (Widgets.ButtonText(new Rect(r.xMax - 140f, r.y, 140f, r.height), Q(S.qualityCap)))
+                        Find.WindowStack.Add(new FloatMenu(QualityUtility.AllQualityCategories.OrderBy(q => q == QualityCategory.Legendary ? -1 : (int)q)
+                            .Select(q => new FloatMenuOption(Q(q), () => S.qualityCap = q)).ToList()));
+                },
+            },
+            new() { sep = true },
+            new()
+            {
+                color = RMUI.Muted,
+                check = r =>
+                {
+                    Label(r, "RM_SetGroups".Translate());
+                    Label(new Rect(PrintX(r) - 50f, r.y, 100f, r.height), "RM_ColPrint".Translate(), TextAnchor.MiddleCenter);
+                    Label(r, "RM_ColMarkup".Translate(), TextAnchor.MiddleRight);
+                },
+            },
+        };
+        for (int g = 0; g < Settings.Groups.Length; g++)
+        {
+            int i = g;
+            lines.Add(new Line
+            {
+                check = r =>
+                {
+                    int markup = S.groupMarkup[i];
+                    bool allowed = S.groupAllowed[i];
+                    Number(r, Settings.Groups[i].Translate().CapitalizeFirst(), ref markup, i, 1, 100);
+                    Widgets.Checkbox(PrintX(r) - 12f, r.y, ref allowed);
+                    S.groupMarkup[i] = markup;
+                    S.groupAllowed[i] = allowed;
+                },
+            });
+        }
+        return lines;
+    }
+
+    /// Два ползунка, подписи одной ширины — по самой длинной.
+    static List<Line> SplitLines()
+    {
+        float lw = new[] { "RM_SetMassReturn".Translate("100%"), "RM_SetValueReturn".Translate(Settings.MaxValueReturn + "%") }.Max(t => Text.CalcSize(t).x) + 12f;
+        return new List<Line>
+        {
+            new() { check = r => S.massReturn = Slider(r, lw, "RM_SetMassReturn", S.massReturn, 0, 100) },
+            new() { check = r => S.valueReturn = Slider(r, lw, "RM_SetValueReturn", S.valueReturn, Settings.MinValueReturn, Settings.MaxValueReturn) },
+        };
+    }
+
+    List<Line> BuildingLines() => new()
+    {
+        new()
+        {
+            check = r =>
+            {
+                Label(r, "RM_Color".Translate());
+                // квадрат цвета — сам кнопка; палитра та же, что у мехов (все ColorDef + цвета фракций, если игра идёт)
+                Rect swatch = FieldCol(r);
+                Widgets.DrawBoxSolidWithOutline(swatch, S.accent, Color.white);
+                Widgets.DrawHighlightIfMouseover(swatch);
+                if (!Widgets.ButtonInvisible(swatch)) return;
+                IEnumerable<Color> all = DefDatabase<ColorDef>.AllDefs.Select(c => c.color).Append(Settings.DefaultAccent);
+                if (Current.Game != null) all = all.Concat(Find.FactionManager.AllFactionsVisible.Select(f => f.Color));
+                List<Color> colors = all.Distinct().ToList();
+                colors.SortByColor(c => c);
+                Find.WindowStack.Add(new Dialog_ChooseColor("RM_Color".Translate(), S.accent, colors, c => S.accent = c));
+            },
+        },
+        new() { check = r => Widgets.CheckboxLabeled(CheckCol(r), "RM_SetNeedMechanitor".Translate(), ref S.needMechanitor) },
+        new() { check = r => Widgets.CheckboxLabeled(CheckCol(r), "RM_SetMoveTanks".Translate(), ref S.moveTanks) },
+        new() { check = r => Number(r, "RM_SetTankCapacity".Translate(), ref S.tankCapacity, buf.Length - 1, 10, 1000000) },
+    };
+
+    /// Столбец на группу зданий (печать, баки, компьютер и расщепитель): подпись столбца, под ней поля.
+    List<Line> PowerLines()
+    {
+        var lines = new List<Line>();
+        for (int k = -1; k < Settings.PowerGroups.Max(g => g.count); k++)
+        {
+            int row = k;
+            lines.Add(new Line
+            {
+                color = row < 0 ? RMUI.Muted : Color.white,
+                check = r =>
+                {
+                    float cw = (r.width - (Settings.PowerGroups.Length - 1) * ColGap) / Settings.PowerGroups.Length;
+                    for (int g = 0, i = 0; g < Settings.PowerGroups.Length; i += Settings.PowerGroups[g].count, g++)
+                    {
+                        Rect c = new(r.x + g * (cw + ColGap), r.y, cw, r.height);
+                        if (row < 0) Label(c, Settings.PowerGroups[g].key.Translate());
+                        else if (row < Settings.PowerGroups[g].count)
+                        {
+                            int w = S.power[i + row];
+                            Number(c, DefDatabase<ThingDef>.GetNamed(Settings.PowerDefs[i + row]).LabelCap, ref w, Settings.Groups.Length + i + row, 0, 100000);
+                            S.power[i + row] = w;
+                        }
+                    }
+                },
+            });
+        }
+        return lines;
     }
 }
 

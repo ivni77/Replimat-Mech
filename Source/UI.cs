@@ -34,6 +34,15 @@ public static class RMUI
         GUI.color = Color.white;
     }
 
+    /// Кнопка ванили; неактивная — серая (ваниль рисует её как активную) и не нажимается.
+    public static bool Button(Rect r, string label, bool active = true)
+    {
+        if (!active) GUI.color = Color.gray;
+        bool clicked = Widgets.ButtonText(r, label, doMouseoverSound: active, active: active);
+        GUI.color = Color.white;
+        return clicked;
+    }
+
     public static string ModeLabel(OrderMode m) => (m switch
     {
         OrderMode.Make => BillRepeatModeDefOf.RepeatCount,
@@ -370,6 +379,64 @@ public static class RMUI
         Text.Anchor = TextAnchor.UpperLeft;
         GUI.color = Color.white;
     }
+
+    /// Карточка, как на «Главной» и в настройках мода: заголовок (справа — кнопка head), строки, справка help у нижнего края; высота по содержимому, не меньше at.height; draw=false — только измерить.
+    /// Строки в одну линию — текст по центру строки по высоте, черта — посередине своей строки: отступы над и под ней равны.
+    public static float Card(Rect at, string title, List<Line> lines, bool draw, Action<Rect> head = null, string help = null)
+    {
+        const float pad = 14f;
+        float w = at.width - 2f * pad, helpH = help == null ? 0f : 8f + Text.CalcHeight(help, w);
+        float LineH(Line l) => l.wide ? Text.CalcHeight(l.left, w) + 2f : 24f;
+        float height = Mathf.Max(at.height, pad + 34f + lines.Sum(LineH) + helpH + pad);
+        if (!draw) return height;
+        Rect box = new(at.x, at.y, at.width, height);
+        Widgets.DrawBoxSolidWithOutline(box, new Color(1f, 1f, 1f, 0.04f), RMUI.Edge);
+        if (help != null) Help(box.ContractedBy(pad), help);
+        float x = at.x + pad, y = at.y + pad;
+        Text.Font = GameFont.Medium;
+        RMUI.Label(new Rect(x, y, head != null ? w - 130f : w, 34f), title.Truncate(head != null ? w - 130f : w));
+        Text.Font = GameFont.Small;
+        head?.Invoke(new Rect(x + w - 120f, y + 2f, 120f, 28f));
+        y += 34f;
+        // полосы и линии — одним столбцом посередине между самой длинной подписью и самым длинным значением, с отступом от обоих
+        List<Line> bars = lines.Where(l => l.bar >= 0f).ToList();
+        float a = x + bars.Select(l => Text.CalcSize(l.left).x).DefaultIfEmpty().Max() + 16f;
+        float b = x + w - bars.Select(l => l.right != null ? Text.CalcSize(l.right).x : 0f).DefaultIfEmpty().Max() - 16f, bw = Mathf.Min(168f, b - a), bx = a + (b - a - bw) / 2f;
+        foreach (Line l in lines)
+        {
+            float h = LineH(l);
+            GUI.color = l.color;
+            if (l.sep) Widgets.DrawLineHorizontal(x, y + h / 2f, w, RMUI.Edge);
+            else if (l.check != null) l.check(new Rect(x, y, w, h));
+            else if (l.wide) RMUI.Label(new Rect(x, y, w, h), l.left);
+            else
+            {
+                Text.Anchor = TextAnchor.MiddleLeft;
+                RMUI.Label(new Rect(x, y, l.mid == null && l.right == null ? w : w * 0.55f, h), l.left);
+                Text.Anchor = TextAnchor.MiddleRight;
+                if (l.mid != null) RMUI.Label(new Rect(x + w * 0.45f, y, w * 0.55f - 130f, h), l.mid);
+                if (l.right != null) RMUI.Label(new Rect(x + w - 120f, y, 120f, h), l.right);
+                Text.Anchor = TextAnchor.UpperLeft;
+                GUI.color = Color.white;
+                if (bw > 20f && l.bar >= 0f) Widgets.FillableBar(new Rect(bx, y + 4.5f, bw, 15f), Mathf.Clamp01(l.bar));
+            }
+            GUI.color = Color.white;
+            y += h;
+        }
+        return height;
+    }
+}
+
+/// Строка карточки (RMUI.Card): подпись слева, две колонки значений справа; wide — текст на всю ширину с переносом;
+/// bar — полоса между подписью и значением (у стоимости без предела — полная); sep — черта; пустая строка — отступ;
+/// check — строка целиком рисует сама (галка с подписью).
+public sealed class Line
+{
+    public string left = "", mid, right;
+    public Action<Rect> check;
+    public Color color = Color.white;
+    public bool wide, sep;
+    public float bar = -1f;
 }
 
 /// Вкладка «Очередь» на самом репликаторе (всегда, и у пустого) — только просмотр: менять — в компьютере.
@@ -412,18 +479,6 @@ public class ITab_Queue : ITab
 public class Dialog_Computer : Window
 {
     enum Tab { Home, Patterns, Queue }
-
-    /// Строка карточки «Главной»: подпись слева, две колонки значений справа; wide — текст на всю ширину с переносом;
-    /// bar — полоса между подписью и значением (у стоимости без предела — полная); sep — черта; пустая строка — отступ;
-    /// check — строка целиком рисует сама (галка с подписью).
-    sealed class Line
-    {
-        public string left = "", mid, right;
-        public Action<Rect> check;
-        public Color color = Color.white;
-        public bool wide, sep;
-        public float bar = -1f;
-    }
 
     sealed class Node
     {
@@ -508,7 +563,7 @@ public class Dialog_Computer : Window
         string matterT = "RM_CardMatter".Translate(), gearT = "RM_CardGear".Translate(), helpT = "RM_CardHelp".Translate();
         string help = string.Join("\n", new[] { "RM_TanksExplain", S.needMechanitor ? "RM_SpeedExplain" : null, "RM_GearExplain" }.Where(k => k != null).Select(k => k.Translate().ToString()));
         List<Line> matter = MatterLines(), gear = GearLines(), helpLines = new() { new Line { wide = true, color = RMUI.Muted, left = help } };
-        float Measure(string title, List<Line> lines, float w = 0f) => Card(new Rect(0f, 0f, w > 0f ? w : colW, 0f), title, lines, false);
+        float Measure(string title, List<Line> lines, float w = 0f) => RMUI.Card(new Rect(0f, 0f, w > 0f ? w : colW, 0f), title, lines, false);
         float top = Mathf.Max(Measure(matterT, matter), Measure(gearT, gear)), hh = Measure(helpT, helpLines, full);
         var cards = Printers.Select(c => (title: Title(c), lines: PrinterLines(c), head: (Action<Rect>)(b =>
         {
@@ -523,15 +578,15 @@ public class Dialog_Computer : Window
         float helpY = top + rows.Sum(h => RMUI.Gap + h) + RMUI.Gap;
         Rect view = new(0f, 0f, full, helpY + hh);
         Widgets.BeginScrollView(r, ref homeScroll, view);
-        Card(new Rect(0f, 0f, colW, top), matterT, matter, true);
-        Card(new Rect(x2, 0f, colW, top), gearT, gear, true);
+        RMUI.Card(new Rect(0f, 0f, colW, top), matterT, matter, true);
+        RMUI.Card(new Rect(x2, 0f, colW, top), gearT, gear, true);
         float y = top + RMUI.Gap;
         for (int i = 0; i < cards.Count; i++)
         {
-            Card(new Rect(i % 2 == 0 ? 0f : x2, y, colW, rows[i / 2]), cards[i].title, cards[i].lines, true, cards[i].head);
+            RMUI.Card(new Rect(i % 2 == 0 ? 0f : x2, y, colW, rows[i / 2]), cards[i].title, cards[i].lines, true, cards[i].head);
             if (i % 2 == 1) y += rows[i / 2] + RMUI.Gap;
         }
-        Card(new Rect(0f, helpY, full, hh), helpT, helpLines, true);
+        RMUI.Card(new Rect(0f, helpY, full, hh), helpT, helpLines, true);
         Widgets.EndScrollView();
     }
 
@@ -600,51 +655,6 @@ public class Dialog_Computer : Window
     }
 
     static int Pct(Order o) => Mathf.RoundToInt(100f * o.progress / Mathf.Max(1f, o.batchTicks));
-
-    /// Карточка: заголовок (справа — кнопка head), строки, справка у нижнего края; высота по содержимому, не меньше at.height; draw=false — только измерить.
-    /// Строки в одну линию — текст по центру строки по высоте, черта — посередине своей строки: отступы над и под ней равны.
-    static float Card(Rect at, string title, List<Line> lines, bool draw, Action<Rect> head = null)
-    {
-        const float pad = 14f;
-        float w = at.width - 2f * pad;
-        float LineH(Line l) => l.wide ? Text.CalcHeight(l.left, w) + 2f : 24f;
-        float height = Mathf.Max(at.height, pad + 34f + lines.Sum(LineH) + pad);
-        if (!draw) return height;
-        Rect box = new(at.x, at.y, at.width, height);
-        Widgets.DrawBoxSolidWithOutline(box, new Color(1f, 1f, 1f, 0.04f), RMUI.Edge);
-        float x = at.x + pad, y = at.y + pad;
-        Text.Font = GameFont.Medium;
-        RMUI.Label(new Rect(x, y, head != null ? w - 130f : w, 34f), title.Truncate(head != null ? w - 130f : w));
-        Text.Font = GameFont.Small;
-        head?.Invoke(new Rect(x + w - 120f, y + 2f, 120f, 28f));
-        y += 34f;
-        // полосы и линии — одним столбцом посередине между самой длинной подписью и самым длинным значением, с отступом от обоих
-        List<Line> bars = lines.Where(l => l.bar >= 0f).ToList();
-        float a = x + bars.Select(l => Text.CalcSize(l.left).x).DefaultIfEmpty().Max() + 16f;
-        float b = x + w - bars.Select(l => l.right != null ? Text.CalcSize(l.right).x : 0f).DefaultIfEmpty().Max() - 16f, bw = Mathf.Min(168f, b - a), bx = a + (b - a - bw) / 2f;
-        foreach (Line l in lines)
-        {
-            float h = LineH(l);
-            GUI.color = l.color;
-            if (l.sep) Widgets.DrawLineHorizontal(x, y + h / 2f, w, RMUI.Edge);
-            else if (l.check != null) l.check(new Rect(x, y, w, h));
-            else if (l.wide) RMUI.Label(new Rect(x, y, w, h), l.left);
-            else
-            {
-                Text.Anchor = TextAnchor.MiddleLeft;
-                RMUI.Label(new Rect(x, y, l.mid == null && l.right == null ? w : w * 0.55f, h), l.left);
-                Text.Anchor = TextAnchor.MiddleRight;
-                if (l.mid != null) RMUI.Label(new Rect(x + w * 0.45f, y, w * 0.55f - 130f, h), l.mid);
-                if (l.right != null) RMUI.Label(new Rect(x + w - 120f, y, 120f, h), l.right);
-                Text.Anchor = TextAnchor.UpperLeft;
-                GUI.color = Color.white;
-                if (bw > 20f && l.bar >= 0f) Widgets.FillableBar(new Rect(bx, y + 4.5f, bw, 15f), Mathf.Clamp01(l.bar));
-            }
-            GUI.color = Color.white;
-            y += h;
-        }
-        return height;
-    }
 
     // ---------------- Шаблоны ----------------
 
@@ -1054,29 +1064,29 @@ public class Dialog_Computer : Window
         }
         if (existing != null)
         {
-            if (Widgets.ButtonText(left, "RM_Apply".Translate(), active: dirty) && dirty)
+            if (RMUI.Button(left, "RM_Apply".Translate(), dirty))
             {
                 d.editor = pawn;
                 Edit.Apply(c, existing, d);
                 Messages.Message("RM_MsgApplied".Translate(p.Label), MessageTypeDefOf.SilentInput, false);
             }
         }
-        else if (Widgets.ButtonText(left, "RM_Create".Translate(), active: why == null) && why == null)
+        else if (RMUI.Button(left, "RM_Create".Translate(), why == null))
         {
             Edit.Create(c, d);
             Messages.Message("RM_MsgAdded".Translate(p.Label, c.RenamableLabel, RMUI.Group(d.important)), MessageTypeDefOf.SilentInput, false);
         }
         Order def = Default(p);
-        if (Widgets.ButtonText(mid, "ResetButton".Translate(), active: !d.SameSettings(def)))
+        if (RMUI.Button(mid, "ResetButton".Translate(), !d.SameSettings(def)))
         {
             draft = def;
             qtyBuf = null;
         }
         if (dirty)
         {
-            if (Widgets.ButtonText(right, "CancelButton".Translate())) Load(p, c, existing);
+            if (RMUI.Button(right, "CancelButton".Translate())) Load(p, c, existing);
         }
-        else if (Widgets.ButtonText(right, "Delete".Translate(), active: existing != null) && existing != null)
+        else if (RMUI.Button(right, "Delete".Translate(), existing != null))
         {
             Edit.Remove(c, existing);
             Messages.Message("RM_MsgDeleted".Translate(p.Label), MessageTypeDefOf.SilentInput, false);

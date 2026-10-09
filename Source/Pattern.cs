@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
@@ -268,30 +269,46 @@ public static class Rules
         return g < 0 || ReplimatMechMod.S.groupAllowed[g];
     }
 
-    static readonly Dictionary<ThingDef, List<(RecipeDef recipe, List<ThingDef> users)>> recipes = new();
+    static readonly Dictionary<ThingDef, List<Func<ResearchProjectDef>>> sources = new();
 
-    /// Какое исследование не изучено (null — изучено всё), как в ванили: постройка — её исследования; мех и предмет по рецепту — хоть один
-    /// рецепт, у которого изучено и само исследование рецепта, и верстак; добываемое из породы (сталь, компоненты) и сделанное не по рецепту —
-    /// без исследований. Рецепты с верстаками — один раз на шаблон: ванильный AllRecipeUsers перебирает все вещи.
+    /// Какое исследование не изучено (null — изучено всё), как в ванили: постройка — её исследования; механоид и предмет — хоть один
+    /// источник из Sources, где изучено всё. Источники — один раз на шаблон: ванильный AllRecipeUsers перебирает все вещи.
     public static ResearchProjectDef MissingResearch(Pattern p)
     {
-        if (p.def.category == ThingCategory.Building) return Missing(p.def);
-        if (!recipes.TryGetValue(p.def, out var rs))
-            recipes[p.def] = rs = DefDatabase<ThingDef>.AllDefs.Any(b => b.building?.mineableThing == p.def) ? new()
-                : DefDatabase<RecipeDef>.AllDefs.Where(r => r.products.Any(x => x.thingDef == p.def))
-                    .Select(r => (r, r.AllRecipeUsers.ToList())).Where(x => x.Item2.Count > 0).ToList();
+        if (p.def.category == ThingCategory.Building) return Missing(p.def.researchPrerequisites);
+        if (!sources.TryGetValue(p.def, out var src)) sources[p.def] = src = Sources(p.def).ToList();
         ResearchProjectDef first = null;
-        foreach (var (r, users) in rs)
+        foreach (Func<ResearchProjectDef> missing in src)
         {
-            ResearchProjectDef m = r.researchPrerequisite is { IsFinished: false } one ? one
-                : r.researchPrerequisites?.FirstOrDefault(x => !x.IsFinished) ?? (users.Any(u => u.IsResearchFinished) ? null : Missing(users[0]));
+            ResearchProjectDef m = missing();
             if (m == null) return null;
             first ??= m;
         }
         return first;
     }
 
-    static ResearchProjectDef Missing(BuildableDef d) => d.researchPrerequisites?.FirstOrDefault(r => !r.IsFinished);
+    /// Откуда предмет в ванили и что для этого изучить: рецепт — его исследование и хоть один изученный верстак; посадка — исследование
+    /// растения (дьявольская нить, какао); чертёж — его проект; чип — проект, который открывает его анализ. Добываемое из породы и дикорастущее
+    /// (сталь, дерево) и то, что не делается вовсе (только купить или найти), — без исследований.
+    static IEnumerable<Func<ResearchProjectDef>> Sources(ThingDef d)
+    {
+        if (DefDatabase<ThingDef>.AllDefs.Any(b => b.building?.mineableThing == d)
+            || DefDatabase<BiomeDef>.AllDefs.Any(b => b.AllWildPlants.Any(x => x.plant?.harvestedThingDef == d))) yield break;
+        if (d.GetCompProperties<CompProperties_Techprint>()?.project is { } tp) yield return () => tp.IsFinished ? null : tp;
+        foreach (ResearchProjectDef rp in DefDatabase<ResearchProjectDef>.AllDefs.Where(r => r.requiredAnalyzed?.Contains(d) == true))
+            yield return () => rp.IsFinished ? null : rp;
+        foreach (ThingDef plant in DefDatabase<ThingDef>.AllDefs.Where(x => x.plant?.harvestedThingDef == d && x.plant.Sowable))
+            yield return () => Missing(plant.plant.sowResearchPrerequisites);
+        foreach (RecipeDef r in DefDatabase<RecipeDef>.AllDefs.Where(r => r.products.Any(x => x.thingDef == d)))
+        {
+            List<ThingDef> users = r.AllRecipeUsers.ToList();
+            if (users.Count > 0)
+                yield return () => (r.researchPrerequisite is { IsFinished: false } one ? one : Missing(r.researchPrerequisites))
+                    ?? (users.Any(u => u.IsResearchFinished) ? null : Missing(users[0].researchPrerequisites));
+        }
+    }
+
+    static ResearchProjectDef Missing(List<ResearchProjectDef> list) => list?.FirstOrDefault(r => !r.IsFinished);
 
     public static bool FeederFood(ThingDef def) => def.IsNutritionGivingIngestible && !def.IsDrug;
 }

@@ -161,8 +161,8 @@
 	<RM_NoHopper>Нет работающего расщепителя материи</RM_NoHopper>
 
 	<!-- настройки мода -->
-	<RM_SetMassReturn>Возврат массы при расщеплении: {0}</RM_SetMassReturn>
-	<RM_SetValueReturn>Сбор стоимости из расщепителя материи: {0}</RM_SetValueReturn>
+	<RM_SetMassReturn>Сбор массы при расщеплении: {0}</RM_SetMassReturn>
+	<RM_SetValueReturn>Сбор стоимости при расщеплении: {0}</RM_SetValueReturn>
 	<RM_Color>Цвет реплимата</RM_Color>
 	<RM_SetQualityCap>Предел качества печати</RM_SetQualityCap>
 	<RM_SetSecPrint>Печать</RM_SetSecPrint>

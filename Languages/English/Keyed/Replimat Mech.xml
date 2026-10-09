@@ -161,8 +161,8 @@
 	<RM_NoHopper>No working matter splitter</RM_NoHopper>
 
 	<!-- mod settings -->
-	<RM_SetMassReturn>Mass returned on splitting: {0}</RM_SetMassReturn>
-	<RM_SetValueReturn>Value collected by the matter splitter: {0}</RM_SetValueReturn>
+	<RM_SetMassReturn>Mass collected on splitting: {0}</RM_SetMassReturn>
+	<RM_SetValueReturn>Value collected on splitting: {0}</RM_SetValueReturn>
 	<RM_Color>Replimat color</RM_Color>
 	<RM_SetQualityCap>Print quality cap</RM_SetQualityCap>
 	<RM_SetSecPrint>Printing</RM_SetSecPrint>
