@@ -257,7 +257,7 @@ public static class RMUI
     public static (string text, Color color) Status(CompPrinter c, Order o)
     {
         if (o.running)
-            return (Tr("RM_StPrinting", Mathf.RoundToInt(100f * o.progress / Mathf.Max(1f, o.batchTicks)), Fmt.Time(o.progress), Fmt.Time(Mathf.Max(0f, o.batchTicks - o.progress))), Blue);
+            return (Tr("RM_StPrinting", Mathf.RoundToInt(100f * o.progress / Mathf.Max(1f, o.batchTicks)), Fmt.Time(o.progress), Fmt.Time(o.batchTicks)), Blue);
         return o.status switch
         {
             "RM_StSuspended" => ("SuspendedCaps".Translate(), Yellow),
