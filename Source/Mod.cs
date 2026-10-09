@@ -232,6 +232,7 @@ public class ReplimatMechMod : Mod
         };
     }
 
+    /// «Нужен механитор» — последним, прижат к справке о нём.
     List<Line> BuildingLines() => new()
     {
         new()
@@ -251,9 +252,9 @@ public class ReplimatMechMod : Mod
                 Find.WindowStack.Add(new Dialog_ChooseColor("RM_Color".Translate(), S.accent, colors, c => S.accent = c));
             },
         },
-        new() { check = r => Widgets.CheckboxLabeled(CheckCol(r), "RM_SetNeedMechanitor".Translate(), ref S.needMechanitor) },
         new() { check = r => Widgets.CheckboxLabeled(CheckCol(r), "RM_SetMoveTanks".Translate(), ref S.moveTanks) },
         new() { check = r => Number(r, "RM_SetTankCapacity".Translate(), ref S.tankCapacity, buf.Length - 1, 10, 1000000) },
+        new() { bottom = true, check = r => Widgets.CheckboxLabeled(CheckCol(r), "RM_SetNeedMechanitor".Translate(), ref S.needMechanitor) },
     };
 
     /// Столбец на группу зданий (печать, баки, компьютер и расщепитель): подпись столбца, под ней поля.

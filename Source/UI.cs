@@ -387,7 +387,7 @@ public static class RMUI
         const float pad = 14f;
         float w = at.width - 2f * pad, helpH = help == null ? 0f : 8f + Text.CalcHeight(help, w);
         float LineH(Line l) => l.wide ? Text.CalcHeight(l.left, w) + 2f : 24f;
-        float height = Mathf.Max(at.height, pad + 34f + lines.Sum(LineH) + helpH + pad);
+        float natural = pad + 34f + lines.Sum(LineH) + helpH + pad, height = Mathf.Max(at.height, natural), extra = height - natural;
         if (!draw) return height;
         Rect box = new(at.x, at.y, at.width, height);
         Widgets.DrawBoxSolidWithOutline(box, new Color(1f, 1f, 1f, 0.04f), RMUI.Edge);
@@ -404,6 +404,7 @@ public static class RMUI
         float b = x + w - bars.Select(l => l.right != null ? Text.CalcSize(l.right).x : 0f).DefaultIfEmpty().Max() - 16f, bw = Mathf.Min(168f, b - a), bx = a + (b - a - bw) / 2f;
         foreach (Line l in lines)
         {
+            if (l.bottom) (y, extra) = (y + extra, 0f);
             float h = LineH(l);
             GUI.color = l.color;
             if (l.sep) Widgets.DrawLineHorizontal(x, y + h / 2f, w, RMUI.Edge);
@@ -429,13 +430,13 @@ public static class RMUI
 
 /// Строка карточки (RMUI.Card): подпись слева, две колонки значений справа; wide — текст на всю ширину с переносом;
 /// bar — полоса между подписью и значением (у стоимости без предела — полная); sep — черта; пустая строка — отступ;
-/// check — строка целиком рисует сама (галка с подписью).
+/// check — строка целиком рисует сама (галка с подписью); bottom — она и все ниже прижаты к низу карточки, к своей справке.
 public sealed class Line
 {
     public string left = "", mid, right;
     public Action<Rect> check;
     public Color color = Color.white;
-    public bool wide, sep;
+    public bool wide, sep, bottom;
     public float bar = -1f;
 }
 
