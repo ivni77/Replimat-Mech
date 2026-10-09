@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Multiplayer.API;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -161,8 +162,11 @@ public class Building_RMComputer : Building
             // Иконка — компьютер: без своей меню ставит иконку консоли.
             yield return why != null
                 ? new FloatMenuOption(label + " (" + why.Translate() + ")", null, c.def)
-                : new FloatMenuOption(label, () => p.jobs.TryTakeOrderedJob(JobMaker.MakeJob(RMDefOf.RM_UseComputer, console, c), JobTag.Misc),
-                    c.def, priority: MenuOptionPriority.SummonThreat, orderInPriority: -1);
+                : new FloatMenuOption(label, () =>
+                {
+                    JobDriver_RMUseComputer.Requested = p;
+                    p.jobs.TryTakeOrderedJob(JobMaker.MakeJob(RMDefOf.RM_UseComputer, console, c), JobTag.Misc);
+                }, c.def, priority: MenuOptionPriority.SummonThreat, orderInPriority: -1);
         }
     }
 
@@ -201,9 +205,12 @@ public class Building_RMComputer : Building
     }
 }
 
-/// Механитор идёт к консоли связи (A) и открывает окно компьютера (B).
+/// Механитор идёт к консоли связи (A) и открывает окно компьютера (B). В Multiplayer работа идёт у всех игроков,
+/// окно — только у того, кто отдал приказ (Requested — у каждого свой).
 public class JobDriver_RMUseComputer : JobDriver
 {
+    public static Pawn Requested;
+
     public override bool TryMakePreToilReservations(bool errorOnFailed) => true;
 
     protected override IEnumerable<Toil> MakeNewToils()
@@ -213,7 +220,12 @@ public class JobDriver_RMUseComputer : JobDriver
         yield return Toils_Goto.GotoCell(TargetIndex.A, PathEndMode.InteractionCell)
             .FailOn(() => !((Building_CommsConsole)TargetThingA).CanUseCommsNow);
         Toil open = ToilMaker.MakeToil("RM_OpenComputer");
-        open.initAction = () => Find.WindowStack.Add(new Dialog_Computer((Building_RMComputer)TargetThingB, pawn));
+        open.initAction = () =>
+        {
+            if (MP.IsInMultiplayer && Requested != pawn) return;
+            Requested = null;
+            Find.WindowStack.Add(new Dialog_Computer((Building_RMComputer)TargetThingB, pawn));
+        };
         yield return open;
     }
 }
@@ -296,7 +308,7 @@ public class WorkGiver_RMScan : WorkGiver_Scanner
     static Building_RMHopper FindHopper(Pawn pawn, Thing t) =>
         Building_RMHopper.Spawned_.Where(h => h.Map == pawn.Map && h.Working && !h.IsForbidden(pawn)
                                                && pawn.CanReach(h, PathEndMode.Touch, Danger.Deadly))
-            .OrderBy(h => h.Position.DistanceToSquared(t.Position)).FirstOrDefault();
+            .OrderBy(h => h.Position.DistanceToSquared(t.Position)).ThenBy(h => h.thingIDNumber).FirstOrDefault();
 }
 
 /// Носильщик несёт одну штуку в расщепитель, тот её сканирует (разбор + шаблон), даже если фильтр её не берёт.

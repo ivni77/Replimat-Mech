@@ -200,8 +200,8 @@ public class CompPrinter : ThingComp, IRenameable
         if (run.progress >= run.batchTicks) Complete(run);
     }
 
-    /// Статусы строк и какая печатает: первая не заблокированная (оплачивает пачку, если хватает баков). Зовут и окна: компьютер
-    /// ставит игру на паузу — без этого правки очереди (новое задание, количество, пауза) были бы видны только после закрытия окна.
+    /// Статусы строк и какая печатает: первая не заблокированная (оплачивает пачку, если хватает баков). Зовёт и правка игрока (Edit):
+    /// компьютер ставит игру на паузу — без этого правки очереди (новое задание, количество, пауза) были бы видны только после закрытия окна.
     public Order Refresh()
     {
         bool can = CanWork;
@@ -303,7 +303,7 @@ public class CompPrinter : ThingComp, IRenameable
                 "RM_LetterMechWait".Translate(w.kind.label, RenamableLabel, w.mechanitor.LabelShort), LetterDefOf.NeutralEvent, parent);
             return;
         }
-        Thing t = o.pattern.Make(o.paidQuality);
+        Thing t = o.pattern.Make(o.paidQuality, ArtGenerationContext.Colony);
         t.stackCount = o.batch;
         Place(t);
     }
@@ -450,17 +450,13 @@ public class CompPrinter : ThingComp, IRenameable
                 defaultLabel = "RM_Reassign".Translate(w.kind.label),
                 icon = w.kind.race.uiIcon,
                 action = () => Find.WindowStack.Add(new FloatMenu(Find.Maps.SelectMany(m => m.mapPawns.FreeColonists)
-                    .Where(MechanitorOk).Select(p => new FloatMenuOption(p.LabelShort, () => w.mechanitor = p)).ToList())),
+                    .Where(MechanitorOk).Select(p => new FloatMenuOption(p.LabelShort, () => Edit.Reassign(this, waiting.IndexOf(w), p))).ToList())),
             };
             yield return new Command_Action
             {
                 defaultLabel = "RM_CancelMech".Translate(w.kind.label),
                 icon = TexCommand.ClearPrioritizedWork,
-                action = () =>
-                {
-                    Refund(w.mass, w.value);
-                    waiting.Remove(w);
-                },
+                action = () => Edit.CancelMech(this, waiting.IndexOf(w)),
             };
         }
     }

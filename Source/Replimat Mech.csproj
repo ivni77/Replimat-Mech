@@ -9,9 +9,10 @@
     <DebugType>none</DebugType>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <NoWarn>CS0649;CS0169;CS0414</NoWarn>
-    <!-- путь к игре и Harmony можно переопределить: dotnet build -p:RimWorld=... -p:Harmony=... -->
+    <!-- пути к игре, Harmony и Multiplayer можно переопределить: dotnet build -p:RimWorld=... -p:Harmony=... -p:Multiplayer=... -->
     <RimWorld Condition="'$(RimWorld)' == ''">$(HOME)/Library/Application Support/Steam/steamapps/common/RimWorld/RimWorldMac.app/Contents/Resources/Data/Managed</RimWorld>
     <Harmony Condition="'$(Harmony)' == ''">$(HOME)/Library/Application Support/Steam/steamapps/workshop/content/294100/2009463077/Current/Assemblies</Harmony>
+    <Multiplayer Condition="'$(Multiplayer)' == ''">$(HOME)/Library/Application Support/Steam/steamapps/workshop/content/294100/2606448745/1.6/Assemblies</Multiplayer>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
@@ -23,5 +24,7 @@
     <Reference Include="UnityEngine.IMGUIModule"><HintPath>$(RimWorld)/UnityEngine.IMGUIModule.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="UnityEngine.TextRenderingModule"><HintPath>$(RimWorld)/UnityEngine.TextRenderingModule.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="0Harmony"><HintPath>$(Harmony)/0Harmony.dll</HintPath><Private>false</Private></Reference>
+    <!-- API Multiplayer едет с модом (без Multiplayer он пустышка) -->
+    <Reference Include="0MultiplayerAPI"><HintPath>$(Multiplayer)/0MultiplayerAPI.dll</HintPath></Reference>
   </ItemGroup>
 </Project>

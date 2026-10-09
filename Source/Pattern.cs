@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using HarmonyLib;
 using RimWorld;
 using Verse;
 
@@ -48,12 +49,12 @@ public class Pattern : IExposable
     public string LabelWithQuality(QualityCategory q) => HasQuality ? Label + ", " + q.GetLabelShort() : Label;
 
     /// Образец для подсчёта цены и подписи; никогда не спавнится. У меха образца нет.
-    public Thing Sample => IsMech ? null : sample ??= Make(Best);
+    public Thing Sample => IsMech ? null : sample ??= Probe(Best);
 
     public float MarketValue(QualityCategory q)
     {
         if (!valueCache.TryGetValue(q, out float v))
-            valueCache[q] = v = Make(q).MarketValue;
+            valueCache[q] = v = Probe(q).MarketValue;
         return v;
     }
 
@@ -63,11 +64,31 @@ public class Pattern : IExposable
         valueCache.Clear();
     }
 
-    /// Новая вещь по шаблону: целая, без привязки к владельцу.
-    public Thing Make(QualityCategory q)
+    static readonly AccessTools.FieldRef<UniqueIDsManager, int> NextThingID = AccessTools.FieldRefAccess<UniqueIDsManager, int>("nextThingID");
+
+    /// Образец не меняет игру, кто бы его ни создал (окно или тик): без сюжета для искусства, случайность и номера вещей — как были.
+    /// Иначе в Multiplayer игроки разойдутся.
+    Thing Probe(QualityCategory q)
+    {
+        UniqueIDsManager ids = Find.UniqueIDsManager;
+        int next = NextThingID(ids);
+        Rand.PushState();
+        try
+        {
+            return Make(q, null);
+        }
+        finally
+        {
+            Rand.PopState();
+            NextThingID(ids) = next;
+        }
+    }
+
+    /// Новая вещь по шаблону: целая, без привязки к владельцу; art — откуда сюжет у произведения искусства.
+    public Thing Make(QualityCategory q, ArtGenerationContext? art)
     {
         Thing t = ThingMaker.MakeThing(def, stuff);
-        t.TryGetComp<CompQuality>()?.SetQuality(q, ArtGenerationContext.Colony);
+        t.TryGetComp<CompQuality>()?.SetQuality(q, art);
         if (ingredients != null && t.TryGetComp<CompIngredients>() is { } ci)
         {
             ci.ingredients.Clear();

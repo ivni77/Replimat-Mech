@@ -10,7 +10,7 @@ A mechanitor sets up the print queues through a comms console.
 Mechanoids are printed like in a gestator.
 Nothing living is printed.
 
-Requires [Harmony](https://steamcommunity.com/sharedfiles/filedetails/?id=2009463077) and Biotech. Incompatible with Replimat and Replimat Universal. Languages: English, Russian.
+Requires [Harmony](https://steamcommunity.com/sharedfiles/filedetails/?id=2009463077) and Biotech. Works with [Multiplayer](https://steamcommunity.com/sharedfiles/filedetails/?id=2606448745). Incompatible with Replimat and Replimat Universal. Languages: English, Russian.
 
 ## Credits and license
 
@@ -21,7 +21,7 @@ Licensed under [Creative Commons Attribution-ShareAlike 4.0 International (CC BY
 
 ## Building
 
-`dotnet build Source -c Release` builds `Assemblies/Replimat Mech.dll` (.NET Framework 4.8). The game and Harmony assemblies are referenced from the default Steam paths on macOS; elsewhere pass `-p:RimWorld=<RimWorld Managed folder> -p:Harmony=<Harmony Assemblies folder>`.
+`dotnet build Source -c Release` builds `Assemblies/Replimat Mech.dll` (.NET Framework 4.8). The game and Harmony assemblies are referenced from the default Steam paths on macOS; elsewhere pass `-p:RimWorld=<RimWorld Managed folder> -p:Harmony=<Harmony Assemblies folder> -p:Multiplayer=<Multiplayer 1.6/Assemblies folder>`. The Multiplayer API (`0MultiplayerAPI.dll`, MIT) is copied into `Assemblies` and ships with the mod.
 
 `Tools/release.sh` makes a clean copy of the mod in `Release/Replimat Mech` for upload to the Steam Workshop. The Workshop description is kept in [Workshop/Description.bbcode](Workshop/Description.bbcode).
 
@@ -37,7 +37,7 @@ Licensed under [Creative Commons Attribution-ShareAlike 4.0 International (CC BY
 Механоиды печатаются как в гестаторе.
 Живое не печатается.
 
-Нужны [Harmony](https://steamcommunity.com/sharedfiles/filedetails/?id=2009463077) и Biotech. Несовместим с Replimat и Replimat Universal. Языки: английский, русский.
+Нужны [Harmony](https://steamcommunity.com/sharedfiles/filedetails/?id=2009463077) и Biotech. Работает в [Multiplayer](https://steamcommunity.com/sharedfiles/filedetails/?id=2606448745). Несовместим с Replimat и Replimat Universal. Языки: английский, русский.
 
 ### Авторы и лицензия
 
@@ -48,6 +48,6 @@ Licensed under [Creative Commons Attribution-ShareAlike 4.0 International (CC BY
 
 ### Сборка
 
-`dotnet build Source -c Release` собирает `Assemblies/Replimat Mech.dll` (.NET Framework 4.8). Сборки игры и Harmony берутся из стандартных путей Steam на macOS; в других системах передайте `-p:RimWorld=<папка Managed игры> -p:Harmony=<папка Assemblies мода Harmony>`.
+`dotnet build Source -c Release` собирает `Assemblies/Replimat Mech.dll` (.NET Framework 4.8). Сборки игры и Harmony берутся из стандартных путей Steam на macOS; в других системах передайте `-p:RimWorld=<папка Managed игры> -p:Harmony=<папка Assemblies мода Harmony> -p:Multiplayer=<папка 1.6/Assemblies мода Multiplayer>`. API Multiplayer (`0MultiplayerAPI.dll`, MIT) копируется в `Assemblies` и едет с модом.
 
 `Tools/release.sh` делает чистую копию мода в `Release/Replimat Mech` для выгрузки в Мастерскую Steam. Описание для Мастерской — в [Workshop/Description.bbcode](Workshop/Description.bbcode).

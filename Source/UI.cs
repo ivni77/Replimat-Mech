@@ -299,7 +299,7 @@ public static class RMUI
             Widgets.BeginGroup(area);
             // NewGroup отдаёт id только на Repaint; на клике нужен тот же id — иначе строка не находится и не тащится.
             int gi = imp ? 0 : 1;
-            if (repaint) gids[gi] = ReorderableWidget.NewGroup((from, to) => Move(c, imp, from, imp, to), ReorderableDirection.Vertical, area.AtZero());
+            if (repaint) gids[gi] = ReorderableWidget.NewGroup((from, to) => Edit.Reorder(c, imp, from, imp, to), ReorderableDirection.Vertical, area.AtZero());
             if (list.Count == 0 && edit)
             {
                 // Заглушка: в пустую группу ваниль не бросает при масштабе интерфейса не 100% — ищет группу по экранным координатам
@@ -333,7 +333,7 @@ public static class RMUI
         if (repaint && groups.Count > 1)
         {
             int first = gids[0];
-            ReorderableWidget.NewMultiGroup(new List<int> { gids[0], gids[1] }, (from, fromGroup, to, toGroup) => Move(c, fromGroup == first, from, toGroup == first, to));
+            ReorderableWidget.NewMultiGroup(new List<int> { gids[0], gids[1] }, (from, fromGroup, to, toGroup) => Edit.Reorder(c, fromGroup == first, from, toGroup == first, to));
         }
         Widgets.EndScrollView();
     }
@@ -368,19 +368,6 @@ public static class RMUI
         Text.Anchor = TextAnchor.UpperLeft;
         GUI.color = Color.white;
     }
-
-    static void Move(CompPrinter c, bool fromImp, int from, bool toImp, int to)
-    {
-        List<Order> src = c.orders.Where(o => o.important == fromImp).ToList();
-        if (from < 0 || from >= src.Count) return;
-        Order moved = src[from];
-        if (fromImp == toImp && to > from) to--;
-        moved.important = toImp;
-        List<Order> imp = c.orders.Where(o => o.important && o != moved).ToList(), norm = c.orders.Where(o => !o.important && o != moved).ToList();
-        List<Order> dst = toImp ? imp : norm;
-        dst.Insert(Mathf.Clamp(to, 0, dst.Count), moved);
-        c.orders = imp.Concat(norm).ToList();
-    }
 }
 
 /// Вкладка «Очередь» на самом репликаторе — только просмотр: менять — в компьютере.
@@ -404,7 +391,6 @@ public class ITab_Queue : ITab
     protected override void FillTab()
     {
         if (SelThing.TryGetComp<CompPrinter>() is not { } c) return;
-        c.Refresh();
         const float countW = 90f;
         Rect r = new Rect(0f, 0f, size.x, size.y).ContractedBy(10f);
         r.yMin += RMUI.TanksLines(new Rect(r.x, r.y, r.width - 16f, 0f), c.Net);  // правый край — по столбцу под ним (без полосы прокрутки)
@@ -484,7 +470,6 @@ public class Dialog_Computer : Window
             Close();
             return;
         }
-        foreach (CompPrinter c in Printers) c.Refresh();
         Text.Font = GameFont.Medium;
         RMUI.Label(new Rect(inRect.x, inRect.y, inRect.width - 40f, 36f), "RM_ComputerTitle".Translate(S.needMechanitor ? "RM_MechanitorOption".Translate(pawn.LabelShort, Mathf.RoundToInt(Pricing.Speed(pawn) * 100f)) : pawn.LabelShort));
         Text.Font = GameFont.Small;
@@ -556,7 +541,15 @@ public class Dialog_Computer : Window
             new(),
             new() { left = "RM_Mass".Translate(), right = Fmt.MassNum(mass) + " / " + Fmt.Mass(cap), bar = cap > 0f ? mass / cap : 0f },
             new() { sep = true },
-            new() { check = r => Widgets.CheckboxLabeled(r, "RM_CollectValue".Translate(), ref computer.collectValue) },
+            new()
+            {
+                check = r =>
+                {
+                    bool on = computer.collectValue;
+                    Widgets.CheckboxLabeled(r, "RM_CollectValue".Translate(), ref on);
+                    if (on != computer.collectValue) Edit.CollectValue(computer, on);
+                },
+            },
             new() { wide = true, color = RMUI.Muted, left = "RM_CollectValueDesc".Translate() },
             new() { wide = true, color = RMUI.Yellow, left = "\n" + "RM_CollectValueWarn".Translate() },
         };
@@ -902,7 +895,9 @@ public class Dialog_Computer : Window
 
     void Form(Rect r)
     {
-        if (existing != null && (selPrinter == null || !selPrinter.orders.Contains(existing))) Load(sel, selPrinter);
+        // задание ушло или появилось (правка — в Multiplayer она приходит командой чуть позже, правка другого игрока) — форма показывает, что есть
+        if (existing != null ? selPrinter == null || !selPrinter.orders.Contains(existing) : selPrinter?.orders.Any(y => y.pattern == sel) == true)
+            Load(sel, selPrinter);
         Pattern p = sel;
         Order d = draft;
         CompPrinter c = selPrinter;
@@ -1044,18 +1039,14 @@ public class Dialog_Computer : Window
             if (Widgets.ButtonText(left, "RM_Apply".Translate(), active: dirty) && dirty)
             {
                 d.editor = pawn;
-                existing.ApplySettings(d);
+                Edit.Apply(c, existing, d);
                 Messages.Message("RM_MsgApplied".Translate(p.Label), MessageTypeDefOf.SilentInput, false);
-                Load(p, c, existing);
             }
         }
         else if (Widgets.ButtonText(left, "RM_Create".Translate()))
         {
-            d.SetTarget(d.target);
-            c.orders.Add(d);
-            Building_RMHopper.SyncAll();
+            Edit.Create(c, d);
             Messages.Message("RM_MsgAdded".Translate(p.Label, c.RenamableLabel, RMUI.Group(d.important)), MessageTypeDefOf.SilentInput, false);
-            Load(p, c, d);
         }
         Order def = Default(p);
         if (Widgets.ButtonText(mid, "ResetButton".Translate(), active: !d.SameSettings(def)))
@@ -1069,10 +1060,8 @@ public class Dialog_Computer : Window
         }
         else if (Widgets.ButtonText(right, "Delete".Translate(), active: existing != null) && existing != null)
         {
-            c.Remove(existing);
-            Building_RMHopper.SyncAll();
+            Edit.Remove(c, existing);
             Messages.Message("RM_MsgDeleted".Translate(p.Label), MessageTypeDefOf.SilentInput, false);
-            Load(p, c);
         }
     }
 
@@ -1221,26 +1210,24 @@ public class Dialog_Computer : Window
         Rect Col(int k) => new(x + Cols[k].x, y, Cols[k].w, 28f);
         int step = o.Stack * GenUI.CurrentAdjustmentMultiplier();
         bool count = o.mode != OrderMode.Forever;
-        void Set(int v)
+        void Set(Action<Order> change)
         {
-            o.SetTarget(v);
-            o.editor = pawn;
+            Order d = o.Copy();
+            change(d);
+            d.editor = pawn;
+            Edit.Apply(c, o, d);
         }
-        if (count && Widgets.ButtonText(new Rect(x, y, 28f, 28f), "−")) Set(o.target - step);
+        if (count && Widgets.ButtonText(new Rect(x, y, 28f, 28f), "−")) Set(d => d.target -= step);
         RMUI.CountCell(count ? new Rect(x + 30f, y, 80f, 28f) : Col(0), c, o);
-        if (count && Widgets.ButtonText(new Rect(x + 112f, y, 28f, 28f), "+")) Set(o.target + step);
+        if (count && Widgets.ButtonText(new Rect(x + 112f, y, 28f, 28f), "+")) Set(d => d.target += step);
         if (!o.pattern.IsMech && Widgets.ButtonText(Col(1), RMUI.ModeLabel(o.mode).CapitalizeFirst().Truncate(Cols[1].w - 12f)))
-            Find.WindowStack.Add(RMUI.ModeMenu(m =>
-            {
-                o.mode = m;
-                o.editor = pawn;
-            }));
-        if (Widgets.ButtonText(Col(2), (o.paused ? "Suspended" : "NotSuspended").Translate())) o.paused = !o.paused;
+            Find.WindowStack.Add(RMUI.ModeMenu(m => Set(d => d.mode = m)));
+        if (Widgets.ButtonText(Col(2), (o.paused ? "Suspended" : "NotSuspended").Translate())) Edit.Pause(c, o, !o.paused);
         if (Widgets.ButtonText(Col(3), c.RenamableLabel.Truncate(Cols[3].w - 10f)))
         {
             List<FloatMenuOption> opts = Printers.Where(p => p != c && p.Accepts(o.pattern)).Select(p => new FloatMenuOption(p.RenamableLabel, () =>
             {
-                c.MoveTo(o, p);
+                Edit.Move(c, o, p);
                 Messages.Message("RM_MsgMoved".Translate(o.pattern.Label, p.RenamableLabel), MessageTypeDefOf.SilentInput, false);
             })).ToList();
             if (opts.Count == 0) opts.Add(new FloatMenuOption("RM_NoOtherPrinters".Translate(), null));
@@ -1251,10 +1238,6 @@ public class Dialog_Computer : Window
             Load(o.pattern, c, o);
             tab = Tab.Patterns;
         }
-        if (Widgets.ButtonImage(new Rect(x + Cols[4].x + 52f, y + 2f, 24f, 24f), TexButton.Delete))
-        {
-            c.Remove(o);
-            Building_RMHopper.SyncAll();
-        }
+        if (Widgets.ButtonImage(new Rect(x + Cols[4].x + 52f, y + 2f, 24f, 24f), TexButton.Delete)) Edit.Remove(c, o);
     }
 }
