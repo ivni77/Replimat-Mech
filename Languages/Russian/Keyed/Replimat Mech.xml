@@ -162,7 +162,7 @@
 
 	<!-- настройки мода -->
 	<RM_SetMassReturn>Возврат массы при расщеплении: {0}</RM_SetMassReturn>
-	<RM_SetValueReturn>Возврат стоимости при расщеплении (от материалов): {0}</RM_SetValueReturn>
+	<RM_SetValueReturn>Сбор стоимости из расщепителя материи: {0}</RM_SetValueReturn>
 	<RM_Color>Цвет реплимата</RM_Color>
 	<RM_SetQualityCap>Предел качества печати</RM_SetQualityCap>
 	<RM_SetSecPrint>Печать</RM_SetSecPrint>

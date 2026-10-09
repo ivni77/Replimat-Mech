@@ -31,8 +31,9 @@ public class Settings : ModSettings
     /// Поменялись умолчания — сохранённые настройки сбрасываются на новые.
     const int Version = 6;
     public static readonly Color DefaultAccent = new(0.20f, 0.45f, 1.00f);
-    /// Возврат стоимости не ниже: при 0 расщепитель не даёт стоимости — печатать нечем.
-    public const int MinValueReturn = 5;
+    /// Сбор стоимости из расщепителя: от 5% (при 0 стоимость в баки не идёт — печатать нечем) до 100 − Cap: печать со скидкой стоит не меньше
+    /// 100 − Cap процентов цены, расщепление собирает свой процент от меньшего из материалов и цены — круг «напечатал — расщепил» в плюс не уходит.
+    public const int MinValueReturn = 5, MaxValueReturn = 100 - Order.Cap;
 
     /// Свечение и свет — цвет реплимата, чуть разбавленный белым, чтобы горело ярко.
     public static Color GlowColor => Color.Lerp(ReplimatMechMod.S.accent, Color.white, 0.25f);
@@ -61,7 +62,7 @@ public class Settings : ModSettings
         Scribe_Collections.Look(ref groupMarkup, "groupMarkup", LookMode.Value);
         Scribe_Collections.Look(ref power, "power", LookMode.Value);
         if (Scribe.mode != LoadSaveMode.PostLoadInit) return;
-        valueReturn = Mathf.Max(valueReturn, MinValueReturn);
+        valueReturn = Mathf.Clamp(valueReturn, MinValueReturn, MaxValueReturn);
         if (version != Version || groupAllowed?.Count != d.groupAllowed.Count || groupMarkup?.Count != d.groupMarkup.Count || power?.Count != d.power.Count) Reset();
         version = Version;
     }
@@ -89,8 +90,8 @@ public class Settings : ModSettings
     }
 }
 
-/// Настройки: ползунки с шагом, числа — полями ввода. Возврат стоимости до 50% + ползунки заказа ±40% (константа) —
-/// вместе меньше 100%, «напечатал со скидкой — разобрал» в плюс не уходит. Скорости печати нет: время — валюта ползунков.
+/// Настройки: ползунки с шагом, числа — полями ввода (предел сбора стоимости — Settings.MaxValueReturn). Скорости печати нет:
+/// время — валюта ползунков.
 public class ReplimatMechMod : Mod
 {
     public static Settings S;
@@ -180,7 +181,7 @@ public class ReplimatMechMod : Mod
 
         Section(l, "RM_SetSecSplit");
         S.massReturn = Slider(l, "RM_SetMassReturn", S.massReturn, 0, 100, 5);
-        S.valueReturn = Slider(l, "RM_SetValueReturn", S.valueReturn, Settings.MinValueReturn, 50, 5);
+        S.valueReturn = Slider(l, "RM_SetValueReturn", S.valueReturn, Settings.MinValueReturn, Settings.MaxValueReturn, 5);
 
         Section(l, "RM_SetSecBuildings");
         Rect color = l.GetRect(30f);

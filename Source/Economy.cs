@@ -87,7 +87,7 @@ public static class Demat
 {
     static Settings S => ReplimatMechMod.S;
 
-    /// Вещь: масса 100%, стоимость 50% от материалов, шаблон. Сама вещь исчезает.
+    /// Вещь: масса и стоимость — процентом из настроек, шаблон. Сама вещь исчезает.
     public static void Item(Thing t, PowerNet net)
     {
         GameComponent_RM.Get.Record(t);
