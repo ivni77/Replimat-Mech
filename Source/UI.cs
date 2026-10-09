@@ -271,12 +271,12 @@ public static class RMUI
         };
     }
 
-    /// Счётчик, как у задания ванили: «сделать X» — сколько осталось (убывает до нуля), «повторять до X» — есть / нужно, «бесконечно» — сделано / всегда.
+    /// Счётчик, как у задания ванили: «сделать X» — сколько осталось (убывает до нуля), «повторять до X» — есть / нужно, «бесконечно» — «Всегда».
     public static string Count(CompPrinter c, Order o) => o.mode switch
     {
         OrderMode.Make => o.target + "x",
         OrderMode.Until => c.Stock(o) + " / " + o.target,
-        _ => o.done + " / " + "RM_Always".Translate(),
+        _ => "RM_Always".Translate(),
     };
 
     static bool Below(CompPrinter c, Order o) => o.mode != OrderMode.Forever && c.Need(o) > 0;
@@ -957,10 +957,13 @@ public class Dialog_Computer : Window
         // почему печатать нельзя — красным (и «Создать» не нажать); мех задания напечатан и ждёт механитора — жёлтым
         string why = !Rules.Allowed(p) ? "RM_StForbiddenFull".Translate().ToString()
             : Rules.MissingResearch(p) is { } rp ? RMUI.Tr("RM_StNoResearchFull", rp.LabelCap.ToString()) : null;
-        string note = why ?? (existing?.status == "RM_StMechWaits" ? "RM_StMechWaitsFull".Translate().ToString() : null);
+        // механоид, которого не начнут: у выбранного механитора нет свободной пропускной способности (печатающийся её уже занял)
+        bool lowBandwidth = p.IsMech && existing?.paid != true && CompPrinter.NoBandwidth(d.mechanitor, p);
+        string note = why ?? (lowBandwidth ? "RM_StNoBandwidthFull".Translate().ToString()
+            : existing?.status == "RM_StMechWaits" ? "RM_StMechWaitsFull".Translate().ToString() : null);
         if (note != null)
         {
-            GUI.color = why != null ? ColorLibrary.RedReadable : RMUI.Yellow;
+            GUI.color = why != null || lowBandwidth ? ColorLibrary.RedReadable : RMUI.Yellow;
             RMUI.Label(new Rect(r.x, y, r.width, 24f), note);
             GUI.color = Color.white;
             y += 30f;

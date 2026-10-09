@@ -16,7 +16,7 @@ public class Order : IExposable
 {
     public Pattern pattern;
     public OrderMode mode;
-    public int target = 1, done;
+    public int target = 1;
     public bool manualQuality, important, paused;
     public QualityCategory quality;
     /// mechanitor — к кому подключится механоид; editor — кто последним создал или правил задание у консоли связи, его скорость — скорость задания.
@@ -102,11 +102,10 @@ public class Order : IExposable
         Scribe_Values.Look(ref patternKey, "pattern");
         Scribe_Values.Look(ref mode, "mode");
         Scribe_Values.Look(ref target, "target", 1);
-        Scribe_Values.Look(ref done, "made");
         // до 1.1.0 «сделать X» считало сделанное вверх до цели — теперь цель сама убывает до нуля
-        int old = 0;
-        Scribe_Values.Look(ref old, "done");
-        if (old > 0) (target, done) = mode == OrderMode.Make ? (Mathf.Max(0, target - old), 0) : (target, old);
+        int done = 0;
+        Scribe_Values.Look(ref done, "done");
+        if (mode == OrderMode.Make) target = Mathf.Max(0, target - done);
         Scribe_Values.Look(ref manualQuality, "manualQuality");
         Scribe_Values.Look(ref important, "important");
         Scribe_Values.Look(ref paused, "paused");
@@ -264,13 +263,15 @@ public class CompPrinter : ThingComp, IRenameable
         // мех напечатан, но не вышел (не хватает пропускной способности или механитора) — не «готово»
         if (Remaining(o) <= 0) return o.pattern.IsMech && waiting.Any(w => w.kind == o.pattern.mechKind) ? "RM_StMechWaits" : "RM_StDone";
         // как гестатор: без свободной пропускной способности механоид не начинают (печатаемые и ждущие её уже заняли)
-        if (o.pattern.IsMech && o.mechanitor.mechanitor.UsedBandwidth + (int)Pricing.Bandwidth(o.pattern) > o.mechanitor.mechanitor.TotalBandwidth)
-            return "RM_StNoBandwidth";
+        if (o.pattern.IsMech && NoBandwidth(o.mechanitor, o.pattern)) return "RM_StNoBandwidth";
         if (Feeder && Room(o.pattern) <= 0) return "RM_StNoRoom";
         return null;
     }
 
     static bool MechanitorOk(Pawn p) => p is { Dead: false } && MechanitorUtility.IsMechanitor(p);
+
+    public static bool NoBandwidth(Pawn mechanitor, Pattern p) =>
+        mechanitor?.mechanitor is { } m && m.UsedBandwidth + (int)Pricing.Bandwidth(p) > m.TotalBandwidth;
 
     /// Сколько ещё нужно, с начатой пачкой: «сделать X» — само количество (убывает с каждой готовой пачкой), «повторять до X» — до цели
     /// на складе. «Бесконечно» — без предела.
@@ -317,7 +318,6 @@ public class CompPrinter : ThingComp, IRenameable
     {
         o.paid = o.running = false;
         o.progress = 0f;
-        o.done += o.batch;
         if (o.mode == OrderMode.Make) o.target = Mathf.Max(0, o.target - o.batch);
         RMDefOf.RM_Replicate.PlayOneShot(new TargetInfo(parent.Position, parent.Map));
         if (o.pattern.IsMech)
