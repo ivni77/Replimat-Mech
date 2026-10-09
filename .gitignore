@@ -1,0 +1,8 @@
+# сборка
+/Assemblies/
+Source/bin/
+Source/obj/
+.DS_Store
+
+# копия мода для Steam (Tools/release.sh)
+/Release/

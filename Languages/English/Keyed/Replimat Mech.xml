@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+	<!-- units -->
+	<RM_Kg>{0} kg</RM_Kg>
+	<RM_SilverN>{0} silver</RM_SilverN>
+	<RM_Minutes>{0} min</RM_Minutes>
+	<RM_Seconds>{0} s</RM_Seconds>
+	<RM_Hours>{0} h</RM_Hours>
+	<RM_Days>{0} d</RM_Days>
+	<RM_None>none</RM_None>
+	<RM_Packed>(packed)</RM_Packed>
+
+	<!-- tanks and inspect panes -->
+	<RM_MassLine>Mass: {0} / {1}</RM_MassLine>
+	<RM_ValueLine>Value: {0}</RM_ValueLine>
+	<RM_TankShare>Share of network matter: {0} (by capacity)</RM_TankShare>
+	<RM_TanksCount>Tanks: {0}</RM_TanksCount>
+	<RM_PrintersCount>Replicators: {0}</RM_PrintersCount>
+	<RM_FeedersCount>Animal replicators: {0}</RM_FeedersCount>
+	<RM_ValueOff>Value collection is off</RM_ValueOff>
+	<RM_TankContents>Tank contents: +{0}</RM_TankContents>
+	<RM_NoTanks>No tanks</RM_NoTanks>
+	<RM_NoComputer>No computer on the network</RM_NoComputer>
+	<RM_FeederFood>Feed: {0}</RM_FeederFood>
+	<RM_Printing>Printing: {0}, {1} left</RM_Printing>
+	<RM_InQueue>In queue: {0}</RM_InQueue>
+	<RM_QueueEnd>Queue done in: ≈ {0}</RM_QueueEnd>
+	<RM_WaitsMechanitor>Waiting for mechanitor: {0}</RM_WaitsMechanitor>
+
+	<!-- bill statuses: short (inspect pane) and full (windows) -->
+	<RM_StDone>done</RM_StDone>
+	<RM_StDoneFull>Done: {0} of {1} in stock</RM_StDoneFull>
+	<RM_StWait>waiting</RM_StWait>
+	<RM_StWaitFull>Waiting: other bills go first</RM_StWaitFull>
+	<RM_StLowMass>low mass</RM_StLowMass>
+	<RM_StLowSilver>low value</RM_StLowSilver>
+	<RM_StNoMechanitor>no mechanitor</RM_StNoMechanitor>
+	<RM_StNoMechanitorFull>No mechanitor: pick one at the computer</RM_StNoMechanitorFull>
+	<RM_StForbidden>forbidden</RM_StForbidden>
+	<RM_StForbiddenFull>Printing is disabled in the mod settings</RM_StForbiddenFull>
+	<RM_StNoRoom>no room</RM_StNoRoom>
+	<RM_StNoRoomFull>No room: the animal replicator is full</RM_StNoRoomFull>
+	<RM_StOff>off</RM_StOff>
+	<RM_StOffFull>Off: no power or no computer on the network</RM_StOffFull>
+	<RM_StSuspended>suspended</RM_StSuspended>
+	<RM_StPrinting>Printing {0}% ({1} / {2})</RM_StPrinting>
+
+	<!-- queue and the Plan block -->
+	<RM_TabQueue>Queue</RM_TabQueue>
+	<RM_TotTime>Time: {0}</RM_TotTime>
+	<RM_TotMass>Mass: {0}</RM_TotMass>
+	<RM_TotValue>Value: {0}</RM_TotValue>
+	<RM_PlanNothing>nothing to print</RM_PlanNothing>
+	<RM_PlanEnough>enough</RM_PlanEnough>
+	<RM_Short>short of {0}</RM_Short>
+	<RM_InTanks>Stored in tanks</RM_InTanks>
+	<RM_MassInTanks>Mass in tanks</RM_MassInTanks>
+	<RM_ValueInTanks>Value in tanks</RM_ValueInTanks>
+	<RM_ColBills>Bills</RM_ColBills>
+	<RM_Always>Always</RM_Always>
+	<RM_ColBill>Bill</RM_ColBill>
+	<RM_ColHave>Have / need</RM_ColHave>
+	<RM_ColPause>Pause</RM_ColPause>
+	<RM_ColDetails>Settings</RM_ColDetails>
+	<RM_TotalAll>All replicators</RM_TotalAll>
+	<RM_GroupImportant>First queue</RM_GroupImportant>
+	<RM_GroupNormal>Second queue</RM_GroupNormal>
+	<RM_GroupDesc>Queue — sets the print order, the first queue has priority.</RM_GroupDesc>
+	<RM_GroupEmpty>Empty — drag a bill here</RM_GroupEmpty>
+
+	<!-- computer: common -->
+	<RM_UseComputer>Contact the replimat computer</RM_UseComputer>
+	<RM_UseComputerN>Contact replimat computer #{0}</RM_UseComputerN>
+	<RM_NeedMechanitor>needs a mechanitor</RM_NeedMechanitor>
+	<RM_ComputerNoPower>computer unpowered</RM_ComputerNoPower>
+	<RM_ComputerTitle>Replimat computer · {0} on the line</RM_ComputerTitle>
+	<RM_TabHome>Home</RM_TabHome>
+	<RM_TabPatternsN>Patterns ({0})</RM_TabPatternsN>
+	<RM_TabQueueN>Queue ({0})</RM_TabQueueN>
+
+	<!-- computer: Home -->
+	<RM_CardMatter>Matter</RM_CardMatter>
+	<RM_CardGear>Equipment</RM_CardGear>
+	<RM_CardHelp>Help</RM_CardHelp>
+	<RM_CardPrinters>Replicators</RM_CardPrinters>
+	<RM_ColBuilding>Building</RM_ColBuilding>
+	<RM_Mass>Mass</RM_Mass>
+	<RM_Value>Value</RM_Value>
+	<RM_TanksOff>Unpowered: {0} — nothing prints from them</RM_TanksOff>
+	<RM_TanksExplain>Matter — what printing uses: mass (kg) and value (silver), split between tanks by capacity.\nComputer — keeps patterns and print queues, runs matter splitters and replicators.\nMatter splitter — splits items and corpses into matter and always records patterns.\nReplicator — prints items and mechanoids from matter.\nTank — stores matter, and once the tanks are full, mass stops accumulating.\nValue — every item has its own, as with traders, and it can be stored without limit.\nMass — every item has its own, it is stored as far as the tanks hold.\nPrinting — takes the item's mass and value from the tanks.</RM_TanksExplain>
+	<RM_SpeedExplain>Bill print speed grows with Crafting skill and mech gestation processors.</RM_SpeedExplain>
+	<RM_CollectValue>Collect value</RM_CollectValue>
+	<RM_CollectValueDesc>Value adds to colony wealth.\nIf disabled, value will not accumulate.</RM_CollectValueDesc>
+	<RM_CollectValueWarn>Printing items and mechanoids needs stored value.</RM_CollectValueWarn>
+	<RM_LackMass>mass: {0}</RM_LackMass>
+	<RM_LackValue>value: {0}</RM_LackValue>
+	<RM_Unpowered>unpowered: {0}</RM_Unpowered>
+	<RM_GearExplain>Equipment — Replimat buildings on this computer's power network.\nUnpowered buildings stop, but tanks keep their stock.</RM_GearExplain>
+	<RM_NoPrinters>No replicators on the network</RM_NoPrinters>
+	<RM_Now>Now: {0} — {1}%</RM_Now>
+	<RM_NowIdle>Not printing anything</RM_NowIdle>
+	<RM_QueueEmpty>Queue is empty</RM_QueueEmpty>
+	<RM_QueueSummary>Bills: {0} · time ≈ {1} · value {2}</RM_QueueSummary>
+	<RM_QueueLow>Short of mass or value: {0}</RM_QueueLow>
+
+	<!-- computer: Patterns -->
+	<RM_NoPatterns>No patterns: scan an item in a matter splitter</RM_NoPatterns>
+	<RM_CatMechs>Mechanoids</RM_CatMechs>
+	<RM_CatOther>Other</RM_CatOther>
+	<RM_PickPattern>Pick a category or a pattern on the left</RM_PickPattern>
+	<RM_NothingFound>Nothing found</RM_NothingFound>
+	<RM_InQueueMark>queued</RM_InQueueMark>
+	<RM_Enough>enough for {0}</RM_Enough>
+	<RM_PerUnit>Per unit: mass {0} · value {1} · time {2}</RM_PerUnit>
+	<RM_InQueueEdit>Bill already in the queue</RM_InQueueEdit>
+	<RM_NoMechanitors>No mechanitors in the colony</RM_NoMechanitors>
+	<RM_EdPrinter>Replicator</RM_EdPrinter>
+	<RM_EdMode>Mode</RM_EdMode>
+	<RM_EdCount>Count, pcs</RM_EdCount>
+	<RM_InStock>in stock: {0}</RM_InStock>
+	<RM_EdQuality>Quality</RM_EdQuality>
+	<RM_QualityBest>best (now {0})</RM_QualityBest>
+	<RM_EdMechanitor>Mechanitor</RM_EdMechanitor>
+	<RM_MechanitorOption>{0} (print speed {1}%)</RM_MechanitorOption>
+	<RM_SliderTime>Time</RM_SliderTime>
+	<RM_SliderValue>Value</RM_SliderValue>
+	<RM_SliderMass>Mass</RM_SliderMass>
+	<RM_SliderMassTip>This pattern has no value.\nPrinting faster costs more mass, and slower costs less.</RM_SliderMassTip>
+	<RM_EdGroup>Queue</RM_EdGroup>
+	<RM_Apply>Apply</RM_Apply>
+	<RM_Create>Create</RM_Create>
+	<RM_NotApplied>Changes not applied</RM_NotApplied>
+	<RM_MsgApplied>Bill updated: {0}</RM_MsgApplied>
+	<RM_MsgDeleted>Bill deleted: {0}</RM_MsgDeleted>
+	<RM_MsgAdded>Added: {0} · {1} · {2}</RM_MsgAdded>
+
+	<!-- computer: Queue -->
+	<RM_MsgMoved>{0} — moved to {1}</RM_MsgMoved>
+	<RM_NoOtherPrinters>No other replicators</RM_NoOtherPrinters>
+
+	<!-- replicator: buttons, messages, letters -->
+	<RM_Rename>Rename</RM_Rename>
+	<RM_Reassign>Connect to another mechanitor: {0}</RM_Reassign>
+	<RM_CancelMech>Cancel: {0}</RM_CancelMech>
+	<RM_MsgShort>{0}: {1} — {2}</RM_MsgShort>
+	<RM_MsgMechReady>{0} connected to mechanitor {1}.</RM_MsgMechReady>
+	<RM_LetterMechWaitLabel>Mech waiting: {0}</RM_LetterMechWaitLabel>
+	<RM_LetterMechWait>{0} was printed in {1}, but mechanitor {2} lacks bandwidth.\nThe mech is waiting.\nFree up bandwidth, connect it to another mechanitor or cancel — the tanks get back exactly what was spent.</RM_LetterMechWait>
+	<RM_MsgHopperBlocked>Not allowed: {0} is queued in {1}.\nThe splitter would split what the replicator printed.</RM_MsgHopperBlocked>
+	<RM_MsgTankDeconstruct>Deconstructing this tank loses its matter: mass {0} and value {1}.</RM_MsgTankDeconstruct>
+
+	<!-- scanning -->
+	<RM_DesignatorScan>Scan</RM_DesignatorScan>
+	<RM_MsgPatternNew>New pattern: {0}</RM_MsgPatternNew>
+	<RM_MsgPatternBetter>Pattern {0} — now up to {1} quality</RM_MsgPatternBetter>
+	<RM_NoHopper>No working matter splitter</RM_NoHopper>
+
+	<!-- mod settings -->
+	<RM_SetMassReturn>Mass returned on splitting: {0}</RM_SetMassReturn>
+	<RM_SetValueReturn>Value returned on splitting (of materials): {0}</RM_SetValueReturn>
+	<RM_Color>Replimat color</RM_Color>
+	<RM_ColorDesc>Replimat color — click the square for a palette like the mechs'.\nOne color for all replimat buildings: tank and splitter bars, screens, print and splitting glow, light.</RM_ColorDesc>
+	<RM_SetQualityCap>Print quality cap</RM_SetQualityCap>
+	<RM_SetGroups>Special items</RM_SetGroups>
+	<RM_ColPrint>print</RM_ColPrint>
+	<RM_ColMarkup>markup, ×</RM_ColMarkup>
+	<RM_GroupChips>chips and subcores</RM_GroupChips>
+	<RM_GroupChipsDesc>Chips and subcores — signal, powerfocus and nano structuring chips, standard and high subcores.\nIn mechs the markup applies to this part of the price only.</RM_GroupChipsDesc>
+	<RM_GroupArcho>archotech and special</RM_GroupArcho>
+	<RM_GroupArchoDesc>Archotech and special — AI persona core, archotech parts, archite capsules, isolinear module, resurrector and healer serums.</RM_GroupArchoDesc>
+	<RM_GroupGenes>genes and unique</RM_GroupGenes>
+	<RM_GroupGenesDesc>Genes and unique — genepacks, xenogerms, techprints, persona and unique weapons.</RM_GroupGenesDesc>
+	<RM_SetNeedMechanitor>A mechanitor is needed to contact the computer</RM_SetNeedMechanitor>
+	<RM_SetMoveTanks>Tanks can be moved (with their contents)</RM_SetMoveTanks>
+	<RM_SetTankCapacity>Replimat tank capacity, kg (large ×4)</RM_SetTankCapacity>
+	<RM_SetPower>Power use, W</RM_SetPower>
+	<RM_PowerPrint>Printing</RM_PowerPrint>
+	<RM_PowerStore>Tanks</RM_PowerStore>
+	<RM_PowerRecycle>Computer and splitter</RM_PowerRecycle>
+	<RM_SetReset>Reset all</RM_SetReset>
+
+</LanguageData>

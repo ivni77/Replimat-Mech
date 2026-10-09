@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+	<RM_Make_IsolinearModule.label>сделать изолинейный модуль</RM_Make_IsolinearModule.label>
+	<RM_Make_IsolinearModule.description>Сделать изолинейный модуль для компьютера реплимата.</RM_Make_IsolinearModule.description>
+	<RM_Make_IsolinearModule.jobString>Делает изолинейный модуль.</RM_Make_IsolinearModule.jobString>
+
+</LanguageData>

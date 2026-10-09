@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+	<name>Replimat Mech</name>
+	<author>ivni77 (based on Replimat: sumghai, Dubwise, Omnot)</author>
+	<packageId>ivni77.ReplimatMech</packageId>
+	<modVersion>1.0.0</modVersion>
+	<url>https://github.com/ivni77/Replimat-Mech</url>
+	<supportedVersions>
+		<li>1.6</li>
+	</supportedVersions>
+	<description>A copier for production.\nThe matter splitter splits items and corpses into matter (mass and value) and records patterns.\nReplicators print from patterns for time, mass and value.\nA mechanitor sets up the queues through a comms console.\nMechs are printed like in a gestator.\nNothing living is printed.
+
+Based on Replimat (Robin "sumghai" Chang, Dubwise56) and Replimat Universal (Omnot).\nTextures (recolored blue) and sounds come from there.\nLicense CC BY-SA 4.0.\nIncompatible with Replimat and Replimat Universal.
+
+---
+
+Копировальная машина для производства.\nРасщепитель материи расщепляет предметы и трупы на материю (массу и стоимость) и записывает шаблоны.\nРепликаторы печатают по шаблонам за время, массу и стоимость.\nМеханитор настраивает очереди через консоль связи.\nМеханоиды печатаются как в гестаторе.\nЖивое не печатается.
+
+Основано на Replimat (Robin "sumghai" Chang, Dubwise56) и Replimat Universal (Omnot).\nТекстуры (перекрашены в синий) и звуки взяты оттуда.\nЛицензия CC BY-SA 4.0.\nНесовместим с Replimat и Replimat Universal.</description>
+	<modDependencies>
+		<li>
+			<packageId>brrainz.harmony</packageId>
+			<displayName>Harmony</displayName>
+			<steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
+			<downloadUrl>https://github.com/pardeike/HarmonyRimWorld/releases/latest</downloadUrl>
+		</li>
+		<li>
+			<packageId>Ludeon.RimWorld.Biotech</packageId>
+			<displayName>Biotech</displayName>
+		</li>
+	</modDependencies>
+	<loadAfter>
+		<li>brrainz.harmony</li>
+		<li>Ludeon.RimWorld.Biotech</li>
+	</loadAfter>
+	<incompatibleWith>
+		<li>sumghai.Replimat</li>
+		<li>Omnot.ReplimatUniversal</li>
+	</incompatibleWith>
+</ModMetaData>

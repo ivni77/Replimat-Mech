@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+	<!-- единицы -->
+	<RM_Kg>{0} кг</RM_Kg>
+	<RM_SilverN>{0} серебра</RM_SilverN>
+	<RM_Minutes>{0} мин</RM_Minutes>
+	<RM_Seconds>{0} с</RM_Seconds>
+	<RM_Hours>{0} ч</RM_Hours>
+	<RM_Days>{0} дн.</RM_Days>
+	<RM_None>нет</RM_None>
+	<RM_Packed>(упак.)</RM_Packed>
+
+	<!-- баки и окна состояния -->
+	<RM_MassLine>Масса: {0} / {1}</RM_MassLine>
+	<RM_ValueLine>Стоимость: {0}</RM_ValueLine>
+	<RM_TankShare>Доля материи сети: {0} (по объёму)</RM_TankShare>
+	<RM_TanksCount>Баков: {0}</RM_TanksCount>
+	<RM_PrintersCount>Репликаторов: {0}</RM_PrintersCount>
+	<RM_FeedersCount>Репликаторов для животных: {0}</RM_FeedersCount>
+	<RM_ValueOff>Сбор стоимости выключен</RM_ValueOff>
+	<RM_TankContents>Содержимое бака: +{0}</RM_TankContents>
+	<RM_NoTanks>Нет баков</RM_NoTanks>
+	<RM_NoComputer>Нет компьютера в сети</RM_NoComputer>
+	<RM_FeederFood>Корм: {0}</RM_FeederFood>
+	<RM_Printing>Печатает: {0}, осталось {1}</RM_Printing>
+	<RM_InQueue>В очереди: {0}</RM_InQueue>
+	<RM_QueueEnd>До конца очереди: ≈ {0}</RM_QueueEnd>
+	<RM_WaitsMechanitor>Ждёт механитора: {0}</RM_WaitsMechanitor>
+
+	<!-- статусы заданий: коротко (осмотр здания) и полностью (окна) -->
+	<RM_StDone>готово</RM_StDone>
+	<RM_StDoneFull>Готово: есть {0} из {1}</RM_StDoneFull>
+	<RM_StWait>ждёт</RM_StWait>
+	<RM_StWaitFull>Ждёт: впереди другие задания</RM_StWaitFull>
+	<RM_StLowMass>мало массы</RM_StLowMass>
+	<RM_StLowSilver>мало стоимости</RM_StLowSilver>
+	<RM_StNoMechanitor>нет механитора</RM_StNoMechanitor>
+	<RM_StNoMechanitorFull>Нет механитора: выберите его в компьютере</RM_StNoMechanitorFull>
+	<RM_StForbidden>запрещено</RM_StForbidden>
+	<RM_StForbiddenFull>Печать запрещена в настройках мода</RM_StForbiddenFull>
+	<RM_StNoRoom>нет места</RM_StNoRoom>
+	<RM_StNoRoomFull>Нет места: репликатор для животных заполнен</RM_StNoRoomFull>
+	<RM_StOff>выключен</RM_StOff>
+	<RM_StOffFull>Выключен: нет питания или компьютера в сети</RM_StOffFull>
+	<RM_StSuspended>пауза</RM_StSuspended>
+	<RM_StPrinting>Печатает {0}% ({1} / {2})</RM_StPrinting>
+
+	<!-- очередь и блок «План» -->
+	<RM_TabQueue>Очередь</RM_TabQueue>
+	<RM_TotTime>Время: {0}</RM_TotTime>
+	<RM_TotMass>Масса: {0}</RM_TotMass>
+	<RM_TotValue>Стоимость: {0}</RM_TotValue>
+	<RM_PlanNothing>нечего печатать</RM_PlanNothing>
+	<RM_PlanEnough>хватает</RM_PlanEnough>
+	<RM_Short>не хватает {0}</RM_Short>
+	<RM_InTanks>Накоплено в баках</RM_InTanks>
+	<RM_MassInTanks>Масса в баках</RM_MassInTanks>
+	<RM_ValueInTanks>Стоимость в баках</RM_ValueInTanks>
+	<RM_ColBills>Заданий</RM_ColBills>
+	<RM_Always>Всегда</RM_Always>
+	<RM_ColBill>Задание</RM_ColBill>
+	<RM_ColHave>Есть / нужно</RM_ColHave>
+	<RM_ColPause>Пауза</RM_ColPause>
+	<RM_ColDetails>Настройки</RM_ColDetails>
+	<RM_TotalAll>Все репликаторы</RM_TotalAll>
+	<RM_GroupImportant>Первая очередь</RM_GroupImportant>
+	<RM_GroupNormal>Вторая очередь</RM_GroupNormal>
+	<RM_GroupDesc>Очередь — определяет порядок печати, приоритет у Первой очереди.</RM_GroupDesc>
+	<RM_GroupEmpty>Пусто — перетащите задание сюда</RM_GroupEmpty>
+
+	<!-- компьютер: общее -->
+	<RM_UseComputer>Связаться с компьютером реплимата</RM_UseComputer>
+	<RM_UseComputerN>Связаться с компьютером реплимата №{0}</RM_UseComputerN>
+	<RM_NeedMechanitor>нужен механитор</RM_NeedMechanitor>
+	<RM_ComputerNoPower>компьютер без питания</RM_ComputerNoPower>
+	<RM_ComputerTitle>Компьютер реплимата · на связи {0}</RM_ComputerTitle>
+	<RM_TabHome>Главная</RM_TabHome>
+	<RM_TabPatternsN>Шаблоны ({0})</RM_TabPatternsN>
+	<RM_TabQueueN>Очередь ({0})</RM_TabQueueN>
+
+	<!-- компьютер: «Главная» -->
+	<RM_CardMatter>Материя</RM_CardMatter>
+	<RM_CardGear>Оборудование</RM_CardGear>
+	<RM_CardHelp>Справка</RM_CardHelp>
+	<RM_CardPrinters>Репликаторы</RM_CardPrinters>
+	<RM_ColBuilding>Здание</RM_ColBuilding>
+	<RM_Mass>Масса</RM_Mass>
+	<RM_Value>Стоимость</RM_Value>
+	<RM_TanksOff>Без питания: {0} — из них не печатается</RM_TanksOff>
+	<RM_TanksExplain>Материя — материал для печати: масса (кг) и стоимость (серебро), делится между баками по объёму.\nКомпьютер — хранит шаблоны и очереди печати, управляет расщепителями материи и репликаторами.\nРасщепитель материи — расщепляет предметы и трупы на материю и всегда записывает шаблоны.\nРепликатор — печатает предметы и механоидов из материи.\nБак — хранит материю, если баки заполнены, то масса копиться не будет.\nСтоимость — у каждого предмета своя, как у торговцев, и копить её можно бесконечно.\nМасса — у каждого предмета своя, копится, сколько влезет в баки.\nПечать — забирает из баков массу и стоимость предмета.</RM_TanksExplain>
+	<RM_SpeedExplain>Скорость печати задания — растёт с навыком ремесла и гестационными процессорами.</RM_SpeedExplain>
+	<RM_CollectValue>Собирать стоимость</RM_CollectValue>
+	<RM_CollectValueDesc>Стоимость влияет на богатство колонии.\nЕсли отключить, то стоимость накапливаться не будет.</RM_CollectValueDesc>
+	<RM_CollectValueWarn>Для печати предметов и механоидов нужна накопленная стоимость.</RM_CollectValueWarn>
+	<RM_LackMass>массы: {0}</RM_LackMass>
+	<RM_LackValue>стоимости: {0}</RM_LackValue>
+	<RM_Unpowered>без питания: {0}</RM_Unpowered>
+	<RM_GearExplain>Оборудование — здания реплимата в электросети этого компьютера.\nБез питания здания стоят, но баки сохраняют запас.</RM_GearExplain>
+	<RM_NoPrinters>Нет репликаторов в сети</RM_NoPrinters>
+	<RM_Now>Сейчас: {0} — {1}%</RM_Now>
+	<RM_NowIdle>Сейчас ничего не печатает</RM_NowIdle>
+	<RM_QueueEmpty>Очередь пуста</RM_QueueEmpty>
+	<RM_QueueSummary>Заданий: {0} · время ≈ {1} · стоимость {2}</RM_QueueSummary>
+	<RM_QueueLow>Не хватает массы или стоимости: {0}</RM_QueueLow>
+
+	<!-- компьютер: «Шаблоны» -->
+	<RM_NoPatterns>Нет шаблонов: отсканируйте предмет в расщепителе материи</RM_NoPatterns>
+	<RM_CatMechs>Механоиды</RM_CatMechs>
+	<RM_CatOther>Прочее</RM_CatOther>
+	<RM_PickPattern>Выберите категорию или шаблон слева</RM_PickPattern>
+	<RM_NothingFound>Ничего не найдено</RM_NothingFound>
+	<RM_InQueueMark>в очереди</RM_InQueueMark>
+	<RM_Enough>хватит на {0}</RM_Enough>
+	<RM_PerUnit>За штуку: масса {0} · стоимость {1} · время {2}</RM_PerUnit>
+	<RM_InQueueEdit>Задание уже в очереди</RM_InQueueEdit>
+	<RM_NoMechanitors>В колонии нет механиторов</RM_NoMechanitors>
+	<RM_EdPrinter>Репликатор</RM_EdPrinter>
+	<RM_EdMode>Режим</RM_EdMode>
+	<RM_EdCount>Количество, шт.</RM_EdCount>
+	<RM_InStock>на складе: {0}</RM_InStock>
+	<RM_EdQuality>Качество</RM_EdQuality>
+	<RM_QualityBest>лучшее (сейчас {0})</RM_QualityBest>
+	<RM_EdMechanitor>Механитор</RM_EdMechanitor>
+	<RM_MechanitorOption>{0} (скорость печати {1}%)</RM_MechanitorOption>
+	<RM_SliderTime>Время</RM_SliderTime>
+	<RM_SliderValue>Стоимость</RM_SliderValue>
+	<RM_SliderMass>Масса</RM_SliderMass>
+	<RM_SliderMassTip>У этого шаблона нет стоимости.\nЕсли уменьшить время печати, потратится больше массы, и наоборот.</RM_SliderMassTip>
+	<RM_EdGroup>Очередь</RM_EdGroup>
+	<RM_Apply>Применить</RM_Apply>
+	<RM_Create>Создать</RM_Create>
+	<RM_NotApplied>Изменения не применены</RM_NotApplied>
+	<RM_MsgApplied>Задание изменено: {0}</RM_MsgApplied>
+	<RM_MsgDeleted>Задание удалено: {0}</RM_MsgDeleted>
+	<RM_MsgAdded>Добавлено: {0} · {1} · {2}</RM_MsgAdded>
+
+	<!-- компьютер: «Очередь» -->
+	<RM_MsgMoved>{0} — перенесено на «{1}»</RM_MsgMoved>
+	<RM_NoOtherPrinters>Нет других репликаторов</RM_NoOtherPrinters>
+
+	<!-- репликатор: кнопки, сообщения, письма -->
+	<RM_Rename>Переименовать</RM_Rename>
+	<RM_Reassign>Подключить к другому механитору: {0}</RM_Reassign>
+	<RM_CancelMech>Отменить: {0}</RM_CancelMech>
+	<RM_MsgShort>«{0}»: {1} — {2}</RM_MsgShort>
+	<RM_MsgMechReady>{0} подключён к механитору {1}.</RM_MsgMechReady>
+	<RM_LetterMechWaitLabel>Механоид ждёт: {0}</RM_LetterMechWaitLabel>
+	<RM_LetterMechWait>{0} напечатан в «{1}», но у механитора {2} не хватает пропускной способности.\nМеханоид ждёт.\nОсвободите пропускную способность, подключите его к другому механитору или отмените — в баки вернётся ровно то, что списали.</RM_LetterMechWait>
+	<RM_MsgHopperBlocked>Нельзя: «{0}» стоит в очереди «{1}».\nРасщепитель расщепил бы то, что напечатал репликатор.</RM_MsgHopperBlocked>
+	<RM_MsgTankDeconstruct>Бак разберут — пропадёт его материя: масса {0} и стоимость {1}.</RM_MsgTankDeconstruct>
+
+	<!-- сканирование -->
+	<RM_DesignatorScan>Сканировать</RM_DesignatorScan>
+	<RM_MsgPatternNew>Новый шаблон: {0}</RM_MsgPatternNew>
+	<RM_MsgPatternBetter>Шаблон «{0}» — теперь до качества «{1}»</RM_MsgPatternBetter>
+	<RM_NoHopper>Нет работающего расщепителя материи</RM_NoHopper>
+
+	<!-- настройки мода -->
+	<RM_SetMassReturn>Возврат массы при расщеплении: {0}</RM_SetMassReturn>
+	<RM_SetValueReturn>Возврат стоимости при расщеплении (от материалов): {0}</RM_SetValueReturn>
+	<RM_Color>Цвет реплимата</RM_Color>
+	<RM_ColorDesc>Цвет реплимата — нажмите на квадрат: палитра как у механоидов.\nОдин цвет на все здания реплимата: полосы баков и расщепителя, экраны, свечение печати и расщепления, свет.</RM_ColorDesc>
+	<RM_SetQualityCap>Предел качества печати</RM_SetQualityCap>
+	<RM_SetGroups>Особые предметы</RM_SetGroups>
+	<RM_ColPrint>печатать</RM_ColPrint>
+	<RM_ColMarkup>наценка, ×</RM_ColMarkup>
+	<RM_GroupChips>чипы и субъядра</RM_GroupChips>
+	<RM_GroupChipsDesc>Чипы и субъядра — сигнальный, энергофокусирующий и наноструктурирующий чипы, стандартное и продвинутое субъядро.\nВ механоидах наценка только на эту часть цены.</RM_GroupChipsDesc>
+	<RM_GroupArcho>архотех и особые</RM_GroupArcho>
+	<RM_GroupArchoDesc>Архотех и особые — ИИ-ядро, архотех-части, архитовые капсулы, изолинейный модуль, сыворотки воскрешения и исцеления.</RM_GroupArchoDesc>
+	<RM_GroupGenes>гены и уникальное</RM_GroupGenes>
+	<RM_GroupGenesDesc>Гены и уникальное — генпаки, ксеногермы, техпринты, персональное и уникальное оружие.</RM_GroupGenesDesc>
+	<RM_SetNeedMechanitor>Нужен механитор для связи с компьютером</RM_SetNeedMechanitor>
+	<RM_SetMoveTanks>Переносить баки (вместе с содержимым)</RM_SetMoveTanks>
+	<RM_SetTankCapacity>Объём бака реплимата, кг (большой — ×4)</RM_SetTankCapacity>
+	<RM_SetPower>Потребляемая мощность, Вт</RM_SetPower>
+	<RM_PowerPrint>Печать</RM_PowerPrint>
+	<RM_PowerStore>Баки</RM_PowerStore>
+	<RM_PowerRecycle>Компьютер и расщепитель</RM_PowerRecycle>
+	<RM_SetReset>Сбросить всё</RM_SetReset>
+
+</LanguageData>

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+	<ResearchProjectDef>
+		<defName>RM_Replication</defName>
+		<label>replication</label>
+		<description>Splitting items into matter (mass and value), recording patterns and printing from them.\nUnlocks all replimat buildings and the isolinear module.</description>
+		<baseCost>1000</baseCost>
+		<techLevel>Industrial</techLevel>
+		<prerequisites>
+			<li>MicroelectronicsBasics</li>
+		</prerequisites>
+		<researchViewX>11.00</researchViewX>
+		<researchViewY>1.80</researchViewY>
+		<discoveredLetterTitle>Replimat: how to build</discoveredLetterTitle>
+		<discoveredLetterText>Replication researched: you can build the replimat.\nEverything goes on one power network.\n\nReplimat computer: stores patterns and print queues.\nIt needs an isolinear module, made at a machining table.\n\nReplimat tank (one or more): stores matter: mass and value.\n\nMatter splitter: splits brought items and corpses into matter and records patterns.\nWhat it accepts is set in its filter, like a stockpile.\nThe "Scan" button on an item sends one piece there.\n\nReplicator: prints from patterns and puts the result nearby.\nOptional: animal replicator, prints feed.\n\nPrint queues are set up by a mechanitor.\nComms console: "Contact the replimat computer".</discoveredLetterText>
+	</ResearchProjectDef>
+
+	<ThingDef ParentName="ResourceBase">
+		<defName>RM_IsolinearModule</defName>
+		<label>isolinear module</label>
+		<description>An optical module for storing and processing patterns.\nThe core part of the replimat computer.</description>
+		<graphicData>
+			<texPath>Things/Item/IsolinearModule</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+		</graphicData>
+		<resourceReadoutPriority>Middle</resourceReadoutPriority>
+		<soundInteract>Metal_Drop</soundInteract>
+		<soundDrop>Standard_Drop</soundDrop>
+		<stackLimit>10</stackLimit>
+		<healthAffectsPrice>false</healthAffectsPrice>
+		<statBases>
+			<MarketValue>2360</MarketValue>
+			<MaxHitPoints>100</MaxHitPoints>
+			<Mass>0.5</Mass>
+			<WorkToMake>20000</WorkToMake>
+		</statBases>
+		<intricate>true</intricate>
+		<thingCategories>
+			<li>Manufactured</li>
+		</thingCategories>
+	</ThingDef>
+
+	<RecipeDef>
+		<defName>RM_Make_IsolinearModule</defName>
+		<label>make isolinear module</label>
+		<description>Make an isolinear module for the replimat computer.</description>
+		<jobString>Making isolinear module.</jobString>
+		<workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+		<workSkill>Crafting</workSkill>
+		<effectWorking>Smith</effectWorking>
+		<soundWorking>Recipe_Smith</soundWorking>
+		<workAmount>20000</workAmount>
+		<unfinishedThingDef>UnfinishedComponent</unfinishedThingDef>
+		<ingredients>
+			<li><filter><thingDefs><li>Steel</li></thingDefs></filter><count>510</count></li>
+			<li><filter><thingDefs><li>ComponentIndustrial</li></thingDefs></filter><count>20</count></li>
+			<li><filter><thingDefs><li>Plasteel</li></thingDefs></filter><count>20</count></li>
+			<li><filter><thingDefs><li>Gold</li></thingDefs></filter><count>5</count></li>
+		</ingredients>
+		<fixedIngredientFilter>
+			<thingDefs><li>Steel</li><li>ComponentIndustrial</li><li>Plasteel</li><li>Gold</li></thingDefs>
+		</fixedIngredientFilter>
+		<products>
+			<RM_IsolinearModule>1</RM_IsolinearModule>
+		</products>
+		<skillRequirements>
+			<Crafting>8</Crafting>
+		</skillRequirements>
+		<researchPrerequisite>RM_Replication</researchPrerequisite>
+		<recipeUsers>
+			<li>TableMachining</li>
+		</recipeUsers>
+	</RecipeDef>
+
+	<DesignationCategoryDef>
+		<defName>RM_Replimat</defName>
+		<label>replimat</label>
+		<description>Replimat buildings: replicators, tanks, matter splitter, computer.</description>
+		<order>501</order>
+		<specialDesignatorClasses>
+			<li>Designator_Cancel</li>
+			<li>Designator_Deconstruct</li>
+		</specialDesignatorClasses>
+		<researchPrerequisites>
+			<li>RM_Replication</li>
+		</researchPrerequisites>
+	</DesignationCategoryDef>
+
+	<DesignationDef>
+		<defName>RM_Scan</defName>
+		<texturePath>UI/Designations/ReplimatScanPattern</texturePath>
+		<targetType>Thing</targetType>
+	</DesignationDef>
+
+	<JobDef>
+		<defName>RM_ScanItem</defName>
+		<driverClass>ReplimatMech.JobDriver_RMScan</driverClass>
+		<reportString>carrying TargetA to be scanned.</reportString>
+		<suspendable>false</suspendable>
+		<allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+	</JobDef>
+
+	<JobDef>
+		<defName>RM_UseComputer</defName>
+		<driverClass>ReplimatMech.JobDriver_RMUseComputer</driverClass>
+		<reportString>going to the replimat computer.</reportString>
+		<suspendable>false</suspendable>
+	</JobDef>
+
+	<WorkGiverDef>
+		<defName>RM_Scan</defName>
+		<label>carry items to be scanned</label>
+		<giverClass>ReplimatMech.WorkGiver_RMScan</giverClass>
+		<workType>Hauling</workType>
+		<verb>scan</verb>
+		<gerund>scanning</gerund>
+		<priorityInType>92</priorityInType>
+		<requiredCapacities>
+			<li>Manipulation</li>
+		</requiredCapacities>
+	</WorkGiverDef>
+
+	<SoundDef>
+		<defName>RM_Replicate</defName>
+		<maxSimultaneous>3</maxSimultaneous>
+		<context>MapOnly</context>
+		<subSounds>
+			<li>
+				<grains><li Class="AudioGrain_Clip"><clipPath>Replimat Mech/TerminalDispense</clipPath></li></grains>
+				<volumeRange>15~20</volumeRange>
+				<distRange>0~40</distRange>
+			</li>
+		</subSounds>
+	</SoundDef>
+
+	<SoundDef>
+		<defName>RM_Dematerialize</defName>
+		<maxSimultaneous>3</maxSimultaneous>
+		<context>MapOnly</context>
+		<subSounds>
+			<li>
+				<grains><li Class="AudioGrain_Clip"><clipPath>Replimat Mech/HopperDematerialize</clipPath></li></grains>
+				<volumeRange>15~20</volumeRange>
+				<distRange>0~40</distRange>
+			</li>
+		</subSounds>
+	</SoundDef>
+
+</Defs>
