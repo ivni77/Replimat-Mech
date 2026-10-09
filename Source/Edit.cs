@@ -31,11 +31,15 @@ public static class Edit
         Done(c);
     }
 
-    /// Настройки черновика — заданию в очереди (форма «Шаблонов», количество и режим в строке).
+    /// Настройки черновика — заданию в очереди (форма «Шаблонов», количество и режим в строке). Сменили механитора — к новому идёт
+    /// и напечатанный механоид задания, который ждёт старого (кнопка «Подключить к другому механитору» — то же самое).
     [SyncMethod(cancelIfAnyArgNull = true)]
     public static void Apply(CompPrinter c, Order o, Order draft)
     {
+        Pawn old = o.mechanitor;
         o.ApplySettings(draft);
+        if (o.pattern?.IsMech == true && o.mechanitor != null && o.mechanitor != old)
+            foreach (WaitingMech w in c.waiting.Where(w => w.kind == o.pattern.mechKind && w.mechanitor == old)) w.mechanitor = o.mechanitor;
         Done(c);
     }
 
