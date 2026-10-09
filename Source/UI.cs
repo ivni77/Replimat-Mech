@@ -262,8 +262,8 @@ public static class RMUI
         {
             "RM_StSuspended" => ("SuspendedCaps".Translate(), Yellow),
             "RM_StLowMass" or "RM_StLowSilver" => (o.status.Translate().CapitalizeFirst(), ColorLibrary.RedReadable),
-            "RM_StNoMechanitor" => ("RM_StNoMechanitorFull".Translate(), ColorLibrary.RedReadable),
-            "RM_StDone" => (Tr("RM_StDoneFull", c.Have(o), o.target), ColorLibrary.Green),
+            "RM_StNoMechanitor" or "RM_StNoBandwidth" => ((o.status + "Full").Translate(), ColorLibrary.RedReadable),
+            "RM_StDone" => (o.mode == OrderMode.Until ? Tr("RM_StDoneFull", c.Stock(o), o.target) : "RM_StDone".Translate().CapitalizeFirst().ToString(), ColorLibrary.Green),
             "RM_StMechWaits" => ("RM_StMechWaitsFull".Translate(), Yellow),
             "RM_StNoResearch" => (Tr("RM_StNoResearchFull", Rules.MissingResearch(o.pattern)?.LabelCap.ToString()), ColorLibrary.RedReadable),
             null => ("RM_StWaitFull".Translate(), RMUI.Muted),
@@ -271,9 +271,15 @@ public static class RMUI
         };
     }
 
-    public static string Count(CompPrinter c, Order o) => (o.mode == OrderMode.Forever ? o.done.ToString() : c.Have(o).ToString()) + " / " + (o.mode == OrderMode.Forever ? "RM_Always".Translate().ToString() : o.target.ToString());
+    /// Счётчик, как у задания ванили: «сделать X» — сколько осталось (убывает до нуля), «повторять до X» — есть / нужно, «бесконечно» — сделано / всегда.
+    public static string Count(CompPrinter c, Order o) => o.mode switch
+    {
+        OrderMode.Make => o.target + "x",
+        OrderMode.Until => c.Stock(o) + " / " + o.target,
+        _ => o.done + " / " + "RM_Always".Translate(),
+    };
 
-    static bool Below(CompPrinter c, Order o) => o.mode != OrderMode.Forever && c.Have(o) < o.target;
+    static bool Below(CompPrinter c, Order o) => o.mode != OrderMode.Forever && c.Need(o) > 0;
 
     /// Очереди репликатора без рамок: у каждой — заголовок (название и в скобках хватает ли, справа числа) и линия, ниже строки. top — что сверху в той же прокрутке
     /// (таблица репликаторов, шапка столбцов), возвращает высоту, draw=false — только измерить. edit — окно компьютера: ручка перетаскивания, пустые группы
@@ -503,6 +509,7 @@ public class Dialog_Computer : Window
     CompPrinter selPrinter, queuePrinter;
     Order existing, draft;
     string qtyBuf;
+    int seenTarget = -1;
 
     static Settings S => ReplimatMechMod.S;
     static string SliderKey(Order o, int i) => i == 0 ? "RM_SliderTime" : o.MassSlider ? "RM_SliderMass" : "RM_SliderValue";
@@ -919,6 +926,9 @@ public class Dialog_Computer : Window
         Pattern p = sel;
         Order d = draft;
         CompPrinter c = selPrinter;
+        // «сделать X» убывает, пока форма открыта: количество, которое не правили, — вслед за заданием (иначе «Применить» вернёт прежнее)
+        if (existing != null && existing.target != seenTarget && d.target == seenTarget) (d.target, qtyBuf) = (existing.target, null);
+        seenTarget = existing?.target ?? -1;
         int n = d.mode == OrderMode.Forever ? 1 : d.target;
         // сверху вниз: что накоплено в баках (линия под ним), шаблон, задание в очереди, «План» — сколько нужно и хватает ли, поля
         RMUI.TanksRow(new Rect(r.x, r.y, r.width, 30f), Net);
@@ -978,7 +988,7 @@ public class Dialog_Computer : Window
         if (Widgets.ButtonText(Field("RM_EdPrinter"), c?.RenamableLabel ?? "RM_NoPrinters".Translate().ToString()))
             Find.WindowStack.Add(new FloatMenu(Printers.Where(x => x.Accepts(p))
                 .Select(x => new FloatMenuOption(x.RenamableLabel + (x.orders.Any(o => o.pattern == p) ? " — " + "RM_InQueueMark".Translate() : ""), () => Load(p, x))).ToList()));
-        if (!p.IsMech && Widgets.ButtonText(Field("RM_EdMode"), RMUI.ModeLabel(d.mode).CapitalizeFirst()))
+        if (Widgets.ButtonText(Field("RM_EdMode"), RMUI.ModeLabel(d.mode).CapitalizeFirst()))
             Find.WindowStack.Add(RMUI.ModeMenu(m => d.mode = m));
         if (d.mode != OrderMode.Forever)
         {
@@ -991,7 +1001,7 @@ public class Dialog_Computer : Window
                 d.target = t;
                 qtyBuf = t.ToString();
             }
-            if (d.mode == OrderMode.Until && c != null) Note(f, "RM_InStock".Translate(c.Stock(d)));
+            if (d.mode == OrderMode.Until && c != null) Note(f, (p.IsMech ? "RM_OnMap" : "RM_InStock").Translate(c.Stock(d)));
         }
         if (p.HasQuality)
         {
@@ -1249,7 +1259,7 @@ public class Dialog_Computer : Window
         if (count && Widgets.ButtonText(new Rect(x, y, 28f, 28f), "−")) Set(d => d.target -= step);
         RMUI.CountCell(count ? new Rect(x + 30f, y, 80f, 28f) : Col(0), c, o);
         if (count && Widgets.ButtonText(new Rect(x + 112f, y, 28f, 28f), "+")) Set(d => d.target += step);
-        if (!o.pattern.IsMech && Widgets.ButtonText(Col(1), RMUI.ModeLabel(o.mode).CapitalizeFirst().Truncate(Cols[1].w - 12f)))
+        if (Widgets.ButtonText(Col(1), RMUI.ModeLabel(o.mode).CapitalizeFirst().Truncate(Cols[1].w - 12f)))
             Find.WindowStack.Add(RMUI.ModeMenu(m => Set(d => d.mode = m)));
         if (Widgets.ButtonText(Col(2), (o.paused ? "Suspended" : "NotSuspended").Translate())) Edit.Pause(c, o, !o.paused);
         if (Widgets.ButtonText(Col(3), c.RenamableLabel.Truncate(Cols[3].w - 10f)))

@@ -72,13 +72,12 @@ public class Order : IExposable
     /// Копия для формы «Шаблонов»: правится копия, «Применить» переносит только настройки — оплаченную пачку по ним пересчитает Refresh.
     public Order Copy() => (Order)MemberwiseClone();
 
-    /// Количество 0 — задание на паузе; ушло с нуля — снова печатает.
+    /// Количество поставили в 0 — задание на паузе; ушло с нуля — снова печатает. Не изменилось (и «сделать X», само досчитавшее
+    /// до нуля) — пауза как была.
     public void SetTarget(int v)
     {
-        bool wasZero = target == 0;
-        target = Mathf.Clamp(v, 0, MaxTarget);
-        if (target == 0) paused = true;
-        else if (wasZero) paused = false;
+        v = Mathf.Clamp(v, 0, MaxTarget);
+        if (v != target) (paused, target) = (v == 0 || paused && target != 0, v);
     }
 
     public void ApplySettings(Order o)
@@ -103,7 +102,11 @@ public class Order : IExposable
         Scribe_Values.Look(ref patternKey, "pattern");
         Scribe_Values.Look(ref mode, "mode");
         Scribe_Values.Look(ref target, "target", 1);
-        Scribe_Values.Look(ref done, "done");
+        Scribe_Values.Look(ref done, "made");
+        // до 1.1.0 «сделать X» считало сделанное вверх до цели — теперь цель сама убывает до нуля
+        int old = 0;
+        Scribe_Values.Look(ref old, "done");
+        if (old > 0) (target, done) = mode == OrderMode.Make ? (Mathf.Max(0, target - old), 0) : (target, old);
         Scribe_Values.Look(ref manualQuality, "manualQuality");
         Scribe_Values.Look(ref important, "important");
         Scribe_Values.Look(ref paused, "paused");
@@ -229,8 +232,8 @@ public class CompPrinter : ThingComp, IRenameable
     /// лишнее в баки (разницу вернёт Reprice). На паузе пачка ждёт как есть.
     void Trim(Order o)
     {
-        if (o.paused || o.mode == OrderMode.Forever) return;
-        int left = o.target - Have(o);
+        if (o.paused) return;
+        int left = Need(o);
         if (left <= 0) Unpay(o);
         else if (left < o.batch) o.batch = left;
     }
@@ -260,22 +263,26 @@ public class CompPrinter : ThingComp, IRenameable
         if (o.pattern.IsMech && !MechanitorOk(o.mechanitor)) return "RM_StNoMechanitor";
         // мех напечатан, но не вышел (не хватает пропускной способности или механитора) — не «готово»
         if (Remaining(o) <= 0) return o.pattern.IsMech && waiting.Any(w => w.kind == o.pattern.mechKind) ? "RM_StMechWaits" : "RM_StDone";
+        // как гестатор: без свободной пропускной способности механоид не начинают (печатаемые и ждущие её уже заняли)
+        if (o.pattern.IsMech && o.mechanitor.mechanitor.UsedBandwidth + (int)Pricing.Bandwidth(o.pattern) > o.mechanitor.mechanitor.TotalBandwidth)
+            return "RM_StNoBandwidth";
         if (Feeder && Room(o.pattern) <= 0) return "RM_StNoRoom";
         return null;
     }
 
     static bool MechanitorOk(Pawn p) => p is { Dead: false } && MechanitorUtility.IsMechanitor(p);
 
-    /// Сколько штук ещё начать (без уже оплаченной пачки). «Бесконечно» — без предела.
-    public int Remaining(Order o) => o.mode switch
+    /// Сколько ещё нужно, с начатой пачкой: «сделать X» — само количество (убывает с каждой готовой пачкой), «повторять до X» — до цели
+    /// на складе. «Бесконечно» — без предела.
+    public int Need(Order o) => o.mode switch
     {
-        OrderMode.Make => o.target - o.done - (o.paid ? o.batch : 0),
-        OrderMode.Until => o.target - Stock(o) - (o.paid ? o.batch : 0),
+        OrderMode.Make => o.target,
+        OrderMode.Until => o.target - Stock(o),
         _ => int.MaxValue,
     };
 
-    /// «Есть» для строки: сделано (сделать X) или на складе (повторять до X).
-    public int Have(Order o) => o.mode == OrderMode.Until ? Stock(o) : o.done;
+    /// Сколько штук ещё начать (без уже оплаченной пачки).
+    public int Remaining(Order o) => Need(o) - (o.paid ? o.batch : 0);
 
     /// Пачка — до стопки ванили за раз (осталось меньше — всё), сколько хватает баков; мех и штучное — по одному.
     bool TryPay(Order o)
@@ -311,6 +318,7 @@ public class CompPrinter : ThingComp, IRenameable
         o.paid = o.running = false;
         o.progress = 0f;
         o.done += o.batch;
+        if (o.mode == OrderMode.Make) o.target = Mathf.Max(0, o.target - o.batch);
         RMDefOf.RM_Replicate.PlayOneShot(new TargetInfo(parent.Position, parent.Map));
         if (o.pattern.IsMech)
         {
@@ -358,6 +366,8 @@ public class CompPrinter : ThingComp, IRenameable
         Map map = parent.Map;
         if (map == null) return 0;
         Pattern p = o.pattern;
+        // механоиды — колонии на карте, как считает ваниль, и напечатанные, что ждут механитора
+        if (p.IsMech) return map.mapPawns.SpawnedColonyMechs.Count(m => m.def == p.def) + waiting.Count(w => w.kind == p.mechKind);
         if (Feeder) return parent.Position.GetThingList(map).Where(x => Matches(x, p)).Sum(x => x.stackCount);
         int n = 0;
         foreach (Thing t in map.listerThings.ThingsOfDef(p.minified ? ThingDefOf.MinifiedThing : p.def))
@@ -468,22 +478,6 @@ public class CompPrinter : ThingComp, IRenameable
             icon = TexButton.Rename,
             action = () => Find.WindowStack.Add(new Dialog_RenamePrinter(this)),
         };
-        foreach (WaitingMech w in waiting)
-        {
-            yield return new Command_Action
-            {
-                defaultLabel = "RM_Reassign".Translate(w.kind.label),
-                icon = w.kind.race.uiIcon,
-                action = () => Find.WindowStack.Add(new FloatMenu(Find.Maps.SelectMany(m => m.mapPawns.FreeColonists)
-                    .Where(MechanitorOk).Select(p => new FloatMenuOption(p.LabelShort, () => Edit.Reassign(this, waiting.IndexOf(w), p))).ToList())),
-            };
-            yield return new Command_Action
-            {
-                defaultLabel = "RM_CancelMech".Translate(w.kind.label),
-                icon = TexCommand.ClearPrioritizedWork,
-                action = () => Edit.CancelMech(this, waiting.IndexOf(w)),
-            };
-        }
     }
 
     public override void PostDraw() => Glow.Printer(this);

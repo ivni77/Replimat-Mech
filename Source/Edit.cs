@@ -26,13 +26,13 @@ public static class Edit
     [SyncMethod(cancelIfAnyArgNull = true)]
     public static void Create(CompPrinter c, Order draft)
     {
-        draft.SetTarget(draft.target);
+        draft.paused = draft.target == 0;
         c.orders.Add(draft);
         Done(c);
     }
 
     /// Настройки черновика — заданию в очереди (форма «Шаблонов», количество и режим в строке). Сменили механитора — к новому идёт
-    /// и напечатанный механоид задания, который ждёт старого (кнопка «Подключить к другому механитору» — то же самое).
+    /// и напечатанный механоид задания, который ждёт старого.
     [SyncMethod(cancelIfAnyArgNull = true)]
     public static void Apply(CompPrinter c, Order o, Order draft)
     {
@@ -50,7 +50,7 @@ public static class Edit
         Done(c);
     }
 
-    /// Удаление задания; механоид по нему уже напечатан и ждёт механитора — отменяется с возвратом, как кнопкой «Отменить»:
+    /// Удаление задания; механоид по нему уже напечатан и ждёт механитора — отменяется с возвратом в баки:
     /// задания нет — нет и пропускной способности под него. Осталось другое задание на того же механоида — ждущий его.
     [SyncMethod(cancelIfAnyArgNull = true)]
     public static void Remove(CompPrinter c, Order o)
@@ -89,19 +89,6 @@ public static class Edit
 
     [SyncMethod(cancelIfAnyArgNull = true)]
     public static void CollectValue(Building_RMComputer computer, bool on) => computer.collectValue = on;
-
-    /// Готовый механоид ждёт механитора: i — номер в списке ожидания.
-    [SyncMethod]
-    public static void Reassign(CompPrinter c, int i, Pawn mechanitor)
-    {
-        if (i >= 0 && i < c.waiting.Count) c.waiting[i].mechanitor = mechanitor;
-    }
-
-    [SyncMethod]
-    public static void CancelMech(CompPrinter c, int i)
-    {
-        if (i >= 0 && i < c.waiting.Count) c.CancelWaiting(i);
-    }
 
     /// Задание из очереди — репликатор и номер; черновик формы (ещё не в очереди) — его настройки.
     [SyncWorker]

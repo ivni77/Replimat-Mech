@@ -30,7 +30,7 @@
 
 	<!-- bill statuses: short (inspect pane) and full (windows) -->
 	<RM_StDone>done</RM_StDone>
-	<RM_StDoneFull>Done: {0} of {1} in stock</RM_StDoneFull>
+	<RM_StDoneFull>Done: have {0} of {1}</RM_StDoneFull>
 	<RM_StMechWaits>waiting for mechanitor</RM_StMechWaits>
 	<RM_StMechWaitsFull>Printed, waiting for mechanitor</RM_StMechWaitsFull>
 	<RM_StWait>waiting</RM_StWait>
@@ -39,6 +39,8 @@
 	<RM_StLowSilver>low value</RM_StLowSilver>
 	<RM_StNoMechanitor>no mechanitor</RM_StNoMechanitor>
 	<RM_StNoMechanitorFull>No mechanitor: pick one at the computer</RM_StNoMechanitorFull>
+	<RM_StNoBandwidth>low bandwidth</RM_StNoBandwidth>
+	<RM_StNoBandwidthFull>Not enough mechanitor bandwidth</RM_StNoBandwidthFull>
 	<RM_StForbidden>forbidden</RM_StForbidden>
 	<RM_StForbiddenFull>Printing is disabled in the mod settings</RM_StForbiddenFull>
 	<RM_StNoResearch>not researched</RM_StNoResearch>
@@ -123,6 +125,7 @@
 	<RM_EdMode>Mode</RM_EdMode>
 	<RM_EdCount>Count, pcs</RM_EdCount>
 	<RM_InStock>in stock: {0}</RM_InStock>
+	<RM_OnMap>on the map: {0}</RM_OnMap>
 	<RM_EdQuality>Quality</RM_EdQuality>
 	<RM_QualityBest>best (now {0})</RM_QualityBest>
 	<RM_EdMechanitor>Mechanitor</RM_EdMechanitor>
@@ -145,12 +148,10 @@
 
 	<!-- replicator: buttons, messages, letters -->
 	<RM_Rename>Rename</RM_Rename>
-	<RM_Reassign>Connect to another mechanitor: {0}</RM_Reassign>
-	<RM_CancelMech>Cancel: {0}</RM_CancelMech>
 	<RM_MsgShort>{0}: {1} — {2}</RM_MsgShort>
 	<RM_MsgMechReady>{0} connected to mechanitor {1}.</RM_MsgMechReady>
 	<RM_LetterMechWaitLabel>Mech waiting: {0}</RM_LetterMechWaitLabel>
-	<RM_LetterMechWait>{0} was printed in {1}, but mechanitor {2} lacks bandwidth.\nThe mech is waiting.\nFree up bandwidth, connect it to another mechanitor or cancel — the tanks get back exactly what was spent.</RM_LetterMechWait>
+	<RM_LetterMechWait>{0} was printed in {1}, but mechanitor {2} lacks bandwidth.\nThe mech is waiting.\nFree up bandwidth or change the bill's mechanitor.\nDelete the bill and the tanks get back exactly what was spent.</RM_LetterMechWait>
 	<RM_MsgHopperBlocked>Not allowed: {0} is queued in {1}.\nThe splitter would split what the replicator printed.</RM_MsgHopperBlocked>
 	<RM_MsgTankDeconstruct>Deconstructing this tank loses its matter: mass {0} and value {1}.</RM_MsgTankDeconstruct>
 

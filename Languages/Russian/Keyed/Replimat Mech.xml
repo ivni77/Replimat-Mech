@@ -39,6 +39,8 @@
 	<RM_StLowSilver>мало стоимости</RM_StLowSilver>
 	<RM_StNoMechanitor>нет механитора</RM_StNoMechanitor>
 	<RM_StNoMechanitorFull>Нет механитора: выберите его в компьютере</RM_StNoMechanitorFull>
+	<RM_StNoBandwidth>мало пропускной способности</RM_StNoBandwidth>
+	<RM_StNoBandwidthFull>Не хватает пропускной способности механитора</RM_StNoBandwidthFull>
 	<RM_StForbidden>запрещено</RM_StForbidden>
 	<RM_StForbiddenFull>Печать запрещена в настройках мода</RM_StForbiddenFull>
 	<RM_StNoResearch>не изучено</RM_StNoResearch>
@@ -123,6 +125,7 @@
 	<RM_EdMode>Режим</RM_EdMode>
 	<RM_EdCount>Количество, шт.</RM_EdCount>
 	<RM_InStock>на складе: {0}</RM_InStock>
+	<RM_OnMap>на карте: {0}</RM_OnMap>
 	<RM_EdQuality>Качество</RM_EdQuality>
 	<RM_QualityBest>лучшее (сейчас {0})</RM_QualityBest>
 	<RM_EdMechanitor>Механитор</RM_EdMechanitor>
@@ -145,12 +148,10 @@
 
 	<!-- репликатор: кнопки, сообщения, письма -->
 	<RM_Rename>Переименовать</RM_Rename>
-	<RM_Reassign>Подключить к другому механитору: {0}</RM_Reassign>
-	<RM_CancelMech>Отменить: {0}</RM_CancelMech>
 	<RM_MsgShort>«{0}»: {1} — {2}</RM_MsgShort>
 	<RM_MsgMechReady>{0} подключён к механитору {1}.</RM_MsgMechReady>
 	<RM_LetterMechWaitLabel>Механоид ждёт: {0}</RM_LetterMechWaitLabel>
-	<RM_LetterMechWait>{0} напечатан в «{1}», но у механитора {2} не хватает пропускной способности.\nМеханоид ждёт.\nОсвободите пропускную способность, подключите его к другому механитору или отмените — в баки вернётся ровно то, что списали.</RM_LetterMechWait>
+	<RM_LetterMechWait>{0} напечатан в «{1}», но у механитора {2} не хватает пропускной способности.\nМеханоид ждёт.\nОсвободите пропускную способность или смените механитора в задании.\nУдалите задание — в баки вернётся ровно то, что списали.</RM_LetterMechWait>
 	<RM_MsgHopperBlocked>Нельзя: «{0}» стоит в очереди «{1}».\nРасщепитель расщепил бы то, что напечатал репликатор.</RM_MsgHopperBlocked>
 	<RM_MsgTankDeconstruct>Бак разберут — пропадёт его материя: масса {0} и стоимость {1}.</RM_MsgTankDeconstruct>
 
