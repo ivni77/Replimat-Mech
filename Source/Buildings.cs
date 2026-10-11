@@ -51,7 +51,7 @@ public class Building_RMHopper : Building_Storage, IThingGlower
         base.DeSpawn(mode);
     }
 
-    /// Правила приёма поверх фильтра (патч Building_Storage.Accepts). Какие трупы — решает фильтр; живого и выключенных генов в нём нет (Settings.Apply).
+    /// Правила приёма поверх фильтра (патч Building_Storage.Accepts). Какие трупы — решает фильтр, живого в нём нет (Startup).
     public bool Allows(Thing t) => Working && CompPrinter.QueuedIn(t.GetInnerIfMinified().def, t is MinifiedThing) == null;
 
     public static void SyncAll()

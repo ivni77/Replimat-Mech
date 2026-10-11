@@ -74,15 +74,9 @@ public class Settings : ModSettings
     }
 
     /// Мощность зданий и переносимость баков — в def, уже стоящим зданиям — пересчёт; иконки меню — в цвет реплимата.
-    /// Фильтр расщепителя: живого в нём нет никогда, предметов биорепликации — когда она выключена.
     public void Apply()
     {
         AccentIcons.Paint();
-        ThingFilter hopper = RMDefOf.RM_Hopper.building.fixedStorageSettings.filter;
-        foreach (ThingDef d in DefDatabase<ThingDef>.AllDefs)
-            if (Rules.Living(d)) hopper.SetAllow(d, false);
-            else if (Rules.Group(d) == Rules.Bio) hopper.SetAllow(d, groupAllowed[Rules.Bio]);
-        hopper.RecalculateDisplayRootCategory();
         FieldInfo baseField = AccessTools.Field(typeof(CompProperties_Power), "basePowerConsumption");
         for (int i = 0; i < PowerDefs.Length; i++)
             if (DefDatabase<ThingDef>.GetNamedSilentFail(PowerDefs[i])?.GetCompProperties<CompProperties_Power>() is { } props)
@@ -307,6 +301,10 @@ public static class Startup
     {
         AccentIcons.Init();
         ReplimatMechMod.S.Apply();
+        // расщепитель берёт всё, кроме живого: настройки режут только печать
+        ThingFilter hopper = RMDefOf.RM_Hopper.building.fixedStorageSettings.filter;
+        foreach (ThingDef d in DefDatabase<ThingDef>.AllDefs.Where(Rules.Living).ToList()) hopper.SetAllow(d, false);
+        hopper.RecalculateDisplayRootCategory();
         (StatDefOf.Mass.parts ??= new List<StatPart>()).Add(new StatPart_TankMass { parentStat = StatDefOf.Mass });
         // в осмотре строки печати — первыми, над ванильными про мощность, как у компьютера и бака
         foreach (ThingDef d in DefDatabase<ThingDef>.AllDefs.Where(d => d.HasComp(typeof(CompPrinter))))
