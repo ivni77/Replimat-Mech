@@ -179,6 +179,9 @@ public class GameComponent_RM : GameComponent
         Building_RMHopper.Spawned_.Clear();
     }
 
+    /// Шаблоны для окна компьютера: при выключенной биорепликации генов среди них нет.
+    public List<Pattern> Shown => ReplimatMechMod.S.groupAllowed[Rules.Bio] ? patterns : patterns.Where(p => Rules.Group(p.def) != Rules.Bio).ToList();
+
     public Pattern ByKey(string key) => key != null && byKey.TryGetValue(key, out Pattern p) ? p : null;
 
     /// Шаблоны по умолчанию — как ванильный верстак без станков: каменные блоки и древесина.
@@ -239,17 +242,22 @@ public static class Rules
     public static bool Living(ThingDef def) => def.HasComp(typeof(CompHatcher)) || LivingDefs.Contains(def.defName) || def.category == ThingCategory.Plant || def.category == ThingCategory.Pawn;
 
     public static bool Printable(ThingDef def) =>
-        !Living(def) && !def.IsCorpse && !def.isUnfinishedThing && (def.category == ThingCategory.Item || def.category == ThingCategory.Building);
+        !Living(def) && !BioOff(def) && !def.IsCorpse && !def.isUnfinishedThing && (def.category == ThingCategory.Item || def.category == ThingCategory.Building);
 
-    /// Особая группа: 0 — чипы и субъядра, 1 — архотех и особые, 2 — гены и уникальное, -1 — обычная вещь.
+    public const int Bio = 3;
+
+    /// Особая группа: 0 — чипы и субъядра, 1 — архотех и особые, 2 — уникальное, Bio — биорепликация (генпаки и ксеногермы), -1 — обычная вещь.
     public static int Group(ThingDef def)
     {
         if (Chips.Contains(def.defName)) return 0;
         if (Archo.Contains(def.defName) || def.thingCategories?.Any(c => c.defName == "BodyPartsArchotech") == true) return 1;
-        if (typeof(GeneSetHolderBase).IsAssignableFrom(def.thingClass) || def.HasComp(typeof(CompTechprint))
-            || def.HasComp(typeof(CompBladelinkWeapon)) || def.HasComp(typeof(CompUniqueWeapon))) return 2;
+        if (typeof(GeneSetHolderBase).IsAssignableFrom(def.thingClass)) return Bio;
+        if (def.HasComp(typeof(CompTechprint)) || def.HasComp(typeof(CompBladelinkWeapon)) || def.HasComp(typeof(CompUniqueWeapon))) return 2;
         return -1;
     }
+
+    /// Биорепликация выключена в настройках — генов в моде нет вовсе: расщепитель их не берёт, шаблон не записывается, записанные скрыты.
+    public static bool BioOff(ThingDef def) => !ReplimatMechMod.S.groupAllowed[Bio] && Group(def) == Bio;
 
     /// Каменные блоки — без стоимости и при печати, и при разборке: торговцы их не покупают.
     public static bool NoValue(ThingDef def) => def.IsWithinCategory(ThingCategoryDefOf.StoneBlocks);

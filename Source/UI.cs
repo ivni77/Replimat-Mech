@@ -546,7 +546,7 @@ public class Dialog_Computer : Window
         var tabs = new List<TabRecord>
         {
             new("RM_TabHome".Translate(), () => tab = Tab.Home, tab == Tab.Home),
-            new("RM_TabPatternsN".Translate(GameComponent_RM.Get.patterns.Count), () => tab = Tab.Patterns, tab == Tab.Patterns),
+            new("RM_TabPatternsN".Translate(GameComponent_RM.Get.Shown.Count), () => tab = Tab.Patterns, tab == Tab.Patterns),
             new("RM_TabQueueN".Translate(Printers.Sum(c => c.orders.Count)), () => tab = Tab.Queue, tab == Tab.Queue),
         };
         Rect body = new(inRect.x, inRect.y + 76f, inRect.width, inRect.height - 76f);
@@ -668,7 +668,7 @@ public class Dialog_Computer : Window
 
     void DrawPatterns(Rect r)
     {
-        if (GameComponent_RM.Get.patterns.Count == 0)
+        if (GameComponent_RM.Get.Shown.Count == 0)
         {
             RMUI.Label(r, "RM_NoPatterns".Translate());
             return;
@@ -756,7 +756,7 @@ public class Dialog_Computer : Window
     {
         get
         {
-            List<Pattern> all = GameComponent_RM.Get.patterns;
+            List<Pattern> all = GameComponent_RM.Get.Shown;
             if (tree != null && treeCount == all.Count && treeFilter == patternSearch.filter.Text) return tree;
             treeCount = all.Count;
             treeFilter = patternSearch.filter.Text;

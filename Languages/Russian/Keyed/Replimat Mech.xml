@@ -176,8 +176,10 @@
 	<RM_GroupChipsDesc>Чипы и субъядра — сигнальный, энергофокусирующий и наноструктурирующий чипы, стандартное и продвинутое субъядро.\nВ механоидах наценка только на эту часть цены.</RM_GroupChipsDesc>
 	<RM_GroupArcho>архотех и особые</RM_GroupArcho>
 	<RM_GroupArchoDesc>Архотех и особые — ИИ-ядро, архотех-части, архитовые капсулы, изолинейный модуль, сыворотки воскрешения и исцеления.</RM_GroupArchoDesc>
-	<RM_GroupGenes>гены и уникальное</RM_GroupGenes>
-	<RM_GroupGenesDesc>Гены и уникальное — генпаки, ксеногермы, техпринты, персональное и уникальное оружие.</RM_GroupGenesDesc>
+	<RM_GroupUnique>уникальное</RM_GroupUnique>
+	<RM_GroupUniqueDesc>Уникальное — техпринты, персональное и уникальное оружие.</RM_GroupUniqueDesc>
+	<RM_GroupBio>биорепликация</RM_GroupBio>
+	<RM_GroupBioDesc>Биорепликация — генпаки и ксеногермы.\nВыключена — расщепитель их не берёт, их шаблоны скрыты.</RM_GroupBioDesc>
 	<RM_SetNeedMechanitor>Нужен механитор для связи с компьютером</RM_SetNeedMechanitor>
 	<RM_SetNeedMechanitorDesc>Выключено — с компьютером связывается любой колонист, но механоидов печатать нельзя.</RM_SetNeedMechanitorDesc>
 	<RM_SetMoveTanks>Переносить баки (вместе с содержимым)</RM_SetMoveTanks>

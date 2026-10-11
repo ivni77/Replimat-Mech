@@ -176,8 +176,10 @@
 	<RM_GroupChipsDesc>Chips and subcores — signal, powerfocus and nano structuring chips, standard and high subcores.\nIn mechs the markup applies to this part of the price only.</RM_GroupChipsDesc>
 	<RM_GroupArcho>archotech and special</RM_GroupArcho>
 	<RM_GroupArchoDesc>Archotech and special — AI persona core, archotech parts, archite capsules, isolinear module, resurrector and healer serums.</RM_GroupArchoDesc>
-	<RM_GroupGenes>genes and unique</RM_GroupGenes>
-	<RM_GroupGenesDesc>Genes and unique — genepacks, xenogerms, techprints, persona and unique weapons.</RM_GroupGenesDesc>
+	<RM_GroupUnique>unique</RM_GroupUnique>
+	<RM_GroupUniqueDesc>Unique — techprints, persona and unique weapons.</RM_GroupUniqueDesc>
+	<RM_GroupBio>bioreplication</RM_GroupBio>
+	<RM_GroupBioDesc>Bioreplication — genepacks and xenogerms.\nOff — the splitter does not take them and their patterns are hidden.</RM_GroupBioDesc>
 	<RM_SetNeedMechanitor>A mechanitor is needed to contact the computer</RM_SetNeedMechanitor>
 	<RM_SetNeedMechanitorDesc>Off — any colonist can contact the computer, but mechanoids cannot be printed.</RM_SetNeedMechanitorDesc>
 	<RM_SetMoveTanks>Tanks can be moved (with their contents)</RM_SetMoveTanks>

@@ -27,7 +27,7 @@ public class Settings : ModSettings
     public static readonly string[] PowerDefs = { "RM_Replicator", "RM_ReplicatorWall", "RM_Feeder", "RM_Tank", "RM_TankLarge", "RM_Computer", "RM_Hopper" };
     /// Колонки мощности в окне настроек: подпись и сколько подряд идущих PowerDefs в колонке.
     public static readonly (string key, int count)[] PowerGroups = { ("RM_PowerPrint", 3), ("RM_PowerStore", 2), ("RM_PowerRecycle", 2) };
-    public static readonly string[] Groups = { "RM_GroupChips", "RM_GroupArcho", "RM_GroupGenes" };
+    public static readonly string[] Groups = { "RM_GroupChips", "RM_GroupArcho", "RM_GroupUnique", "RM_GroupBio" };
     /// Поменялись умолчания — сохранённые настройки сбрасываются на новые.
     const int Version = 6;
     public static readonly Color DefaultAccent = new(0.20f, 0.45f, 1.00f);
@@ -43,8 +43,8 @@ public class Settings : ModSettings
     public Color accent = DefaultAccent;
     public QualityCategory qualityCap = QualityCategory.Excellent;
     public bool needMechanitor = true, moveTanks = true;
-    public List<bool> groupAllowed = new() { true, true, true };
-    public List<int> groupMarkup = new() { 2, 2, 2 };
+    public List<bool> groupAllowed = new() { true, true, true, true };
+    public List<int> groupMarkup = new() { 2, 2, 2, 2 };
     public List<int> power = new() { 200, 200, 200, 50, 200, 300, 200 };
 
     public override void ExposeData()
@@ -63,6 +63,12 @@ public class Settings : ModSettings
         Scribe_Collections.Look(ref power, "power", LookMode.Value);
         if (Scribe.mode != LoadSaveMode.PostLoadInit) return;
         valueReturn = Mathf.Clamp(valueReturn, MinValueReturn, MaxValueReturn);
+        // в 1.1.0 гены были в третьей группе: её галка и наценка переходят к новой четвёртой, «биорепликации»
+        if (groupAllowed?.Count == Rules.Bio && groupMarkup?.Count == Rules.Bio)
+        {
+            groupAllowed.Add(groupAllowed[Rules.Bio - 1]);
+            groupMarkup.Add(groupMarkup[Rules.Bio - 1]);
+        }
         if (version != Version || groupAllowed?.Count != d.groupAllowed.Count || groupMarkup?.Count != d.groupMarkup.Count || power?.Count != d.power.Count) Reset();
         version = Version;
     }
@@ -75,9 +81,15 @@ public class Settings : ModSettings
     }
 
     /// Мощность зданий и переносимость баков — в def, уже стоящим зданиям — пересчёт; иконки меню — в цвет реплимата.
+    /// Фильтр расщепителя: живого в нём нет никогда, генов — при выключенной биорепликации.
     public void Apply()
     {
         AccentIcons.Paint();
+        ThingFilter hopper = RMDefOf.RM_Hopper.building.fixedStorageSettings.filter;
+        foreach (ThingDef d in DefDatabase<ThingDef>.AllDefs)
+            if (Rules.Living(d)) hopper.SetAllow(d, false);
+            else if (Rules.Group(d) == Rules.Bio) hopper.SetAllow(d, groupAllowed[Rules.Bio]);
+        hopper.RecalculateDisplayRootCategory();
         FieldInfo baseField = AccessTools.Field(typeof(CompProperties_Power), "basePowerConsumption");
         for (int i = 0; i < PowerDefs.Length; i++)
             if (DefDatabase<ThingDef>.GetNamedSilentFail(PowerDefs[i])?.GetCompProperties<CompProperties_Power>() is { } props)
@@ -295,9 +307,6 @@ public static class Startup
     {
         AccentIcons.Init();
         ReplimatMechMod.S.Apply();
-        ThingFilter hopper = RMDefOf.RM_Hopper.building.fixedStorageSettings.filter;
-        foreach (ThingDef d in DefDatabase<ThingDef>.AllDefs.Where(Rules.Living).ToList()) hopper.SetAllow(d, false);
-        hopper.RecalculateDisplayRootCategory();
         (StatDefOf.Mass.parts ??= new List<StatPart>()).Add(new StatPart_TankMass { parentStat = StatDefOf.Mass });
         // в осмотре строки печати — первыми, над ванильными про мощность, как у компьютера и бака
         foreach (ThingDef d in DefDatabase<ThingDef>.AllDefs.Where(d => d.HasComp(typeof(CompPrinter))))
