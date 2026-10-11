@@ -173,13 +173,11 @@
 	<RM_ColPrint>печатать</RM_ColPrint>
 	<RM_ColMarkup>наценка, ×</RM_ColMarkup>
 	<RM_GroupChips>чипы и субъядра</RM_GroupChips>
-	<RM_GroupChipsDesc>Сигнальный, энергофокусирующий и наноструктурирующий чипы, стандартное и продвинутое субъядро; в механоидах наценка только на них.</RM_GroupChipsDesc>
-	<RM_GroupArcho>архотех и особые</RM_GroupArcho>
-	<RM_GroupArchoDesc>ИИ-ядро, архотех-части, архитовые капсулы, изолинейный модуль, сыворотки воскрешения и исцеления.</RM_GroupArchoDesc>
+	<RM_GroupChipsDesc>Чипы механоидов и субъядра.</RM_GroupChipsDesc>
 	<RM_GroupUnique>уникальное</RM_GroupUnique>
-	<RM_GroupUniqueDesc>Техпринты, персональное и уникальное оружие.</RM_GroupUniqueDesc>
+	<RM_GroupUniqueDesc>Техпринты, ИИ-ядро, изолинейный модуль, уникальное оружие.</RM_GroupUniqueDesc>
 	<RM_GroupBio>биорепликация</RM_GroupBio>
-	<RM_GroupBioDesc>Генпаки и ксеногермы; выключена — в расщепителе и шаблонах их нет.</RM_GroupBioDesc>
+	<RM_GroupBioDesc>Вся генетика, архотех-части, сыворотки воскрешения и исцеления.</RM_GroupBioDesc>
 	<RM_SetMoveTanks>Переносить баки (вместе с содержимым)</RM_SetMoveTanks>
 	<RM_SetTankCapacity>Объём бака, кг (большой — ×4)</RM_SetTankCapacity>
 	<RM_SetPower>Мощность, Вт</RM_SetPower>

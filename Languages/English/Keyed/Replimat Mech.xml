@@ -173,13 +173,11 @@
 	<RM_ColPrint>print</RM_ColPrint>
 	<RM_ColMarkup>markup, ×</RM_ColMarkup>
 	<RM_GroupChips>chips and subcores</RM_GroupChips>
-	<RM_GroupChipsDesc>Signal, powerfocus and nano structuring chips, standard and high subcores; in mechanoids the markup applies to them only.</RM_GroupChipsDesc>
-	<RM_GroupArcho>archotech and special</RM_GroupArcho>
-	<RM_GroupArchoDesc>AI persona core, archotech parts, archite capsules, isolinear module, resurrector and healer serums.</RM_GroupArchoDesc>
+	<RM_GroupChipsDesc>Mechanoid chips and subcores.</RM_GroupChipsDesc>
 	<RM_GroupUnique>unique</RM_GroupUnique>
-	<RM_GroupUniqueDesc>Techprints, persona and unique weapons.</RM_GroupUniqueDesc>
+	<RM_GroupUniqueDesc>Techprints, AI persona core, isolinear module, unique weapons.</RM_GroupUniqueDesc>
 	<RM_GroupBio>bioreplication</RM_GroupBio>
-	<RM_GroupBioDesc>Genepacks and xenogerms; off — the splitter and the pattern list have none of them.</RM_GroupBioDesc>
+	<RM_GroupBioDesc>All genetics, archotech parts, resurrector and healer serums.</RM_GroupBioDesc>
 	<RM_SetMoveTanks>Tanks can be moved (with their contents)</RM_SetMoveTanks>
 	<RM_SetTankCapacity>Tank capacity, kg (large ×4)</RM_SetTankCapacity>
 	<RM_SetPower>Power, W</RM_SetPower>

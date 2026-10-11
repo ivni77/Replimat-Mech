@@ -27,7 +27,7 @@ public class Settings : ModSettings
     public static readonly string[] PowerDefs = { "RM_Replicator", "RM_ReplicatorWall", "RM_Feeder", "RM_Tank", "RM_TankLarge", "RM_Computer", "RM_Hopper" };
     /// Группы мощности в окне настроек: подпись и сколько подряд идущих PowerDefs в группе.
     public static readonly (string key, int count)[] PowerGroups = { ("RM_PowerPrint", 3), ("RM_PowerStore", 2), ("RM_PowerRecycle", 2) };
-    public static readonly string[] Groups = { "RM_GroupChips", "RM_GroupArcho", "RM_GroupUnique", "RM_GroupBio" };
+    public static readonly string[] Groups = { "RM_GroupChips", "RM_GroupBio", "RM_GroupUnique" };
     /// Поменялись умолчания — сохранённые настройки сбрасываются на новые.
     const int Version = 6;
     public static readonly Color DefaultAccent = new(0.20f, 0.45f, 1.00f);
@@ -43,8 +43,8 @@ public class Settings : ModSettings
     public Color accent = DefaultAccent;
     public QualityCategory qualityCap = QualityCategory.Excellent;
     public bool moveTanks = true;
-    public List<bool> groupAllowed = new() { true, true, true, true };
-    public List<int> groupMarkup = new() { 2, 2, 2, 2 };
+    public List<bool> groupAllowed = new() { true, true, true };
+    public List<int> groupMarkup = new() { 2, 2, 2 };
     public List<int> power = new() { 200, 200, 200, 50, 200, 300, 200 };
 
     public override void ExposeData()
@@ -62,12 +62,6 @@ public class Settings : ModSettings
         Scribe_Collections.Look(ref power, "power", LookMode.Value);
         if (Scribe.mode != LoadSaveMode.PostLoadInit) return;
         valueReturn = Mathf.Clamp(valueReturn, MinValueReturn, MaxValueReturn);
-        // в 1.1.0 гены были в третьей группе: её галка и наценка переходят к новой четвёртой, «биорепликации»
-        if (groupAllowed?.Count == Rules.Bio && groupMarkup?.Count == Rules.Bio)
-        {
-            groupAllowed.Add(groupAllowed[Rules.Bio - 1]);
-            groupMarkup.Add(groupMarkup[Rules.Bio - 1]);
-        }
         if (version != Version || groupAllowed?.Count != d.groupAllowed.Count || groupMarkup?.Count != d.groupMarkup.Count || power?.Count != d.power.Count) Reset();
         version = Version;
     }
@@ -80,7 +74,7 @@ public class Settings : ModSettings
     }
 
     /// Мощность зданий и переносимость баков — в def, уже стоящим зданиям — пересчёт; иконки меню — в цвет реплимата.
-    /// Фильтр расщепителя: живого в нём нет никогда, генов — при выключенной биорепликации.
+    /// Фильтр расщепителя: живого в нём нет никогда, предметов биорепликации — когда она выключена.
     public void Apply()
     {
         AccentIcons.Paint();
@@ -127,7 +121,7 @@ public class ReplimatMechMod : Mod
     }
 
     /// FieldW — столбец полей справа, у всех карточек; галки — по его центру. LeftW — левый столбец карточек (расщепление, мощность).
-    /// RowGap — отступ между строкой со справкой и следующей.
+    /// RowGap — отступ между строками и группами строк карточки.
     const float FieldW = 64f, LeftW = 300f, RowGap = 10f;
 
     static Rect FieldCol(Rect r) => new(r.xMax - FieldW, r.y, FieldW, r.height);
@@ -220,9 +214,9 @@ public class ReplimatMechMod : Mod
                 },
             },
         };
-        for (int g = 0; g < Settings.Groups.Length; g++)
+        // на экране биорепликация — последней
+        foreach (int i in new[] { 0, Rules.Unique, Rules.Bio })
         {
-            int i = g;
             if (i > 0) lines.Add(new Line { h = RowGap });
             lines.Add(new Line
             {
@@ -248,6 +242,7 @@ public class ReplimatMechMod : Mod
         return new List<Line>
         {
             new() { check = r => S.massReturn = Slider(r, lw, "RM_SetMassReturn", S.massReturn, 0, 100) },
+            new() { h = RowGap },
             new() { check = r => S.valueReturn = Slider(r, lw, "RM_SetValueReturn", S.valueReturn, Settings.MinValueReturn, Settings.MaxValueReturn) },
         };
     }
@@ -272,17 +267,20 @@ public class ReplimatMechMod : Mod
                 Find.WindowStack.Add(new Dialog_ChooseColor("RM_Color".Translate(), S.accent, colors, c => S.accent = c));
             },
         },
+        new() { h = RowGap },
         new() { check = r => Widgets.CheckboxLabeled(CheckCol(r), "RM_SetMoveTanks".Translate(), ref S.moveTanks) },
+        new() { h = RowGap },
         new() { check = r => Number(r, "RM_SetTankCapacity".Translate(), ref S.tankCapacity, buf.Length - 1, 10, 1000000) },
     };
 
-    /// Столбцом: подпись группы зданий (печать, баки, компьютер и расщепитель), под ней поля её зданий.
+    /// Столбцом: подпись группы зданий (печать, баки, компьютер и расщепитель), под ней поля её зданий; между группами отступ.
     List<Line> PowerLines()
     {
         var lines = new List<Line>();
         int i = 0;
         foreach ((string key, int count) in Settings.PowerGroups)
         {
+            if (i > 0) lines.Add(new Line { h = RowGap });
             lines.Add(new Line { left = key.Translate(), color = RMUI.Muted });
             for (int n = 0; n < count; n++, i++)
             {

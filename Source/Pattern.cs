@@ -236,7 +236,8 @@ public static class Rules
 {
     static readonly HashSet<string> LivingDefs = new() { "HumanEmbryo", "HumanOvum" };
     static readonly HashSet<string> Chips = new() { "SignalChip", "PowerfocusChip", "NanostructuringChip", "SubcoreRegular", "SubcoreHigh" };
-    static readonly HashSet<string> Archo = new() { "AIPersonaCore", "ArchiteCapsule", "RM_IsolinearModule", "MechSerumResurrector", "MechSerumHealer" };
+    static readonly HashSet<string> BioDefs = new() { "ArchiteCapsule", "MechSerumResurrector", "MechSerumHealer" };
+    static readonly HashSet<string> UniqueDefs = new() { "AIPersonaCore", "RM_IsolinearModule" };
 
     /// Всё, из чего появляется жизнь, — живое.
     public static bool Living(ThingDef def) => def.HasComp(typeof(CompHatcher)) || LivingDefs.Contains(def.defName) || def.category == ThingCategory.Plant || def.category == ThingCategory.Pawn;
@@ -244,19 +245,20 @@ public static class Rules
     public static bool Printable(ThingDef def) =>
         !Living(def) && !BioOff(def) && !def.IsCorpse && !def.isUnfinishedThing && (def.category == ThingCategory.Item || def.category == ThingCategory.Building);
 
-    public const int Bio = 3;
+    /// Номера групп — как в настройках 1.1.0: биорепликация — на месте «архотеха», уникальное — на месте «генов и уникального».
+    public const int Bio = 1, Unique = 2;
 
-    /// Особая группа: 0 — чипы и субъядра, 1 — архотех и особые, 2 — уникальное, Bio — биорепликация (генпаки и ксеногермы), -1 — обычная вещь.
+    /// Особая группа: 0 — чипы и субъядра, Bio — биорепликация (гены, архотех, сыворотки), Unique — уникальное, -1 — обычный предмет.
     public static int Group(ThingDef def)
     {
         if (Chips.Contains(def.defName)) return 0;
-        if (Archo.Contains(def.defName) || def.thingCategories?.Any(c => c.defName == "BodyPartsArchotech") == true) return 1;
-        if (typeof(GeneSetHolderBase).IsAssignableFrom(def.thingClass)) return Bio;
-        if (def.HasComp(typeof(CompTechprint)) || def.HasComp(typeof(CompBladelinkWeapon)) || def.HasComp(typeof(CompUniqueWeapon))) return 2;
+        if (BioDefs.Contains(def.defName) || typeof(GeneSetHolderBase).IsAssignableFrom(def.thingClass)
+            || def.thingCategories?.Any(c => c.defName == "BodyPartsArchotech") == true) return Bio;
+        if (UniqueDefs.Contains(def.defName) || def.HasComp(typeof(CompTechprint)) || def.HasComp(typeof(CompBladelinkWeapon)) || def.HasComp(typeof(CompUniqueWeapon))) return Unique;
         return -1;
     }
 
-    /// Биорепликация выключена в настройках — генов в моде нет вовсе: расщепитель их не берёт, шаблон не записывается, записанные скрыты.
+    /// Биорепликация выключена в настройках — её предметов в моде нет вовсе: расщепитель их не берёт, шаблон не записывается, записанные скрыты.
     public static bool BioOff(ThingDef def) => !ReplimatMechMod.S.groupAllowed[Bio] && Group(def) == Bio;
 
     /// Каменные блоки — без стоимости и при печати, и при разборке: торговцы их не покупают.
