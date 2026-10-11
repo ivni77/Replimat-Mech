@@ -179,7 +179,7 @@
 	<RM_GroupBio>биорепликация</RM_GroupBio>
 	<RM_GroupBioDesc>Вся генетика, архотех-части, сыворотки воскрешения и исцеления.</RM_GroupBioDesc>
 	<RM_SetMoveTanks>Переносить баки (вместе с содержимым)</RM_SetMoveTanks>
-	<RM_SetTankCapacity>Объём бака, кг (большой — ×4)</RM_SetTankCapacity>
+	<RM_SetTankCapacity>Объём бака, кг (большой ×4)</RM_SetTankCapacity>
 	<RM_SetPower>Мощность, Вт</RM_SetPower>
 	<RM_PowerPrint>Печать</RM_PowerPrint>
 	<RM_PowerStore>Баки</RM_PowerStore>

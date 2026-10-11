@@ -173,7 +173,9 @@ public class ReplimatMechMod : Mod
         Card(2, new Rect(0f, top + RMUI.Gap, LeftW, bottom));
         Card(3, new Rect(x2, top + RMUI.Gap, full - x2, bottom));
         Widgets.EndScrollView();
-        if (RMUI.Button(new Rect(inRect.xMax - 160f, inRect.yMax + 8f, 160f, 30f), "RM_SetReset".Translate()))
+        // вровень с ванильной «Закрыть» и той же высоты: она стоит на FooterRowHeight выше края окна
+        float closeH = Window.CloseButSize.y;
+        if (RMUI.Button(new Rect(inRect.xMax - 160f, inRect.yMax + closeH + Window.StandardMargin - Window.FooterRowHeight, 160f, closeH), "RM_SetReset".Translate()))
         {
             S.Reset();
             buf = new string[buf.Length];
