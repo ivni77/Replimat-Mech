@@ -13,7 +13,7 @@
 		<researchViewX>11.00</researchViewX>
 		<researchViewY>1.80</researchViewY>
 		<discoveredLetterTitle>Replimat: how to build</discoveredLetterTitle>
-		<discoveredLetterText>Replication researched: you can build the replimat.\nEverything goes on one power network.\n\nReplimat computer: stores patterns and print queues.\nIt needs an isolinear module, made at a machining table.\n\nReplimat tank (one or more): stores matter: mass and value.\n\nMatter splitter: splits brought items and corpses into matter and records patterns.\nWhat it accepts is set in its filter, like a stockpile.\nThe "Scan" button on an item sends one piece there.\n\nReplicator: prints from patterns and puts the result nearby.\nOptional: animal replicator, prints feed.\n\nPrint queues are set up by a mechanitor.\nComms console: "Contact the replimat computer".</discoveredLetterText>
+		<discoveredLetterText>Replication researched: you can build the replimat.\nEverything goes on one power network.\n\nReplimat computer: stores patterns and print queues.\nIt needs an isolinear module: made at a machining table or bought from exotic goods traders.\n\nReplimat tank (one or more): stores matter: mass and value.\n\nMatter splitter: splits brought items and corpses into matter and records patterns.\nWhat it accepts is set in its filter, like a stockpile.\nThe "Scan" button on an item sends one piece there.\n\nReplicator: prints from patterns and puts the result nearby.\nOptional: animal replicator, prints feed.\n\nPrint queues are set up by a mechanitor.\nComms console: "Contact the replimat computer".</discoveredLetterText>
 	</ResearchProjectDef>
 
 	<ThingDef ParentName="ResourceBase">
@@ -39,6 +39,9 @@
 		<thingCategories>
 			<li>Manufactured</li>
 		</thingCategories>
+		<tradeTags>
+			<li>ExoticMisc</li>
+		</tradeTags>
 	</ThingDef>
 
 	<RecipeDef>
