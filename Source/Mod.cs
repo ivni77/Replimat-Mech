@@ -301,9 +301,9 @@ public static class Startup
     {
         AccentIcons.Init();
         ReplimatMechMod.S.Apply();
-        // расщепитель берёт всё, кроме живого: настройки режут только печать
+        // расщепитель берёт всё, что можно принести: что именно — решает игрок фильтром; животных и растений в фильтре нет — их не носят
         ThingFilter hopper = RMDefOf.RM_Hopper.building.fixedStorageSettings.filter;
-        foreach (ThingDef d in DefDatabase<ThingDef>.AllDefs.Where(Rules.Living).ToList()) hopper.SetAllow(d, false);
+        foreach (ThingDef d in DefDatabase<ThingDef>.AllDefs.Where(d => d.category is ThingCategory.Pawn or ThingCategory.Plant).ToList()) hopper.SetAllow(d, false);
         hopper.RecalculateDisplayRootCategory();
         (StatDefOf.Mass.parts ??= new List<StatPart>()).Add(new StatPart_TankMass { parentStat = StatDefOf.Mass });
         // в осмотре строки печати — первыми, над ванильными про мощность, как у компьютера и бака

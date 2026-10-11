@@ -51,7 +51,7 @@ public class Building_RMHopper : Building_Storage, IThingGlower
         base.DeSpawn(mode);
     }
 
-    /// Правила приёма поверх фильтра (патч Building_Storage.Accepts). Какие трупы — решает фильтр, живого в нём нет (Startup).
+    /// Правила приёма поверх фильтра (патч Building_Storage.Accepts). Что брать — решает фильтр игрока: в нём всё, что можно принести (Startup).
     public bool Allows(Thing t) => Working && CompPrinter.QueuedIn(t.GetInnerIfMinified().def, t is MinifiedThing) == null;
 
     public static void SyncAll()
@@ -265,7 +265,7 @@ public class Designator_RMScan : Designator
     public override AcceptanceReport CanDesignateThing(Thing t)
     {
         if (!RMDefOf.RM_Replication.IsFinished || t.def.category != ThingCategory.Item || !t.def.EverHaulable || t is Corpse
-            || Rules.Living(t.GetInnerIfMinified().def) || Map.designationManager.DesignationOn(t, Designation) != null) return false;
+            || Map.designationManager.DesignationOn(t, Designation) != null) return false;
         Pattern fresh = Pattern.From(t, out QualityCategory q);
         if (fresh == null) return false;
         Pattern known = GameComponent_RM.Get.ByKey(fresh.Key);

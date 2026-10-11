@@ -237,10 +237,9 @@ public static class Rules
     static readonly HashSet<string> LivingDefs = new() { "HumanEmbryo", "HumanOvum" };
     static readonly HashSet<string> Chips = new() { "SignalChip", "PowerfocusChip", "NanostructuringChip", "SubcoreRegular", "SubcoreHigh" };
     static readonly HashSet<string> BioDefs = new() { "ArchiteCapsule", "MechSerumResurrector", "MechSerumHealer" };
-    static readonly HashSet<string> UniqueDefs = new() { "AIPersonaCore", "RM_IsolinearModule" };
 
-    /// Всё, из чего появляется жизнь, — живое.
-    public static bool Living(ThingDef def) => def.HasComp(typeof(CompHatcher)) || LivingDefs.Contains(def.defName) || def.category == ThingCategory.Plant || def.category == ThingCategory.Pawn;
+    /// Всё, из чего появляется жизнь, — живое: не печатается (расщепляется, как любой предмет).
+    static bool Living(ThingDef def) => def.HasComp(typeof(CompHatcher)) || LivingDefs.Contains(def.defName);
 
     public static bool Printable(ThingDef def) =>
         !Living(def) && !BioOff(def) && !def.IsCorpse && !def.isUnfinishedThing && (def.category == ThingCategory.Item || def.category == ThingCategory.Building);
@@ -254,7 +253,7 @@ public static class Rules
         if (Chips.Contains(def.defName)) return 0;
         if (BioDefs.Contains(def.defName) || typeof(GeneSetHolderBase).IsAssignableFrom(def.thingClass)
             || def.thingCategories?.Any(c => c.defName == "BodyPartsArchotech") == true) return Bio;
-        if (UniqueDefs.Contains(def.defName) || def.HasComp(typeof(CompTechprint)) || def.HasComp(typeof(CompBladelinkWeapon)) || def.HasComp(typeof(CompUniqueWeapon))) return Unique;
+        if (def.defName == "AIPersonaCore" || def.HasComp(typeof(CompTechprint)) || def.HasComp(typeof(CompBladelinkWeapon)) || def.HasComp(typeof(CompUniqueWeapon))) return Unique;
         return -1;
     }
 

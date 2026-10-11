@@ -175,7 +175,7 @@
 	<RM_GroupChips>chips and subcores</RM_GroupChips>
 	<RM_GroupChipsDesc>Mechanoid chips and subcores.</RM_GroupChipsDesc>
 	<RM_GroupUnique>unique</RM_GroupUnique>
-	<RM_GroupUniqueDesc>Techprints, AI persona core, isolinear module, unique weapons.</RM_GroupUniqueDesc>
+	<RM_GroupUniqueDesc>Techprints, AI persona core, persona and unique weapons.</RM_GroupUniqueDesc>
 	<RM_GroupBio>bioreplication</RM_GroupBio>
 	<RM_GroupBioDesc>All genetics, archotech parts, resurrector and healer serums.</RM_GroupBioDesc>
 	<RM_SetMoveTanks>Tanks can be moved (with their contents)</RM_SetMoveTanks>

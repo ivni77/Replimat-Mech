@@ -175,7 +175,7 @@
 	<RM_GroupChips>чипы и субъядра</RM_GroupChips>
 	<RM_GroupChipsDesc>Чипы механоидов и субъядра.</RM_GroupChipsDesc>
 	<RM_GroupUnique>уникальное</RM_GroupUnique>
-	<RM_GroupUniqueDesc>Техпринты, ИИ-ядро, изолинейный модуль, уникальное оружие.</RM_GroupUniqueDesc>
+	<RM_GroupUniqueDesc>Техпринты, ИИ-ядро, персональное и уникальное оружие.</RM_GroupUniqueDesc>
 	<RM_GroupBio>биорепликация</RM_GroupBio>
 	<RM_GroupBioDesc>Вся генетика, архотех-части, сыворотки воскрешения и исцеления.</RM_GroupBioDesc>
 	<RM_SetMoveTanks>Переносить баки (вместе с содержимым)</RM_SetMoveTanks>
