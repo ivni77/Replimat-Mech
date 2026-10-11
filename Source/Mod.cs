@@ -25,7 +25,7 @@ public static class RMDefOf
 public class Settings : ModSettings
 {
     public static readonly string[] PowerDefs = { "RM_Replicator", "RM_ReplicatorWall", "RM_Feeder", "RM_Tank", "RM_TankLarge", "RM_Computer", "RM_Hopper" };
-    /// Колонки мощности в окне настроек: подпись и сколько подряд идущих PowerDefs в колонке.
+    /// Группы мощности в окне настроек: подпись и сколько подряд идущих PowerDefs в группе.
     public static readonly (string key, int count)[] PowerGroups = { ("RM_PowerPrint", 3), ("RM_PowerStore", 2), ("RM_PowerRecycle", 2) };
     public static readonly string[] Groups = { "RM_GroupChips", "RM_GroupArcho", "RM_GroupUnique", "RM_GroupBio" };
     /// Поменялись умолчания — сохранённые настройки сбрасываются на новые.
@@ -42,7 +42,7 @@ public class Settings : ModSettings
     public int massReturn = 100, valueReturn = 50, tankCapacity = 1000;
     public Color accent = DefaultAccent;
     public QualityCategory qualityCap = QualityCategory.Excellent;
-    public bool needMechanitor = true, moveTanks = true;
+    public bool moveTanks = true;
     public List<bool> groupAllowed = new() { true, true, true, true };
     public List<int> groupMarkup = new() { 2, 2, 2, 2 };
     public List<int> power = new() { 200, 200, 200, 50, 200, 300, 200 };
@@ -56,7 +56,6 @@ public class Settings : ModSettings
         Scribe_Values.Look(ref accent, "accent", d.accent);
         Scribe_Values.Look(ref tankCapacity, "tankCapacity", d.tankCapacity);
         Scribe_Values.Look(ref qualityCap, "qualityCap", d.qualityCap);
-        Scribe_Values.Look(ref needMechanitor, "needMechanitor", d.needMechanitor);
         Scribe_Values.Look(ref moveTanks, "moveTanks", d.moveTanks);
         Scribe_Collections.Look(ref groupAllowed, "groupAllowed", LookMode.Value);
         Scribe_Collections.Look(ref groupMarkup, "groupMarkup", LookMode.Value);
@@ -127,8 +126,9 @@ public class ReplimatMechMod : Mod
         S.Apply();
     }
 
-    /// Ширина столбца полей справа — у всех карточек; галки — по его центру.
-    const float FieldW = 64f, ColGap = 24f;
+    /// FieldW — столбец полей справа, у всех карточек; галки — по его центру. LeftW — левый столбец карточек (расщепление, мощность).
+    /// RowGap — отступ между строкой со справкой и следующей.
+    const float FieldW = 64f, LeftW = 300f, RowGap = 10f;
 
     static Rect FieldCol(Rect r) => new(r.xMax - FieldW, r.y, FieldW, r.height);
     static Rect CheckCol(Rect r) => new(r.x, r.y, r.width - (FieldW - 24f) / 2f, r.height);
@@ -157,36 +157,42 @@ public class ReplimatMechMod : Mod
         return Mathf.Clamp(Mathf.RoundToInt(v / 5f) * 5, min, max);
     }
 
-    /// Слева «Печать», справа «Расщепление» и «Здания», ниже во всю ширину — мощность; «Сбросить всё» — внизу справа.
-    /// Высоты карточек — сначала измерить (draw: false), потом рисовать: нижние края колонок вровень.
+    /// Сверху «Расщепление» и «Здания», ниже «Мощность» и «Печать»: левый столбец узкий, карточки одной строки — одной высоты.
+    /// Высоты — сначала измерить (draw: false), потом рисовать; не влезло — прокрутка. «Сбросить всё» — в нижнем ряду окна, на уровне ванильной «Закрыть».
     public override void DoSettingsWindowContents(Rect inRect)
     {
-        float full = inRect.width - 16f, colW = (full - RMUI.Gap) / 2f, x2 = colW + RMUI.Gap;
-        var cards = new (string title, List<Line> lines, string help)[]
+        var cards = new (string title, List<Line> lines)[]
         {
-            ("RM_SetSecPrint".Translate(), PrintLines(), string.Join("\n", Settings.Groups.Select(g => (g + "Desc").Translate().ToString()))),
-            ("RM_SetSecSplit".Translate(), SplitLines(), null),
-            ("RM_SetSecBuildings".Translate(), BuildingLines(), "RM_SetNeedMechanitorDesc".Translate()),
-            ("RM_SetPower".Translate(), PowerLines(), null),
+            ("RM_SetSecSplit".Translate(), SplitLines()), ("RM_SetSecBuildings".Translate(), BuildingLines()),
+            ("RM_SetPower".Translate(), PowerLines()), ("RM_SetSecPrint".Translate(), PrintLines()),
         };
-        float Card(int i, Rect at, bool draw = true) => RMUI.Card(at, cards[i].title, cards[i].lines, draw, help: cards[i].help);
-        float split = Card(1, new Rect(0f, 0f, colW, 0f), false), top = Mathf.Max(Card(0, new Rect(0f, 0f, colW, 0f), false),
-            split + RMUI.Gap + Card(2, new Rect(0f, 0f, colW, 0f), false)), power = Card(3, new Rect(0f, 0f, full, 0f), false);
-        var view = new Rect(0f, 0f, full, top + power + 2f * RMUI.Gap + 30f);
-        Widgets.BeginScrollView(inRect, ref scroll, view);
-        Card(0, new Rect(0f, 0f, colW, top));
-        Card(1, new Rect(x2, 0f, colW, split));
-        Card(2, new Rect(x2, split + RMUI.Gap, colW, top - split - RMUI.Gap));
-        Card(3, new Rect(0f, top + RMUI.Gap, full, power));
-        if (RMUI.Button(new Rect(full - 160f, view.height - 30f, 160f, 30f), "RM_SetReset".Translate()))
+        float Card(int i, Rect at, bool draw = true) => RMUI.Card(at, cards[i].title, cards[i].lines, draw);
+        float full = inRect.width, x2 = LeftW + RMUI.Gap, top = 0f, bottom = 0f;
+        void Measure()
+        {
+            top = Mathf.Max(Card(0, new Rect(0f, 0f, LeftW, 0f), false), Card(1, new Rect(0f, 0f, full - x2, 0f), false));
+            bottom = Mathf.Max(Card(2, new Rect(0f, 0f, LeftW, 0f), false), Card(3, new Rect(0f, 0f, full - x2, 0f), false));
+        }
+        Measure();
+        if (top + RMUI.Gap + bottom > inRect.height)
+        {
+            full -= 16f;
+            Measure();
+        }
+        Widgets.BeginScrollView(inRect, ref scroll, new Rect(0f, 0f, full, top + RMUI.Gap + bottom));
+        Card(0, new Rect(0f, 0f, LeftW, top));
+        Card(1, new Rect(x2, 0f, full - x2, top));
+        Card(2, new Rect(0f, top + RMUI.Gap, LeftW, bottom));
+        Card(3, new Rect(x2, top + RMUI.Gap, full - x2, bottom));
+        Widgets.EndScrollView();
+        if (RMUI.Button(new Rect(inRect.xMax - 160f, inRect.yMax + 8f, 160f, 30f), "RM_SetReset".Translate()))
         {
             S.Reset();
             buf = new string[buf.Length];
         }
-        Widgets.EndScrollView();
     }
 
-    /// Предел качества и таблица особых предметов: печатать ли, наценка.
+    /// Предел качества и таблица особых предметов: печатать ли, наценка; под каждой группой — её справка.
     List<Line> PrintLines()
     {
         float PrintX(Rect r) => r.xMax - FieldW - 60f;
@@ -217,6 +223,7 @@ public class ReplimatMechMod : Mod
         for (int g = 0; g < Settings.Groups.Length; g++)
         {
             int i = g;
+            if (i > 0) lines.Add(new Line { h = RowGap });
             lines.Add(new Line
             {
                 check = r =>
@@ -229,6 +236,7 @@ public class ReplimatMechMod : Mod
                     S.groupAllowed[i] = allowed;
                 },
             });
+            lines.Add(new Line { wide = true, color = RMUI.Muted, left = (Settings.Groups[i] + "Desc").Translate() });
         }
         return lines;
     }
@@ -244,7 +252,7 @@ public class ReplimatMechMod : Mod
         };
     }
 
-    /// «Нужен механитор» — последним, прижат к справке о нём.
+    /// Цвет реплимата, переносимость и объём баков.
     List<Line> BuildingLines() => new()
     {
         new()
@@ -266,35 +274,29 @@ public class ReplimatMechMod : Mod
         },
         new() { check = r => Widgets.CheckboxLabeled(CheckCol(r), "RM_SetMoveTanks".Translate(), ref S.moveTanks) },
         new() { check = r => Number(r, "RM_SetTankCapacity".Translate(), ref S.tankCapacity, buf.Length - 1, 10, 1000000) },
-        new() { bottom = true, check = r => Widgets.CheckboxLabeled(CheckCol(r), "RM_SetNeedMechanitor".Translate(), ref S.needMechanitor) },
     };
 
-    /// Столбец на группу зданий (печать, баки, компьютер и расщепитель): подпись столбца, под ней поля.
+    /// Столбцом: подпись группы зданий (печать, баки, компьютер и расщепитель), под ней поля её зданий.
     List<Line> PowerLines()
     {
         var lines = new List<Line>();
-        for (int k = -1; k < Settings.PowerGroups.Max(g => g.count); k++)
+        int i = 0;
+        foreach ((string key, int count) in Settings.PowerGroups)
         {
-            int row = k;
-            lines.Add(new Line
+            lines.Add(new Line { left = key.Translate(), color = RMUI.Muted });
+            for (int n = 0; n < count; n++, i++)
             {
-                color = row < 0 ? RMUI.Muted : Color.white,
-                check = r =>
+                int k = i;
+                lines.Add(new Line
                 {
-                    float cw = (r.width - (Settings.PowerGroups.Length - 1) * ColGap) / Settings.PowerGroups.Length;
-                    for (int g = 0, i = 0; g < Settings.PowerGroups.Length; i += Settings.PowerGroups[g].count, g++)
+                    check = r =>
                     {
-                        Rect c = new(r.x + g * (cw + ColGap), r.y, cw, r.height);
-                        if (row < 0) Label(c, Settings.PowerGroups[g].key.Translate());
-                        else if (row < Settings.PowerGroups[g].count)
-                        {
-                            int w = S.power[i + row];
-                            Number(c, DefDatabase<ThingDef>.GetNamed(Settings.PowerDefs[i + row]).LabelCap, ref w, Settings.Groups.Length + i + row, 0, 100000);
-                            S.power[i + row] = w;
-                        }
-                    }
-                },
-            });
+                        int w = S.power[k];
+                        Number(r, DefDatabase<ThingDef>.GetNamed(Settings.PowerDefs[k]).LabelCap, ref w, Settings.Groups.Length + k, 0, 100000);
+                        S.power[k] = w;
+                    },
+                });
+            }
         }
         return lines;
     }

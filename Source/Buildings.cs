@@ -156,7 +156,7 @@ public class Building_RMComputer : Building
         {
             Building_RMComputer c = computers[i];
             string label = computers.Count == 1 ? "RM_UseComputer".Translate() : "RM_UseComputerN".Translate(i + 1);
-            string why = ReplimatMechMod.S.needMechanitor && !MechanitorUtility.IsMechanitor(p) ? "RM_NeedMechanitor"
+            string why = !MechanitorUtility.IsMechanitor(p) ? "RM_NeedMechanitor"
                 : !c.Powered ? "RM_ComputerNoPower"
                 : !p.CanReach(console, PathEndMode.InteractionCell, Danger.Some) ? "CannotUseNoPath" : null;
             // Иконка — компьютер: без своей меню ставит иконку консоли.

@@ -162,8 +162,8 @@
 	<RM_NoHopper>No working matter splitter</RM_NoHopper>
 
 	<!-- mod settings -->
-	<RM_SetMassReturn>Mass collected on splitting: {0}</RM_SetMassReturn>
-	<RM_SetValueReturn>Value collected on splitting: {0}</RM_SetValueReturn>
+	<RM_SetMassReturn>Mass collected: {0}</RM_SetMassReturn>
+	<RM_SetValueReturn>Value collected: {0}</RM_SetValueReturn>
 	<RM_Color>Replimat color</RM_Color>
 	<RM_SetQualityCap>Print quality cap</RM_SetQualityCap>
 	<RM_SetSecPrint>Printing</RM_SetSecPrint>
@@ -173,18 +173,16 @@
 	<RM_ColPrint>print</RM_ColPrint>
 	<RM_ColMarkup>markup, ×</RM_ColMarkup>
 	<RM_GroupChips>chips and subcores</RM_GroupChips>
-	<RM_GroupChipsDesc>Chips and subcores — signal, powerfocus and nano structuring chips, standard and high subcores.\nIn mechs the markup applies to this part of the price only.</RM_GroupChipsDesc>
+	<RM_GroupChipsDesc>Signal, powerfocus and nano structuring chips, standard and high subcores; in mechanoids the markup applies to them only.</RM_GroupChipsDesc>
 	<RM_GroupArcho>archotech and special</RM_GroupArcho>
-	<RM_GroupArchoDesc>Archotech and special — AI persona core, archotech parts, archite capsules, isolinear module, resurrector and healer serums.</RM_GroupArchoDesc>
+	<RM_GroupArchoDesc>AI persona core, archotech parts, archite capsules, isolinear module, resurrector and healer serums.</RM_GroupArchoDesc>
 	<RM_GroupUnique>unique</RM_GroupUnique>
-	<RM_GroupUniqueDesc>Unique — techprints, persona and unique weapons.</RM_GroupUniqueDesc>
+	<RM_GroupUniqueDesc>Techprints, persona and unique weapons.</RM_GroupUniqueDesc>
 	<RM_GroupBio>bioreplication</RM_GroupBio>
-	<RM_GroupBioDesc>Bioreplication — genepacks and xenogerms.\nOff — the splitter does not take them and their patterns are hidden.</RM_GroupBioDesc>
-	<RM_SetNeedMechanitor>A mechanitor is needed to contact the computer</RM_SetNeedMechanitor>
-	<RM_SetNeedMechanitorDesc>Off — any colonist can contact the computer, but mechanoids cannot be printed.</RM_SetNeedMechanitorDesc>
+	<RM_GroupBioDesc>Genepacks and xenogerms; off — the splitter and the pattern list have none of them.</RM_GroupBioDesc>
 	<RM_SetMoveTanks>Tanks can be moved (with their contents)</RM_SetMoveTanks>
-	<RM_SetTankCapacity>Replimat tank capacity, kg (large ×4)</RM_SetTankCapacity>
-	<RM_SetPower>Power use, W</RM_SetPower>
+	<RM_SetTankCapacity>Tank capacity, kg (large ×4)</RM_SetTankCapacity>
+	<RM_SetPower>Power, W</RM_SetPower>
 	<RM_PowerPrint>Printing</RM_PowerPrint>
 	<RM_PowerStore>Tanks</RM_PowerStore>
 	<RM_PowerRecycle>Computer and splitter</RM_PowerRecycle>

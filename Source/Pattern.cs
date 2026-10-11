@@ -275,7 +275,6 @@ public static class Rules
     public static bool Allowed(Pattern p)
     {
         if (p.minified && !p.def.Minifiable) return false;
-        if (p.IsMech) return ReplimatMechMod.S.needMechanitor;
         int g = Group(p.def);
         return g < 0 || ReplimatMechMod.S.groupAllowed[g];
     }

@@ -62,8 +62,8 @@ public static class Pricing
         return MechMaterials(p.def).Sum(m => m.count * Work(m.def, null)) + r.gestationCycles * (r.formingTicks + r.workAmount);
     }
 
-    /// Скорость печати — скорость гестации механитора (ремесло + гестационные процессоры); игра без механитора или его нет — 100%.
-    public static float Speed(Pawn editor) => ReplimatMechMod.S.needMechanitor && editor != null ? editor.GetStatValue(RMDefOf.MechFormingSpeed) : 1f;
+    /// Скорость печати — скорость гестации механитора (ремесло + гестационные процессоры); его нет — 100%.
+    public static float Speed(Pawn editor) => editor != null ? editor.GetStatValue(RMDefOf.MechFormingSpeed) : 1f;
 
     public static float Bandwidth(Pattern p) => p.def.GetStatValueAbstract(StatDefOf.BandwidthCost);
 

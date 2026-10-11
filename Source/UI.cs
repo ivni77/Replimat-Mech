@@ -363,7 +363,7 @@ public static class RMUI
         string name = o.pattern.LabelWithQuality(o.Quality);
         float nw = Mathf.Min(Text.CalcSize(name).x + 4f, w);
         Label(new Rect(x, r.y + 4f, nw, 24f), name.Truncate(nw));
-        string tail = ReplimatMechMod.S.needMechanitor && o.editor != null ? "    (" + o.editor.LabelShort + ")" : "";
+        string tail = o.editor != null ? "    (" + o.editor.LabelShort + ")" : "";
         if (tail.Length > 0 && nw < w - 20f)
         {
             GUI.color = Muted;
@@ -386,18 +386,17 @@ public static class RMUI
         GUI.color = Color.white;
     }
 
-    /// Карточка, как на «Главной» и в настройках мода: заголовок (справа — кнопка head), строки, справка help у нижнего края; высота по содержимому, не меньше at.height; draw=false — только измерить.
+    /// Карточка, как на «Главной» и в настройках мода: заголовок (справа — кнопка head), строки; высота по содержимому, не меньше at.height; draw=false — только измерить.
     /// Строки в одну линию — текст по центру строки по высоте, черта — посередине своей строки: отступы над и под ней равны.
-    public static float Card(Rect at, string title, List<Line> lines, bool draw, Action<Rect> head = null, string help = null)
+    public static float Card(Rect at, string title, List<Line> lines, bool draw, Action<Rect> head = null)
     {
         const float pad = 14f;
-        float w = at.width - 2f * pad, helpH = help == null ? 0f : 8f + Text.CalcHeight(help, w);
-        float LineH(Line l) => l.wide ? Text.CalcHeight(l.left, w) + 2f : 24f;
-        float natural = pad + 34f + lines.Sum(LineH) + helpH + pad, height = Mathf.Max(at.height, natural), extra = height - natural;
+        float w = at.width - 2f * pad;
+        float LineH(Line l) => l.wide ? Text.CalcHeight(l.left, w) + 2f : l.h;
+        float height = Mathf.Max(at.height, pad + 34f + lines.Sum(LineH) + pad);
         if (!draw) return height;
         Rect box = new(at.x, at.y, at.width, height);
         Widgets.DrawBoxSolidWithOutline(box, new Color(1f, 1f, 1f, 0.04f), RMUI.Edge);
-        if (help != null) Help(box.ContractedBy(pad), help);
         float x = at.x + pad, y = at.y + pad;
         Text.Font = GameFont.Medium;
         RMUI.Label(new Rect(x, y, head != null ? w - 130f : w, 34f), title.Truncate(head != null ? w - 130f : w));
@@ -410,7 +409,6 @@ public static class RMUI
         float b = x + w - bars.Select(l => l.right != null ? Text.CalcSize(l.right).x : 0f).DefaultIfEmpty().Max() - 16f, bw = Mathf.Min(168f, b - a), bx = a + (b - a - bw) / 2f;
         foreach (Line l in lines)
         {
-            if (l.bottom) (y, extra) = (y + extra, 0f);
             float h = LineH(l);
             GUI.color = l.color;
             if (l.sep) Widgets.DrawLineHorizontal(x, y + h / 2f, w, RMUI.Edge);
@@ -435,15 +433,15 @@ public static class RMUI
 }
 
 /// Строка карточки (RMUI.Card): подпись слева, две колонки значений справа; wide — текст на всю ширину с переносом;
-/// bar — полоса между подписью и значением (у стоимости без предела — полная); sep — черта; пустая строка — отступ;
-/// check — строка целиком рисует сама (галка с подписью); bottom — она и все ниже прижаты к низу карточки, к своей справке.
+/// bar — полоса между подписью и значением (у стоимости без предела — полная); sep — черта; пустая строка — отступ высотой h;
+/// check — строка целиком рисует сама (галка с подписью).
 public sealed class Line
 {
     public string left = "", mid, right;
     public Action<Rect> check;
     public Color color = Color.white;
-    public bool wide, sep, bottom;
-    public float bar = -1f;
+    public bool wide, sep;
+    public float bar = -1f, h = 24f;
 }
 
 /// Вкладка «Очередь» на самом репликаторе (всегда, и у пустого) — только просмотр: менять — в компьютере.
@@ -541,7 +539,7 @@ public class Dialog_Computer : Window
             return;
         }
         Text.Font = GameFont.Medium;
-        RMUI.Label(new Rect(inRect.x, inRect.y, inRect.width - 40f, 36f), "RM_ComputerTitle".Translate(S.needMechanitor ? "RM_MechanitorOption".Translate(pawn.LabelShort, Mathf.RoundToInt(Pricing.Speed(pawn) * 100f)) : pawn.LabelShort));
+        RMUI.Label(new Rect(inRect.x, inRect.y, inRect.width - 40f, 36f), "RM_ComputerTitle".Translate("RM_MechanitorOption".Translate(pawn.LabelShort, Mathf.RoundToInt(Pricing.Speed(pawn) * 100f))));
         Text.Font = GameFont.Small;
         var tabs = new List<TabRecord>
         {
@@ -569,7 +567,7 @@ public class Dialog_Computer : Window
     {
         float full = r.width - 16f, colW = (full - RMUI.Gap) / 2f, x2 = colW + RMUI.Gap;
         string matterT = "RM_CardMatter".Translate(), gearT = "RM_CardGear".Translate(), helpT = "RM_CardHelp".Translate();
-        string help = string.Join("\n", new[] { "RM_TanksExplain", S.needMechanitor ? "RM_SpeedExplain" : null, "RM_GearExplain" }.Where(k => k != null).Select(k => k.Translate().ToString()));
+        string help = string.Join("\n", new[] { "RM_TanksExplain", "RM_SpeedExplain", "RM_GearExplain" }.Select(k => k.Translate().ToString()));
         List<Line> matter = MatterLines(), gear = GearLines(), helpLines = new() { new Line { wide = true, color = RMUI.Muted, left = help } };
         float Measure(string title, List<Line> lines, float w = 0f) => RMUI.Card(new Rect(0f, 0f, w > 0f ? w : colW, 0f), title, lines, false);
         float top = Mathf.Max(Measure(matterT, matter), Measure(gearT, gear)), hh = Measure(helpT, helpLines, full);
@@ -1020,16 +1018,16 @@ public class Dialog_Computer : Window
                 Find.WindowStack.Add(new FloatMenu(opts));
             }
         }
-        // механитор: у предмета — кто последним правил задание, у механоида — к кому он подключится, на выбор; в игре без механитора поля нет
-        Rect mf = S.needMechanitor ? Field("RM_EdMechanitor") : default;
+        // механитор: у предмета — кто последним правил задание, у механоида — к кому он подключится, на выбор
+        Rect mf = Field("RM_EdMechanitor");
         string Name(Pawn m) => m?.LabelShort ?? "RM_None".Translate();
-        if (S.needMechanitor && !p.IsMech)
+        if (!p.IsMech)
         {
             Text.Anchor = TextAnchor.MiddleLeft;
             RMUI.Label(mf, Name(d.editor).Truncate(mf.width));
             Text.Anchor = TextAnchor.UpperLeft;
         }
-        else if (S.needMechanitor && Widgets.ButtonText(mf, Name(d.mechanitor).Truncate(mf.width - 12f)))
+        else if (Widgets.ButtonText(mf, Name(d.mechanitor).Truncate(mf.width - 12f)))
         {
             List<FloatMenuOption> opts = Find.Maps.SelectMany(m => m.mapPawns.FreeColonists).Where(MechanitorUtility.IsMechanitor)
                 .Select(m => new FloatMenuOption(m.LabelShort, () => d.mechanitor = m)).ToList();

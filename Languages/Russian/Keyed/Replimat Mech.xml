@@ -162,8 +162,8 @@
 	<RM_NoHopper>Нет работающего расщепителя материи</RM_NoHopper>
 
 	<!-- настройки мода -->
-	<RM_SetMassReturn>Сбор массы при расщеплении: {0}</RM_SetMassReturn>
-	<RM_SetValueReturn>Сбор стоимости при расщеплении: {0}</RM_SetValueReturn>
+	<RM_SetMassReturn>Сбор массы: {0}</RM_SetMassReturn>
+	<RM_SetValueReturn>Сбор стоимости: {0}</RM_SetValueReturn>
 	<RM_Color>Цвет реплимата</RM_Color>
 	<RM_SetQualityCap>Предел качества печати</RM_SetQualityCap>
 	<RM_SetSecPrint>Печать</RM_SetSecPrint>
@@ -173,18 +173,16 @@
 	<RM_ColPrint>печатать</RM_ColPrint>
 	<RM_ColMarkup>наценка, ×</RM_ColMarkup>
 	<RM_GroupChips>чипы и субъядра</RM_GroupChips>
-	<RM_GroupChipsDesc>Чипы и субъядра — сигнальный, энергофокусирующий и наноструктурирующий чипы, стандартное и продвинутое субъядро.\nВ механоидах наценка только на эту часть цены.</RM_GroupChipsDesc>
+	<RM_GroupChipsDesc>Сигнальный, энергофокусирующий и наноструктурирующий чипы, стандартное и продвинутое субъядро; в механоидах наценка только на них.</RM_GroupChipsDesc>
 	<RM_GroupArcho>архотех и особые</RM_GroupArcho>
-	<RM_GroupArchoDesc>Архотех и особые — ИИ-ядро, архотех-части, архитовые капсулы, изолинейный модуль, сыворотки воскрешения и исцеления.</RM_GroupArchoDesc>
+	<RM_GroupArchoDesc>ИИ-ядро, архотех-части, архитовые капсулы, изолинейный модуль, сыворотки воскрешения и исцеления.</RM_GroupArchoDesc>
 	<RM_GroupUnique>уникальное</RM_GroupUnique>
-	<RM_GroupUniqueDesc>Уникальное — техпринты, персональное и уникальное оружие.</RM_GroupUniqueDesc>
+	<RM_GroupUniqueDesc>Техпринты, персональное и уникальное оружие.</RM_GroupUniqueDesc>
 	<RM_GroupBio>биорепликация</RM_GroupBio>
-	<RM_GroupBioDesc>Биорепликация — генпаки и ксеногермы.\nВыключена — расщепитель их не берёт, их шаблоны скрыты.</RM_GroupBioDesc>
-	<RM_SetNeedMechanitor>Нужен механитор для связи с компьютером</RM_SetNeedMechanitor>
-	<RM_SetNeedMechanitorDesc>Выключено — с компьютером связывается любой колонист, но механоидов печатать нельзя.</RM_SetNeedMechanitorDesc>
+	<RM_GroupBioDesc>Генпаки и ксеногермы; выключена — в расщепителе и шаблонах их нет.</RM_GroupBioDesc>
 	<RM_SetMoveTanks>Переносить баки (вместе с содержимым)</RM_SetMoveTanks>
-	<RM_SetTankCapacity>Объём бака реплимата, кг (большой — ×4)</RM_SetTankCapacity>
-	<RM_SetPower>Потребляемая мощность, Вт</RM_SetPower>
+	<RM_SetTankCapacity>Объём бака, кг (большой — ×4)</RM_SetTankCapacity>
+	<RM_SetPower>Мощность, Вт</RM_SetPower>
 	<RM_PowerPrint>Печать</RM_PowerPrint>
 	<RM_PowerStore>Баки</RM_PowerStore>
 	<RM_PowerRecycle>Компьютер и расщепитель</RM_PowerRecycle>
