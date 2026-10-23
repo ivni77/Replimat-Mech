@@ -11,4 +11,6 @@ mkdir -p "$out"
 /usr/bin/rsync -a --delete --exclude .DS_Store --rsync-path=/usr/bin/rsync About Assemblies Defs Languages Patches Sounds Textures LICENSE.md "$out/"
 # .DS_Store от Finder — не в Steam (--delete не трогает исключённое и корень копии)
 find "$out" -name .DS_Store -delete
+# имени автора в Steam нет: слова — в Docs/name-guard.txt, найдено — стоп
+if LC_ALL=C grep -r -l -f Docs/name-guard.txt "$out"; then echo "$out: имя автора в файлах выше — убрать"; exit 1; fi
 echo "$out: $(du -sh "$out" | cut -f1)"

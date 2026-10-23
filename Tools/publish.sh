@@ -7,6 +7,8 @@ GIT_INDEX_FILE=.git/public-index git read-tree HEAD
 GIT_INDEX_FILE=.git/public-index git rm -r -q --cached --ignore-unmatch Docs CLAUDE.md
 tree=$(GIT_INDEX_FILE=.git/public-index git write-tree)
 rm -f .git/public-index
+# имени автора наружу нет: слова — в Docs/name-guard.txt (Docs не публикуется), найдено — стоп
+if git grep -I -l -f Docs/name-guard.txt "$tree"; then echo "public: имя автора в файлах выше — убрать"; exit 1; fi
 parent=$(git rev-parse -q --verify refs/heads/public || true)
 if [ -n "$parent" ] && [ "$(git rev-parse "$parent^{tree}")" = "$tree" ]; then
   echo "public: без изменений"
