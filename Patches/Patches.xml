@@ -7,4 +7,16 @@
 			<li>ReplimatMech.Designator_RMScan</li>
 		</value>
 	</Operation>
+
+	<!-- Mod buildings at the exotic goods traders only, 0-1 piece (2026-10-21) -->
+	<Operation Class="PatchOperationAdd">
+		<xpath>Defs/TraderKindDef[defName="Orbital_Exotic" or defName="Caravan_Outlander_Exotic"]/stockGenerators</xpath>
+		<value>
+			<li Class="StockGenerator_Category">
+				<categoryDef>RM_Buildings</categoryDef>
+				<thingDefCountRange>0~1</thingDefCountRange>
+				<countRange>1~1</countRange>
+			</li>
+		</value>
+	</Operation>
 </Patch>

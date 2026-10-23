@@ -2,11 +2,11 @@
 [i]A fork of [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1715402900]Replimat[/url] by Robin "sumghai" Chang and Dubwise56 and [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3806650178]Replimat Universal[/url] by Omnot. Unofficial; not endorsed by the original authors.[/i]
 
 A copier for your colony's production.
-The matter splitter splits items and corpses into matter (mass and value) and records their patterns.
-Replicators print from those patterns, paying time, mass and value.
-A mechanitor sets up the print queues through a comms console.
-Mechanoids are printed like in a gestator.
-Nothing living is printed.
+The splitter works like a crematorium: by its bills it splits items and corpses into matter (mass and value) and records their patterns.
+Replicators work like workbenches: by their bills they print from those patterns, paying time, mass and value.
+The links of the computer operator (replink, mechlink, biolink) set what prints and how fast.
+Mechanoids are printed like in a gestator, and resurrected.
+[b]New in 1.2:[/b] bioreplication — adult tame animals by DNA and colonists by templates.
 
 [b]Incompatible with Replimat and Replimat Universal.[/b]
 
@@ -14,39 +14,44 @@ Nothing living is printed.
 
 [h2]Features[/h2]
 [list]
-[*][b]Matter splitter[/b]: splits what haulers bring into matter and records each pattern at the best quality seen. Corpses split like cremation, without mood penalties; a mech corpse gives its pattern if you can gestate that mech. It takes what its filter allows, like a stockpile; [b]Scan[/b] has one piece brought in past the filter.
-[*][b]Replimat tanks[/b] store mass up to capacity and value without limit, shared across the network; the large one holds four times more.
+[*][b]Splitter[/b]: crematorium-style bills (filter, hit points, quality); the pattern is recorded at the best quality seen. Corpses split without mood penalties. [b]Scan[/b] has one piece brought in.
+[*][b]Tanks[/b] store mass up to capacity and value without limit, shared across the network; the large one holds four times more.
 [*][b]Replicators[/b] (standing and wall) print in batches of up to a stack. The [b]animal replicator[/b] prints feed into itself.
-[*][b]Computer window[/b] from a comms console: [b]Home[/b], [b]Patterns[/b] (vanilla category tree, bill form), [b]Queue[/b] (all bills, edited in the row).
-[*][b]Bills like vanilla[/b]: Do X times, Do until you have X, Do forever; first and second queue; pause; drag to reorder; move to another replicator.
+[*][b]Bills[/b] like a workbench: all three modes, pause, reorder, copy and paste. [b]Surplus[/b]: haulers take the excess to the splitter.
+[*][b]Operator and links[/b]: a colonist with a link contacts the computer once. Replink: items; vanilla mechlink: mechs, chips, subcores; biolink: bioreplication. Replink and biolink level up from the value printed, up to 175% speed.
+[*][b]Mechs[/b]: mechanitor and control group per bill; corpses are resurrected in the replicator.
+[*][b]Bioscanner[/b]: records the DNA of a living animal or person, unharmed (or of a fresh corpse in the splitter). The [b]bioreplicator[/b] grows from matter, no food, an adult tame animal (female or male) or a colonist by template.
+[*][b]People[/b]: templates built from blocks — appearance, skills, passions, up to three traits, genes; scanned people add their traits and genes. Printed colonists are 18, without relatives; no randomness.
+[*][b]Trash[/b]: whatever you delete from the print lists can be restored from it.
+[*][b]Computer window[/b]: matter, buildings, links, all bills.
 [*][b]Sliders[/b]: print faster for more value or cheaper for more time, up to 40%.
-[*][b]Print speed[/b] is the mechanitor's mech forming speed (crafting, gestation processors).
-[*][b]Only researched things are printed[/b], like vanilla: buildings, recipes, crops, chips and techprints need their research; mined, wild and found things need none.
-[*]Paid matter is never lost: deleting or moving a bill returns the unprinted batch.
+[*][b]Only researched things are printed[/b], like vanilla. Deleting a bill returns the unprinted batch to the tanks.
+[*]Exotic goods traders sell replimat buildings.
 [/list]
 
 [img]https://raw.githubusercontent.com/ivni77/Replimat-Mech/main/Workshop/Images/2.png[/img]
 [img]https://raw.githubusercontent.com/ivni77/Replimat-Mech/main/Workshop/Images/3.png[/img]
 [img]https://raw.githubusercontent.com/ivni77/Replimat-Mech/main/Workshop/Images/4.png[/img]
+[img]https://raw.githubusercontent.com/ivni77/Replimat-Mech/main/Workshop/Images/5.png[/img]
 
 [h2]Quick start[/h2]
 [olist]
-[*]Research [b]Replication[/b] (after Microelectronics basics and Machining).
-[*]Make an [b]isolinear module[/b] at a machining table.
-[*]On one power network build a [b]replimat computer[/b], [b]replimat tanks[/b], a [b]matter splitter[/b] and a [b]replicator[/b].
-[*]Allow items in the splitter's filter (all off by default) or use [b]Scan[/b].
-[*]A mechanitor at a comms console: [b]Contact the replimat computer[/b], pick a pattern, create a bill.
+[*]Research [b]Replication[/b].
+[*]On one power network build a [b]computer[/b], [b]tanks[/b], a [b]splitter[/b] and a [b]replicator[/b].
+[*]Make a [b]replink[/b] at a machining table and install it (a mechanitor can use the mechlink alone).
+[*]Right-click the computer with that colonist: [b]Contact the computer[/b].
+[*]Add bills to the splitter (or use [b]Scan[/b]) and to the replicator.
 [/olist]
 
-[img]https://raw.githubusercontent.com/ivni77/Replimat-Mech/main/Workshop/Images/5.jpg[/img]
+[img]https://raw.githubusercontent.com/ivni77/Replimat-Mech/main/Workshop/Images/6.png[/img]
 
 [h2]Settings[/h2]
-Mass and value collected on splitting (value 5–60%, so print-and-split never profits), color, print quality cap, special items (allow, markup), movable tanks, tank capacity, power use.
-Stored value adds to colony wealth; [b]Collect value[/b] on the Home tab turns it off.
+Mass and value collected on splitting (value 5–60%, so print-and-split never profits), color, print quality cap, special items and bioreplication (allow, markup), movable tanks, tank capacity, power use.
+Stored value adds to colony wealth; [b]Collect value[/b] in the computer window turns it off.
 
 [h2]Compatibility[/h2]
 RimWorld [b]1.6[/b]. Requires [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2009463077]Harmony[/url] and [b]Biotech[/b]. Languages: English, Russian.
-Works with [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2606448745]Multiplayer[/url]: edits are synced, the computer window opens only for the player who gave the order; mod settings must match the host.
+Works with [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2606448745]Multiplayer[/url]: edits are synced. Mod settings must match the host: change them before joining, a change during the game desyncs.
 
 [h2]Credits and license[/h2]
 [list]
@@ -62,33 +67,24 @@ Licensed under [url=https://creativecommons.org/licenses/by-sa/4.0/]CC BY-SA 4.0
 [i]Форк Replimat (Robin "sumghai" Chang и Dubwise56) и Replimat Universal (Omnot). Неофициальный, авторы оригинала его не одобряли.[/i]
 
 Копировальная машина для производства колонии.
-Расщепитель материи расщепляет предметы и трупы на материю (массу и стоимость) и записывает шаблоны.
-Репликаторы печатают по шаблонам за время, массу и стоимость.
-Механитор настраивает очереди печати через консоль связи.
-Механоиды печатаются как в гестаторе.
-Живое не печатается.
+Расщепитель — как крематорий: по своим заданиям расщепляет предметы и трупы на материю (массу и стоимость) и записывает шаблоны.
+Репликаторы — как верстаки: по своим заданиям печатают по шаблонам за время, массу и стоимость.
+Механоиды печатаются как в гестаторе и воскрешаются.
+[b]Новое в 1.2:[/b] биорепликация — взрослые ручные животные по ДНК и поселенцы по шаблонам.
 
 [b]Несовместим с Replimat и Replimat Universal.[/b]
 
 [h2]Возможности[/h2]
 [list]
-[*][b]Расщепитель материи[/b] расщепляет принесённое по фильтру (как склад) и записывает шаблоны; труп механоида даёт шаблон, если его можно вырастить в гестаторе. [b]«Сканировать»[/b] приносит одну штуку мимо фильтра.
-[*][b]Баки реплимата[/b]: масса — сколько влезет, стоимость — без предела.
-[*][b]Репликаторы[/b] (обычный, настенный, для животных) печатают пачками до стопки.
-[*][b]Окно компьютера[/b]: «Главная», «Шаблоны», «Очередь»; задания как в ванили, первая и вторая очередь, ползунки времени и стоимости.
-[*][b]Скорость печати[/b] растёт с навыком ремесла и гестационными процессорами механитора.
-[*]Печатается только изученное, как в ванили: постройки, рецепты, урожай, чипы и техпринты — после своих исследований; добываемое, дикорастущее и найденное — без них.
-[*]Удаление или перенос задания возвращает недопечатанное в баки.
+[*][b]Баки[/b]: масса — сколько влезет, стоимость — без предела.
+[*][b]Репликаторы[/b]: обычный, настенный, для животных; печать пачками до стопки, «Излишки» — лишнее в расщепитель.
+[*][b]Линки оператора компьютера[/b]: риплинк — предметы, мехлинк — механоиды, чипы и субъядра, биолинк — биорепликация; уровни линков ускоряют печать до 175%.
+[*][b]Биосканер[/b] записывает ДНК живого животного или человека, [b]биорепликатор[/b] выращивает их из материи, без еды.
+[*][b]Люди[/b]: шаблон из блоков — внешность, навыки, интересы, черты, гены; черты и гены дают отсканированные люди. Без случайностей.
+[*]Удалённое из списков печати — в [b]корзине[/b], оттуда возвращается.
 [/list]
 
-[h2]Как начать[/h2]
-[olist]
-[*]Исследовать [b]«Репликацию»[/b], сделать [b]изолинейный модуль[/b] на верстаке.
-[*]В одной электросети построить [b]компьютер реплимата[/b], [b]баки реплимата[/b], [b]расщепитель материи[/b] и [b]репликатор[/b].
-[*]Разрешить предметы в фильтре расщепителя или нажать [b]«Сканировать»[/b].
-[*]Механитор у консоли связи: [b]«Связаться с компьютером реплимата»[/b], выбрать шаблон, создать задание.
-[/olist]
-
+Как собрать — в письме после исследования [b]«Репликации»[/b].
 Нужны Harmony и Biotech, RimWorld 1.6.
-Работает в Multiplayer; настройки мода — как у хоста.
+Работает в Multiplayer; настройки мода — как у хоста, менять до входа: смена в игре даёт рассинхрон.
 Лицензия CC BY-SA 4.0, как у Replimat; атрибуция и список изменений — LICENSE.md в папке мода.

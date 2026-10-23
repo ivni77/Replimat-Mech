@@ -4,13 +4,13 @@ English · [Русский](#русский)
 
 A RimWorld 1.6 mod (Core + Biotech): a copier for your colony's production — an unofficial fork of [Replimat](https://github.com/sumghai/Replimat) and Replimat Universal.
 
-The matter splitter splits items and corpses into matter (mass and value) and records their patterns.
-Replicators print from those patterns, paying time, mass and value.
-A mechanitor sets up the print queues through a comms console.
-Mechanoids are printed like in a gestator.
-Nothing living is printed.
+The splitter works like a crematorium: by its bills it splits items and corpses into matter (mass and value) and records their patterns.
+Replicators work like workbenches: by their bills they print from those patterns, paying time, mass and value.
+The links of the computer operator (replink, mechlink, biolink) set what prints and how fast.
+Mechanoids are printed like in a gestator, and resurrected.
+Bioreplication (can be switched off in the settings): the bioscanner records DNA, the bioreplicator grows adult tame animals by DNA and colonists by templates.
 
-Requires [Harmony](https://steamcommunity.com/sharedfiles/filedetails/?id=2009463077) and Biotech. Works with [Multiplayer](https://steamcommunity.com/sharedfiles/filedetails/?id=2606448745). Incompatible with Replimat and Replimat Universal. Languages: English, Russian.
+Requires [Harmony](https://steamcommunity.com/sharedfiles/filedetails/?id=2009463077) and Biotech. Works with [Multiplayer](https://steamcommunity.com/sharedfiles/filedetails/?id=2606448745): mod settings must match the host — change them before joining, a change during the game desyncs. Incompatible with Replimat and Replimat Universal. Languages: English, Russian.
 
 ## Credits and license
 
@@ -31,13 +31,13 @@ Licensed under [Creative Commons Attribution-ShareAlike 4.0 International (CC BY
 
 Мод для RimWorld 1.6 (Core + Biotech): копировальная машина для производства колонии — неофициальный форк [Replimat](https://github.com/sumghai/Replimat) и Replimat Universal.
 
-Расщепитель материи расщепляет предметы и трупы на материю (массу и стоимость) и записывает их шаблоны.
-Репликаторы печатают по шаблонам за время, массу и стоимость.
-Механитор настраивает очереди печати через консоль связи.
-Механоиды печатаются как в гестаторе.
-Живое не печатается.
+Расщепитель — как крематорий: по своим заданиям расщепляет предметы и трупы на материю (массу и стоимость) и записывает их шаблоны.
+Репликаторы — как верстаки: по своим заданиям печатают по шаблонам за время, массу и стоимость.
+Линки оператора компьютера (риплинк, мехлинк, биолинк) решают, что печатается и как быстро.
+Механоиды печатаются как в гестаторе и воскрешаются.
+Биорепликация (выключается в настройках): биосканер записывает ДНК, биорепликатор выращивает взрослых ручных животных по ДНК и поселенцев по шаблонам.
 
-Нужны [Harmony](https://steamcommunity.com/sharedfiles/filedetails/?id=2009463077) и Biotech. Работает в [Multiplayer](https://steamcommunity.com/sharedfiles/filedetails/?id=2606448745). Несовместим с Replimat и Replimat Universal. Языки: английский, русский.
+Нужны [Harmony](https://steamcommunity.com/sharedfiles/filedetails/?id=2009463077) и Biotech. Работает в [Multiplayer](https://steamcommunity.com/sharedfiles/filedetails/?id=2606448745): настройки мода — как у хоста, менять до входа в игру, смена во время игры даёт рассинхрон. Несовместим с Replimat и Replimat Universal. Языки: английский, русский.
 
 ### Авторы и лицензия
 

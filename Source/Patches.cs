@@ -7,32 +7,14 @@ using Verse;
 
 namespace ReplimatMech;
 
-/// Поверх фильтра хранилища: расщепитель — очередь и «Нет баков», кормушка — только то, что уже в ней.
-[HarmonyPatch(typeof(Building_Storage), nameof(Building_Storage.Accepts))]
+/// Кормушка принимает только то, что уже лежит в ней. Патч — на фильтр, не на Accepts: ваниль ищет склад по фильтру, а клетку проверяет
+/// через Accepts; разойдутся — носильщики без конца берут и срывают «отнести на склад».
+[HarmonyPatch(typeof(StorageSettings), nameof(StorageSettings.AllowedToAccept), typeof(Thing))]
 static class Patch_StorageAccepts
 {
-    static void Postfix(Building_Storage __instance, Thing t, ref bool __result)
+    static void Postfix(StorageSettings __instance, Thing t, ref bool __result)
     {
-        if (!__result) return;
-        if (__instance is Building_RMHopper h) __result = h.Allows(t);
-        else if (__instance is Building_RMFeeder f) __result = f.Holds(t);
-    }
-}
-
-/// Галку в фильтре расщепителя на то, что стоит в очереди, не поставить.
-[HarmonyPatch(typeof(ThingFilter), nameof(ThingFilter.SetAllow), typeof(ThingDef), typeof(bool))]
-static class Patch_FilterSetAllow
-{
-    static int lastFrame = -1;
-
-    static bool Prefix(ThingFilter __instance, ThingDef thingDef, bool allow)
-    {
-        if (!allow || !Building_RMHopper.Spawned_.Any(h => h.settings?.filter == __instance) || CompPrinter.QueuedIn(thingDef) is not { } printer)
-            return true;
-        if (Time.frameCount != lastFrame)
-            Messages.Message("RM_MsgHopperBlocked".Translate(thingDef.label, printer.RenamableLabel), MessageTypeDefOf.RejectInput, false);
-        lastFrame = Time.frameCount;
-        return false;
+        if (__result && __instance.owner is Building_RMFeeder f) __result = f.Holds(t);
     }
 }
 
@@ -41,6 +23,28 @@ static class Patch_FilterSetAllow
 static class Patch_Bandwidth
 {
     static void Postfix(Pawn_MechanitorTracker __instance, ref int __result) => __result += CompPrinter.Reserved(__instance.Pawn);
+}
+
+/// Мехлинк — как риплинк и биолинк: в скобках уровень (гестационные процессоры) и скорость печати механоидов, в подсказке — пунктами.
+[HarmonyPatch(typeof(HediffWithComps), nameof(HediffWithComps.LabelInBrackets), MethodType.Getter)]
+static class Patch_MechlinkLabel
+{
+    static void Postfix(HediffWithComps __instance, ref string __result)
+    {
+        if (__instance.def != HediffDefOf.MechlinkImplant || __instance.pawn == null) return;
+        string b = Links.Bracket(__instance.pawn, Link.Mech);
+        __result = __result.NullOrEmpty() ? b : __result + ", " + b;
+    }
+}
+
+[HarmonyPatch(typeof(HediffWithComps), nameof(HediffWithComps.TipStringExtra), MethodType.Getter)]
+static class Patch_MechlinkTip
+{
+    static void Postfix(HediffWithComps __instance, ref string __result)
+    {
+        if (__instance.def == HediffDefOf.MechlinkImplant && __instance.pawn != null)
+            __result = Links.Tip(__result, RMUI.Tr("RM_LinkLevelTip", Links.Level(__instance.pawn, Link.Mech)), Links.SpeedTip(Links.Speed(__instance.pawn, Link.Mech)));
+    }
 }
 
 /// Стоимость в баках — часть богатства колонии.
@@ -69,14 +73,49 @@ static class Patch_ReverseDesignators
     static void Postfix(List<Designator> ___desList) => ___desList.Add(new Designator_RMScan());
 }
 
-/// С компьютером — только через консоль связи (как вызов дьявола).
-[HarmonyPatch(typeof(Building_CommsConsole), nameof(Building_CommsConsole.GetFloatMenuOptions))]
-static class Patch_CommsConsole
+/// Биорепликация выключена в настройках — рецепта биолинка на станке нет.
+[HarmonyPatch(typeof(RecipeDef), nameof(RecipeDef.AvailableNow), MethodType.Getter)]
+static class Patch_RecipeAvailable
 {
-    static IEnumerable<FloatMenuOption> Postfix(IEnumerable<FloatMenuOption> values, Building_CommsConsole __instance, Pawn myPawn)
+    static void Postfix(RecipeDef __instance, ref bool __result) =>
+        __result = __result && (__instance.ProducedThingDef != RMDefOf.RM_Biolink || Rules.BioOn);
+}
+
+/// Подсказка детства «репликант» на карточке — одно описание (2026-10-22): без пустых строк, навыков и запретов работы ванили.
+[HarmonyPatch(typeof(BackstoryDef), nameof(BackstoryDef.FullDescriptionFor))]
+static class Patch_BackstoryDescription
+{
+    static void Postfix(BackstoryDef __instance, ref TaggedString __result)
     {
-        foreach (FloatMenuOption o in values) yield return o;
-        if (!__instance.CanUseCommsNow) yield break;
-        foreach (FloatMenuOption o in Building_RMComputer.ConsoleOptions(__instance, myPawn)) yield return o;
+        if (__instance == RMDefOf.RM_Bioreplicated) __result = __instance.description;
     }
+}
+
+/// Рыночная стоимость напечатанного человека — не ниже стоимости шаблона до наценки (2026-10-22): ваниль ценит здоровье, возраст
+/// и навыки, гены и черты — нет; раны, возраст и рост навыков дальше по ванили. В пояснении стата — строка.
+[HarmonyPatch(typeof(StatWorker_MarketValue), nameof(StatWorker_MarketValue.GetValueUnfinalized))]
+static class Patch_PawnValue
+{
+    public static float Floor(StatRequest req) =>
+        req.Thing is Pawn p && p.health?.hediffSet.GetFirstHediffOfDef(RMDefOf.RM_Replicant) is Hediff_RMReplicant m ? m.value : 0f;
+
+    static void Postfix(StatRequest req, ref float __result) => __result = Mathf.Max(__result, Floor(req));
+}
+
+[HarmonyPatch(typeof(StatWorker_MarketValue), nameof(StatWorker_MarketValue.GetExplanationUnfinalized))]
+static class Patch_PawnValueExplanation
+{
+    static void Postfix(StatRequest req, ref string __result)
+    {
+        float v = Patch_PawnValue.Floor(req);
+        if (v > 0f) __result = __result.TrimEndNewlines() + "\n" + RMUI.Tr("RM_ValueFloor", Fmt.Silver(v));
+    }
+}
+
+/// Биорепликация выключена — биосканера и инкубатора нет в меню строительства.
+[HarmonyPatch(typeof(Designator_Build), nameof(Designator_Build.Visible), MethodType.Getter)]
+static class Patch_BuildVisible
+{
+    static void Postfix(Designator_Build __instance, ref bool __result) =>
+        __result = __result && (Rules.BioOn || __instance.PlacingDef != RMDefOf.RM_Bioscanner && __instance.PlacingDef != RMDefOf.RM_Incubator);
 }

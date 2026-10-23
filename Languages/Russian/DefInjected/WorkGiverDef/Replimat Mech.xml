@@ -4,5 +4,14 @@
 	<RM_Scan.label>нести предметы на сканирование</RM_Scan.label>
 	<RM_Scan.verb>сканировать</RM_Scan.verb>
 	<RM_Scan.gerund>сканирует</RM_Scan.gerund>
+	<RM_Carry.label>нести в расщепитель и репликаторы</RM_Carry.label>
+	<RM_Carry.verb>нести</RM_Carry.verb>
+	<RM_Carry.gerund>несёт</RM_Carry.gerund>
+	<RM_Bioscanner.label>вести животных к биосканеру</RM_Bioscanner.label>
+	<RM_Bioscanner.verb>вести</RM_Bioscanner.verb>
+	<RM_Bioscanner.gerund>ведёт</RM_Bioscanner.gerund>
+	<RM_CarryToBioscanner.label>нести людей в биосканер</RM_CarryToBioscanner.label>
+	<RM_CarryToBioscanner.verb>нести</RM_CarryToBioscanner.verb>
+	<RM_CarryToBioscanner.gerund>несёт</RM_CarryToBioscanner.gerund>
 
 </LanguageData>

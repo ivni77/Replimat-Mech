@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
 
-	<RM_ScanItem.reportString>несёт TargetA на сканирование.</RM_ScanItem.reportString>
-	<RM_UseComputer.reportString>идёт к компьютеру реплимата.</RM_UseComputer.reportString>
+	<RM_Carry.reportString>несёт TargetA в TargetB.</RM_Carry.reportString>
+	<RM_RopeToScanner.reportString>ведёт TargetA к TargetC.</RM_RopeToScanner.reportString>
+	<RM_UseComputer.reportString>связывается с компьютером.</RM_UseComputer.reportString>
 
 </LanguageData>

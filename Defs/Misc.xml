@@ -4,7 +4,7 @@
 	<ResearchProjectDef>
 		<defName>RM_Replication</defName>
 		<label>replication</label>
-		<description>Splitting items into matter (mass and value), recording patterns and printing from them.\nUnlocks all replimat buildings and the isolinear module.</description>
+		<description>Splitting items into matter (mass and value), recording patterns and printing from them.\nUnlocks all replimat buildings.\nLiving printing (animals by DNA, people by templates) can be switched off in the mod settings: then the replimat prints only items and mechanoids.</description>
 		<baseCost>1000</baseCost>
 		<techLevel>Industrial</techLevel>
 		<prerequisites>
@@ -14,73 +14,13 @@
 		<researchViewX>11.00</researchViewX>
 		<researchViewY>1.80</researchViewY>
 		<discoveredLetterTitle>Replimat: how to build</discoveredLetterTitle>
-		<discoveredLetterText>Replication researched: you can build the replimat.\nEverything goes on one power network.\n\nReplimat computer: stores patterns and print queues.\nIt needs an isolinear module: made at a machining table or bought from exotic goods traders.\n\nReplimat tank (one or more): stores matter: mass and value.\n\nMatter splitter: splits brought items and corpses into matter and records patterns.\nWhat it accepts is set in its filter, like a stockpile.\nThe "Scan" button on an item sends one piece there.\n\nReplicator: prints from patterns and puts the result nearby.\nOptional: animal replicator, prints feed.\n\nPrint queues are set up by a mechanitor.\nComms console: "Contact the replimat computer".</discoveredLetterText>
+		<discoveredLetterText>Replication researched: you can build the replimat.\nEverything goes on one power network.\n\nComputer: binds the operator's links to the replicators.\nA colonist with a replink, mechlink or biolink: right-click the computer, "Contact the computer".\nThis is done once, after that the operator is not needed at the computer.\nA bound link lets its group print, the link level sets the speed.\nIf the operator dies or leaves the map, printing stops.\n\nTank: stores matter: mass and value.\nLarge tank: the same, four times more matter.\nBuild as many tanks as you like.\n\nSplitter: like a crematorium, bills with filters.\nHaulers bring what fits, it is split into matter at once and its pattern is recorded.\nThe "Scan" button on an item sends one piece there.\n\nReplicator: like a workbench, bills are added in the replicator itself.\nIt prints from the tanks of its power network and puts the result nearby.\nWall replicator: the same, built into a wall.\nAnimal replicator: prints feed into itself, animals eat straight from it.\n\nBioscanner: records the DNA of an animal or a person for bioreplication.\nBioreplicator: prints adult tame animals by recorded DNA and colonists by templates.\nBioreplication can be switched off in the mod settings.</discoveredLetterText>
 	</ResearchProjectDef>
-
-	<ThingDef ParentName="ResourceBase">
-		<defName>RM_IsolinearModule</defName>
-		<label>isolinear module</label>
-		<description>An optical module for storing and processing patterns.\nThe core part of the replimat computer.</description>
-		<graphicData>
-			<texPath>Things/Item/IsolinearModule</texPath>
-			<graphicClass>Graphic_Single</graphicClass>
-		</graphicData>
-		<resourceReadoutPriority>Middle</resourceReadoutPriority>
-		<soundInteract>Metal_Drop</soundInteract>
-		<soundDrop>Standard_Drop</soundDrop>
-		<stackLimit>10</stackLimit>
-		<healthAffectsPrice>false</healthAffectsPrice>
-		<statBases>
-			<MarketValue>2360</MarketValue>
-			<MaxHitPoints>100</MaxHitPoints>
-			<Mass>0.5</Mass>
-			<WorkToMake>20000</WorkToMake>
-		</statBases>
-		<intricate>true</intricate>
-		<thingCategories>
-			<li>Manufactured</li>
-		</thingCategories>
-		<tradeTags>
-			<li>ExoticMisc</li>
-		</tradeTags>
-	</ThingDef>
-
-	<RecipeDef>
-		<defName>RM_Make_IsolinearModule</defName>
-		<label>make isolinear module</label>
-		<description>Make an isolinear module for the replimat computer.</description>
-		<jobString>Making isolinear module.</jobString>
-		<workSpeedStat>GeneralLaborSpeed</workSpeedStat>
-		<workSkill>Crafting</workSkill>
-		<effectWorking>Smith</effectWorking>
-		<soundWorking>Recipe_Smith</soundWorking>
-		<workAmount>20000</workAmount>
-		<unfinishedThingDef>UnfinishedComponent</unfinishedThingDef>
-		<ingredients>
-			<li><filter><thingDefs><li>Steel</li></thingDefs></filter><count>510</count></li>
-			<li><filter><thingDefs><li>ComponentIndustrial</li></thingDefs></filter><count>20</count></li>
-			<li><filter><thingDefs><li>Plasteel</li></thingDefs></filter><count>20</count></li>
-			<li><filter><thingDefs><li>Gold</li></thingDefs></filter><count>5</count></li>
-		</ingredients>
-		<fixedIngredientFilter>
-			<thingDefs><li>Steel</li><li>ComponentIndustrial</li><li>Plasteel</li><li>Gold</li></thingDefs>
-		</fixedIngredientFilter>
-		<products>
-			<RM_IsolinearModule>1</RM_IsolinearModule>
-		</products>
-		<skillRequirements>
-			<Crafting>8</Crafting>
-		</skillRequirements>
-		<researchPrerequisite>RM_Replication</researchPrerequisite>
-		<recipeUsers>
-			<li>TableMachining</li>
-		</recipeUsers>
-	</RecipeDef>
 
 	<DesignationCategoryDef>
 		<defName>RM_Replimat</defName>
 		<label>replimat</label>
-		<description>Replimat buildings: replicators, tanks, matter splitter, computer.</description>
+		<description>Replimat buildings: computer, tanks, splitter, replicators, bioscanner.</description>
 		<order>501</order>
 		<specialDesignatorClasses>
 			<li>Designator_Cancel</li>
@@ -98,9 +38,9 @@
 	</DesignationDef>
 
 	<JobDef>
-		<defName>RM_ScanItem</defName>
-		<driverClass>ReplimatMech.JobDriver_RMScan</driverClass>
-		<reportString>carrying TargetA to be scanned.</reportString>
+		<defName>RM_Carry</defName>
+		<driverClass>ReplimatMech.JobDriver_RMCarry</driverClass>
+		<reportString>carrying TargetA to TargetB.</reportString>
 		<suspendable>false</suspendable>
 		<allowOpportunisticPrefix>true</allowOpportunisticPrefix>
 	</JobDef>
@@ -108,10 +48,40 @@
 	<JobDef>
 		<defName>RM_UseComputer</defName>
 		<driverClass>ReplimatMech.JobDriver_RMUseComputer</driverClass>
-		<reportString>going to the replimat computer.</reportString>
+		<reportString>contacting the computer.</reportString>
 		<suspendable>false</suspendable>
 	</JobDef>
 
+	<JobDef>
+		<defName>RM_RopeToScanner</defName>
+		<driverClass>ReplimatMech.JobDriver_RMRopeToScanner</driverClass>
+		<reportString>leading TargetA to TargetC.</reportString>
+		<casualInterruptible>false</casualInterruptible>
+	</JobDef>
+	<WorkGiverDef>
+		<defName>RM_Bioscanner</defName>
+		<label>take animals to the bioscanner</label>
+		<giverClass>ReplimatMech.WorkGiver_RMBioscanner</giverClass>
+		<workType>Handling</workType>
+		<verb>take</verb>
+		<gerund>taking</gerund>
+		<priorityInType>140</priorityInType>
+		<requiredCapacities>
+			<li>Manipulation</li>
+		</requiredCapacities>
+	</WorkGiverDef>
+	<WorkGiverDef>
+		<defName>RM_CarryToBioscanner</defName>
+		<label>carry people to the bioscanner</label>
+		<giverClass>ReplimatMech.WorkGiver_RMCarryToBioscanner</giverClass>
+		<workType>Hauling</workType>
+		<verb>carry</verb>
+		<gerund>carrying</gerund>
+		<priorityInType>90</priorityInType>
+		<requiredCapacities>
+			<li>Manipulation</li>
+		</requiredCapacities>
+	</WorkGiverDef>
 	<WorkGiverDef>
 		<defName>RM_Scan</defName>
 		<label>carry items to be scanned</label>
@@ -124,6 +94,51 @@
 			<li>Manipulation</li>
 		</requiredCapacities>
 	</WorkGiverDef>
+
+	<WorkGiverDef>
+		<defName>RM_Carry</defName>
+		<label>carry to the splitter and replicators</label>
+		<giverClass>ReplimatMech.WorkGiver_RMCarry</giverClass>
+		<workType>Hauling</workType>
+		<verb>carry</verb>
+		<gerund>carrying</gerund>
+		<priorityInType>90</priorityInType>
+		<requiredCapacities>
+			<li>Manipulation</li>
+		</requiredCapacities>
+	</WorkGiverDef>
+
+	<!-- Задание расщепителя — как у крематория: носильщики несут подходящее (предметы и трупы), оно сразу расщепляется на материю. -->
+	<RecipeDef>
+		<defName>RM_Split</defName>
+		<label>split item</label>
+		<description>Haulers bring items and corpses that fit the filter, the splitter splits them into matter and records the patterns of items.</description>
+		<jobString>Carrying to the splitter.</jobString>
+		<workAmount>0</workAmount>
+		<autoStripCorpses>false</autoStripCorpses>
+		<requiredGiverWorkType>Hauling</requiredGiverWorkType>
+		<recipeUsers>
+			<li>RM_Hopper</li>
+		</recipeUsers>
+		<ingredients>
+			<li>
+				<filter>
+					<categories>
+						<li>Root</li>
+					</categories>
+				</filter>
+				<count>1</count>
+			</li>
+		</ingredients>
+		<fixedIngredientFilter>
+			<categories>
+				<li>Root</li>
+			</categories>
+		</fixedIngredientFilter>
+		<defaultIngredientFilter>
+			<thingDefs/>
+		</defaultIngredientFilter>
+	</RecipeDef>
 
 	<SoundDef>
 		<defName>RM_Replicate</defName>
@@ -150,5 +165,27 @@
 			</li>
 		</subSounds>
 	</SoundDef>
+
+	<!-- Childhood of a person printed by the bioreplicator, the only mark on the character card: title and a one-line hover
+	     (Patch_BackstoryDescription); no skill gains, no disabled work; no adulthood (vanilla gives none before 20) -->
+	<BackstoryDef>
+		<defName>RM_Bioreplicated</defName>
+		<title>replicant</title>
+		<titleShort>replicant</titleShort>
+		<description>Printed in a bioreplicator.</description>
+		<slot>Childhood</slot>
+		<shuffleable>false</shuffleable>
+	</BackstoryDef>
+
+	<!-- Mark of a creature printed by the bioreplicator: whole body, no effects; shown on animals, hidden on people, where it keeps
+	     the template value (the market value floor, Patch_PawnValue) -->
+	<HediffDef>
+		<defName>RM_Replicant</defName>
+		<label>replicant</label>
+		<description>A creature printed by a bioreplicator.</description>
+		<hediffClass>ReplimatMech.Hediff_RMReplicant</hediffClass>
+		<isBad>false</isBad>
+		<everCurableByItem>false</everCurableByItem>
+	</HediffDef>
 
 </Defs>

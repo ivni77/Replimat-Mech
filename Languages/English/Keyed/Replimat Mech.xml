@@ -4,10 +4,6 @@
 	<!-- units -->
 	<RM_Kg>{0} kg</RM_Kg>
 	<RM_SilverN>{0} silver</RM_SilverN>
-	<RM_Minutes>{0} min</RM_Minutes>
-	<RM_Seconds>{0} s</RM_Seconds>
-	<RM_Hours>{0} h</RM_Hours>
-	<RM_Days>{0} d</RM_Days>
 	<RM_None>none</RM_None>
 	<RM_Packed>(packed)</RM_Packed>
 
@@ -18,15 +14,16 @@
 	<RM_TanksCount>Tanks: {0}</RM_TanksCount>
 	<RM_PrintersCount>Replicators: {0}</RM_PrintersCount>
 	<RM_FeedersCount>Animal replicators: {0}</RM_FeedersCount>
+	<RM_IncubatorsCount>Bioreplicators: {0}</RM_IncubatorsCount>
 	<RM_ValueOff>Value collection is off</RM_ValueOff>
 	<RM_TankContents>Tank contents: +{0}</RM_TankContents>
 	<RM_NoTanks>No tanks</RM_NoTanks>
 	<RM_NoComputer>No computer on the network</RM_NoComputer>
 	<RM_FeederFood>Feed: {0}</RM_FeederFood>
 	<RM_Printing>Printing: {0}, {1} left</RM_Printing>
-	<RM_InQueue>In queue: {0}</RM_InQueue>
-	<RM_QueueEnd>Queue done in: ≈ {0}</RM_QueueEnd>
 	<RM_WaitsMechanitor>Waiting for mechanitor: {0}</RM_WaitsMechanitor>
+	<RM_HeldCorpse>Corpse inside: {0}</RM_HeldCorpse>
+	<RM_QueueLeft>Bills in queue: {0} · time ≈ {1}</RM_QueueLeft>
 
 	<!-- bill statuses: short (inspect pane) and full (windows) -->
 	<RM_StDone>done</RM_StDone>
@@ -34,11 +31,11 @@
 	<RM_StMechWaits>waiting for mechanitor</RM_StMechWaits>
 	<RM_StMechWaitsFull>Printed, waiting for mechanitor</RM_StMechWaitsFull>
 	<RM_StWait>waiting</RM_StWait>
-	<RM_StWaitFull>Waiting: other bills go first</RM_StWaitFull>
+	<RM_StWaitFull>Waiting: something else is printing</RM_StWaitFull>
 	<RM_StLowMass>low mass</RM_StLowMass>
 	<RM_StLowSilver>low value</RM_StLowSilver>
 	<RM_StNoMechanitor>no mechanitor</RM_StNoMechanitor>
-	<RM_StNoMechanitorFull>No mechanitor: pick one at the computer</RM_StNoMechanitorFull>
+	<RM_StNoMechanitorFull>No mechanitor: pick one in the bill</RM_StNoMechanitorFull>
 	<RM_StNoBandwidth>low bandwidth</RM_StNoBandwidth>
 	<RM_StNoBandwidthFull>Not enough mechanitor bandwidth</RM_StNoBandwidthFull>
 	<RM_StForbidden>forbidden</RM_StForbidden>
@@ -51,115 +48,143 @@
 	<RM_StOffFull>Off: no power or no computer on the network</RM_StOffFull>
 	<RM_StSuspended>suspended</RM_StSuspended>
 	<RM_StPrinting>Printing {0}% ({1} / {2})</RM_StPrinting>
+	<RM_StNoOperator>no operator</RM_StNoOperator>
+	<RM_StNoOperatorFull>No operator: a colonist with a link has to contact the computer</RM_StNoOperatorFull>
+	<RM_StNoLink>no link</RM_StNoLink>
+	<RM_StNoLinkFull>The operator has no link: {0}</RM_StNoLinkFull>
+	<RM_StNoCorpse>waits for a corpse</RM_StNoCorpse>
+	<RM_StNoCorpseFull>Waiting for a mechanoid corpse: haulers will bring it</RM_StNoCorpseFull>
 
 	<!-- queue and the Plan block -->
-	<RM_TabQueue>Queue</RM_TabQueue>
 	<RM_TotTime>Time: {0}</RM_TotTime>
 	<RM_TotMass>Mass: {0}</RM_TotMass>
 	<RM_TotValue>Value: {0}</RM_TotValue>
 	<RM_PlanNothing>nothing to print</RM_PlanNothing>
 	<RM_PlanEnough>enough</RM_PlanEnough>
 	<RM_Short>short of {0}</RM_Short>
-	<RM_InTanks>Stored in tanks</RM_InTanks>
-	<RM_MassInTanks>Mass in tanks</RM_MassInTanks>
-	<RM_ValueInTanks>Value in tanks</RM_ValueInTanks>
-	<RM_ColBills>Bills</RM_ColBills>
-	<RM_Always>Always</RM_Always>
-	<RM_ColBill>Bill</RM_ColBill>
-	<RM_ColHave>Have / need</RM_ColHave>
-	<RM_ColPause>Pause</RM_ColPause>
-	<RM_ColDetails>Settings</RM_ColDetails>
-	<RM_TotalAll>All replicators</RM_TotalAll>
-	<RM_GroupImportant>First queue</RM_GroupImportant>
-	<RM_GroupNormal>Second queue</RM_GroupNormal>
-	<RM_GroupDesc>Queue — sets the print order, the first queue has priority.</RM_GroupDesc>
-	<RM_GroupEmpty>Empty — drag a bill here</RM_GroupEmpty>
 
 	<!-- computer: common -->
-	<RM_UseComputer>Contact the replimat computer</RM_UseComputer>
-	<RM_UseComputerN>Contact replimat computer #{0}</RM_UseComputerN>
-	<RM_NeedMechanitor>needs a mechanitor</RM_NeedMechanitor>
+	<RM_UseComputer>Contact the computer</RM_UseComputer>
 	<RM_ComputerNoPower>computer unpowered</RM_ComputerNoPower>
-	<RM_ComputerTitle>Replimat computer · {0} on the line</RM_ComputerTitle>
+	<RM_UseComputerLinks>{0} ({1})</RM_UseComputerLinks>
+	<RM_NeedLink>needs a replink, mechlink or biolink</RM_NeedLink>
+	<RM_AlreadyOperator>already the operator</RM_AlreadyOperator>
+	<RM_MsgOperator>{0} is now the computer operator ({1}).</RM_MsgOperator>
+	<RM_OperatorLine>Operator: {0} ({1})</RM_OperatorLine>
 	<RM_TabHome>Home</RM_TabHome>
-	<RM_TabPatternsN>Patterns ({0})</RM_TabPatternsN>
-	<RM_TabQueueN>Queue ({0})</RM_TabQueueN>
+	<RM_TabQueues>Queues</RM_TabQueues>
+	<RM_TabComputer>Computer</RM_TabComputer>
+	<RM_QueuesHelp>Click a replicator to show its bills below, double-click to go to it.\nThe replicator button in a bill row moves the bill to another replicator of the same power network.</RM_QueuesHelp>
+	<RM_WorkerAll>Anyone</RM_WorkerAll>
+	<RM_WorkerColonist>Any colonist</RM_WorkerColonist>
+	<RM_ColPrinter>Replicator</RM_ColPrinter>
+	<RM_ColBills>Bills</RM_ColBills>
 
 	<!-- computer: Home -->
 	<RM_CardMatter>Matter</RM_CardMatter>
 	<RM_CardGear>Equipment</RM_CardGear>
 	<RM_CardHelp>Help</RM_CardHelp>
-	<RM_CardPrinters>Replicators</RM_CardPrinters>
 	<RM_ColBuilding>Building</RM_ColBuilding>
 	<RM_Mass>Mass</RM_Mass>
 	<RM_Value>Value</RM_Value>
 	<RM_TanksOff>Unpowered: {0} — nothing prints from them</RM_TanksOff>
-	<RM_TanksExplain>Matter — what printing uses: mass (kg) and value (silver), split between tanks by capacity.\nComputer — keeps patterns and print queues, runs matter splitters and replicators.\nMatter splitter — splits items and corpses into matter and always records patterns.\nReplicator — prints items and mechanoids from matter.\nTank — stores matter, and once the tanks are full, mass stops accumulating.\nValue — every item has its own, as with traders, and it can be stored without limit.\nMass — every item has its own, it is stored as far as the tanks hold.\nPrinting — takes the item's mass and value from the tanks.</RM_TanksExplain>
-	<RM_SpeedExplain>Bill print speed grows with Crafting skill and mech gestation processors.</RM_SpeedExplain>
+	<RM_TanksExplain>Matter — what printing uses: mass (kg) and value (silver), split between tanks by capacity.\nTank — stores matter, and once the tanks are full, mass stops accumulating.\nMass — every item has its own, it is stored as far as the tanks hold.\nValue — every item has its own, as with traders, and it can be stored without limit.\nPrinting — takes the item's mass and value from the tanks.\n\nValue in the tanks adds to colony wealth.\nIf «Collect value» is disabled, value will not accumulate.</RM_TanksExplain>
+	<RM_SpeedExplain>Printing speed comes from the operator's link.\nThe replink prints items, the mechlink mechanoids, mechanoid chips and subcores, the biolink bioreplication.\nReplink and biolink: +15% per level, experience is the value printed.\nMechlink: the level is the number of mech gestation processors (an implant made at a workbench, up to 6), the speed is the operator's mechanoid gestation speed.</RM_SpeedExplain>
 	<RM_CollectValue>Collect value</RM_CollectValue>
-	<RM_CollectValueDesc>Value adds to colony wealth.\nIf disabled, value will not accumulate.</RM_CollectValueDesc>
 	<RM_CollectValueWarn>Printing items and mechanoids needs stored value.</RM_CollectValueWarn>
 	<RM_LackMass>mass: {0}</RM_LackMass>
 	<RM_LackValue>value: {0}</RM_LackValue>
 	<RM_Unpowered>unpowered: {0}</RM_Unpowered>
-	<RM_GearExplain>Equipment — Replimat buildings on this computer's power network.\nUnpowered buildings stop, but tanks keep their stock.</RM_GearExplain>
+	<RM_GearExplain>Equipment — Replimat buildings on this computer's power network.\nComputer — binds the operator's links to the replicators of its power network.\nSplitter — like a crematorium: splits items and corpses into matter by its bills and records patterns.\nReplicator — like a workbench: prints items and mechanoids from matter by its bills.\nUnpowered buildings stop, but tanks keep their stock.</RM_GearExplain>
 	<RM_NoPrinters>No replicators on the network</RM_NoPrinters>
-	<RM_Now>Now: {0} — {1}%</RM_Now>
-	<RM_NowIdle>Not printing anything</RM_NowIdle>
 	<RM_QueueEmpty>Queue is empty</RM_QueueEmpty>
-	<RM_QueueSummary>Bills: {0} · time ≈ {1} · value {2}</RM_QueueSummary>
-	<RM_QueueLow>Short of mass or value: {0}</RM_QueueLow>
+	<RM_CardOperator>Operator</RM_CardOperator>
+	<RM_OperatorName>Operator: {0}</RM_OperatorName>
+	<RM_OperatorLost>Operator {0} is dead or off the map.</RM_OperatorLost>
+	<RM_NoOperatorHelp>No operator: printing stops.\nA colonist with a replink, mechlink or biolink: right-click the computer, "Contact the computer".</RM_NoOperatorHelp>
+	<RM_LinkPrintsRep>items</RM_LinkPrintsRep>
+	<RM_LinkPrintsMech>mechanoids, mechanoid chips and subcores</RM_LinkPrintsMech>
+	<RM_LinkPrintsBio>bioreplication: all genetics, archotech parts, resurrector and healer serums</RM_LinkPrintsBio>
+	<RM_LinkMissing>{0}: none — cannot print {1}.</RM_LinkMissing>
+	<RM_ColLink>Link</RM_ColLink>
+	<RM_ColLevel>Level</RM_ColLevel>
+	<RM_ColXp>Experience</RM_ColXp>
+	<RM_ColSpeed>Printing speed</RM_ColSpeed>
+	<RM_LinkBracket>lv. {0} — {1}%</RM_LinkBracket>
+	<RM_LinkLevelTip>Level: {0}</RM_LinkLevelTip>
+	<RM_PrintSpeedTip>Printing speed: {0}%</RM_PrintSpeedTip>
+	<RM_LinkXpTip>Experience: {0}</RM_LinkXpTip>
+	<RM_MsgLinkLevel>{0}: {1} reached level {2}, printing speed {3}%.</RM_MsgLinkLevel>
 
-	<!-- computer: Patterns -->
-	<RM_NoPatterns>No patterns: scan an item in a matter splitter</RM_NoPatterns>
-	<RM_CatMechs>Mechanoids</RM_CatMechs>
+	<!-- bills: add and the bill window -->
+	<RM_NoPatterns>No patterns: scan an item in a splitter</RM_NoPatterns>
+	<RM_CatMechs>Mechs</RM_CatMechs>
+	<RM_CatMechPrint>Mech printing</RM_CatMechPrint>
+	<RM_CatResurrect>Mech resurrection</RM_CatResurrect>
+	<RM_CatAll>All</RM_CatAll>
 	<RM_CatOther>Other</RM_CatOther>
-	<RM_PickPattern>Pick a category or a pattern on the left</RM_PickPattern>
+	<RM_TanksLine>Mass {0} · value {1}</RM_TanksLine>
+	<RM_PickTile>Pick a pattern</RM_PickTile>
+	<RM_ColCategories>Categories</RM_ColCategories>
+	<RM_ColPatterns>Patterns</RM_ColPatterns>
+	<RM_ColBill>Bill</RM_ColBill>
+	<RM_Apply>Apply</RM_Apply>
 	<RM_NothingFound>Nothing found</RM_NothingFound>
-	<RM_InQueueMark>queued</RM_InQueueMark>
+	<RM_Trash>Trash</RM_Trash>
+	<RM_TrashEmpty>The trash is empty</RM_TrashEmpty>
+	<RM_TrashConfirm>Template {0} has bills: they will be deleted.\nMove the template to the trash?</RM_TrashConfirm>
+	<RM_TrashConfirmPaid>Template {0} has bills: they will be deleted, what was started goes back to the tanks.\nMove the template to the trash?</RM_TrashConfirmPaid>
+	<RM_Restore>Restore</RM_Restore>
+	<RM_DeleteForever>Delete template {0} for good?\nIt cannot be brought back.</RM_DeleteForever>
+	<RM_TrashHelp>The Delete icon at the top right of a card moves it to the trash.\nIf the template has bills, you are asked first: the bills are deleted, what was started goes back to the tanks.\n"Trash" on the left, right under "All", has its own category tree of what is in it.\nA template in the trash is not printed.\nThe round arrow at the top right of a card in the trash brings it back.\nThe splitter and the bioscanner do not take a template out of the trash, a better item quality is still recorded.</RM_TrashHelp>
+	<RM_TrashHelpBio>People templates and the "Replicant" go to the trash too.\nA trait or gene in the trash is not offered for templates, templates that already have it keep it.\nDelete on a person card in the trash deletes the template for good, you are asked first.\nEverything else in the trash, the "Replicant" too, can only be brought back.</RM_TrashHelpBio>
+	<RM_TrashHelpMech>Mech resurrection cards go to the trash too.</RM_TrashHelpMech>
 	<RM_Enough>enough for {0}</RM_Enough>
 	<RM_PerUnit>Per unit: mass {0} · value {1} · time {2}</RM_PerUnit>
-	<RM_InQueueEdit>Bill already in the queue</RM_InQueueEdit>
+	<RM_PerUnitMin>Per unit: mass {0} · min. value {1} · time {2}</RM_PerUnitMin>
+	<RM_PatternsHelp>A click on a card shows its bill on the right.\n"Enough for N" is how many the matter in the tanks makes now.\n"Not researched" or "forbidden" in the mod settings: the card is faded and cannot be picked.\n"Already in bills": this replicator has a bill for the template, on the right are its settings and Apply.\nItem templates are recorded by the splitter when it splits items.\nMechanoids come in two sections: "Mech printing" and "Mech resurrection".\nResurrection is a card of the vanilla resurrection recipe with every mechanoid it resurrects; which one is chosen in the bill.</RM_PatternsHelp>
 	<RM_NoMechanitors>No mechanitors in the colony</RM_NoMechanitors>
-	<RM_EdPrinter>Replicator</RM_EdPrinter>
 	<RM_EdMode>Mode</RM_EdMode>
 	<RM_EdCount>Count, pcs</RM_EdCount>
-	<RM_InStock>in stock: {0}</RM_InStock>
-	<RM_OnMap>on the map: {0}</RM_OnMap>
+	<RM_OnMap>On the map: {0}</RM_OnMap>
+	<RM_InStock>In stock: {0}</RM_InStock>
 	<RM_EdQuality>Quality</RM_EdQuality>
 	<RM_QualityBest>best (now {0})</RM_QualityBest>
 	<RM_EdMechanitor>Mechanitor</RM_EdMechanitor>
-	<RM_MechanitorOption>{0} (print speed {1}%)</RM_MechanitorOption>
+	<RM_EdMech>Mech</RM_EdMech>
 	<RM_SliderTime>Time</RM_SliderTime>
 	<RM_SliderValue>Value</RM_SliderValue>
 	<RM_SliderMass>Mass</RM_SliderMass>
 	<RM_SliderMassTip>This pattern has no value.\nPrinting faster costs more mass, and slower costs less.</RM_SliderMassTip>
-	<RM_EdGroup>Queue</RM_EdGroup>
-	<RM_Apply>Apply</RM_Apply>
-	<RM_Create>Create</RM_Create>
-	<RM_NotApplied>Changes not applied</RM_NotApplied>
-	<RM_MsgApplied>Bill updated: {0}</RM_MsgApplied>
-	<RM_MsgDeleted>Bill deleted: {0}</RM_MsgDeleted>
-	<RM_MsgAdded>Added: {0} · {1} · {2}</RM_MsgAdded>
-
-	<!-- computer: Queue -->
-	<RM_MsgMoved>{0} — moved to {1}</RM_MsgMoved>
-	<RM_NoOtherPrinters>No other replicators</RM_NoOtherPrinters>
+	<RM_InBill>already in bills</RM_InBill>
+	<RM_Surplus>Surplus to the splitter</RM_Surplus>
+	<RM_SurplusNote>The splitter gets the bill “{0}”: haulers bring it what is in storage above the target.\nThe bill can also be deleted in the splitter: the box here is then cleared.</RM_SurplusNote>
+	<RM_RestartConfirm>The print will restart: what was started goes back to the tanks.\nContinue?</RM_RestartConfirm>
+	<RM_PrintOnConfirm>The print has started: it goes on with the new settings.\nContinue?</RM_PrintOnConfirm>
+	<RM_DeleteConfirm>The print has started: what was started goes back to the tanks.\nDelete the bill?</RM_DeleteConfirm>
+	<RM_RestartNote>Changing the quality, sex or sliders of a started bill, or saving its template with edits, restarts the print: what was started goes back to the tanks.\nCount, mode, surplus, mechanitor and name do not restart it.\nWhile the print has started, "Apply" and deleting the bill always ask first.</RM_RestartNote>
+	<RM_SurplusNoHopper>No splitter on the map: the surplus has nowhere to go.</RM_SurplusNoHopper>
+	<RM_SurplusBill>Surplus: {0} above {1}</RM_SurplusBill>
+	<RM_SurplusInfo>{0}: {1} extra</RM_SurplusInfo>
+	<RM_RowSurplus>surplus to the splitter</RM_RowSurplus>
+	<RM_RowMech>Mechanitor {0}, group {1}</RM_RowMech>
+	<RM_SpeedLevel>Printed by {0}: {1} level {2}, speed {3}%</RM_SpeedLevel>
+	<RM_ResurrectHelp>Haulers bring the nearest corpse of the colony mechanoid chosen above to the replicator, if the mechanitor has enough bandwidth.\nMatter is the steel of the vanilla resurrection recipe, the time is that of resurrection in a gestator.</RM_ResurrectHelp>
 
 	<!-- replicator: buttons, messages, letters -->
 	<RM_Rename>Rename</RM_Rename>
 	<RM_MsgShort>{0}: {1} — {2}</RM_MsgShort>
-	<RM_MsgMechReady>{0} connected to mechanitor {1}.</RM_MsgMechReady>
 	<RM_LetterMechWaitLabel>Mech waiting: {0}</RM_LetterMechWaitLabel>
 	<RM_LetterMechWait>{0} was printed in {1}, but mechanitor {2} lacks bandwidth.\nThe mech is waiting.\nFree up bandwidth or change the bill's mechanitor.\nDelete the bill and the tanks get back exactly what was spent.</RM_LetterMechWait>
-	<RM_MsgHopperBlocked>Not allowed: {0} is queued in {1}.\nThe splitter would split what the replicator printed.</RM_MsgHopperBlocked>
+	<RM_MsgMechPrinted>{0} printed and connected to {1}, group {2}.</RM_MsgMechPrinted>
+	<RM_MsgMechResurrected>{0} resurrected and connected to {1}, group {2}.</RM_MsgMechResurrected>
 	<RM_MsgTankDeconstruct>Deconstructing this tank loses its matter: mass {0} and value {1}.</RM_MsgTankDeconstruct>
 
 	<!-- scanning -->
 	<RM_DesignatorScan>Scan</RM_DesignatorScan>
 	<RM_MsgPatternNew>New pattern: {0}</RM_MsgPatternNew>
 	<RM_MsgPatternBetter>Pattern {0} — now up to {1} quality</RM_MsgPatternBetter>
-	<RM_NoHopper>No working matter splitter</RM_NoHopper>
+	<RM_NoHopper>No working splitter</RM_NoHopper>
 
 	<!-- mod settings -->
 	<RM_SetMassReturn>Mass collected: {0}</RM_SetMassReturn>
@@ -173,11 +198,11 @@
 	<RM_ColPrint>print</RM_ColPrint>
 	<RM_ColMarkup>markup, ×</RM_ColMarkup>
 	<RM_GroupChips>chips and subcores</RM_GroupChips>
-	<RM_GroupChipsDesc>Mechanoid chips and subcores.</RM_GroupChipsDesc>
+	<RM_GroupChipsDesc>Chips: signal, powerfocus, nanostructuring.\nSubcores: standard, high.</RM_GroupChipsDesc>
 	<RM_GroupUnique>unique</RM_GroupUnique>
 	<RM_GroupUniqueDesc>Techprints, AI persona core, persona and unique weapons.</RM_GroupUniqueDesc>
 	<RM_GroupBio>bioreplication</RM_GroupBio>
-	<RM_GroupBioDesc>All genetics, archotech parts, resurrector and healer serums.</RM_GroupBioDesc>
+	<RM_GroupBioDesc>All genetics, archotech parts, resurrector and healer serums, and the living: the bioscanner and the bioreplicator.</RM_GroupBioDesc>
 	<RM_SetMoveTanks>Tanks can be moved (with their contents)</RM_SetMoveTanks>
 	<RM_SetTankCapacity>Tank capacity, kg (large ×4)</RM_SetTankCapacity>
 	<RM_SetPower>Power, W</RM_SetPower>
@@ -185,5 +210,47 @@
 	<RM_PowerStore>Tanks</RM_PowerStore>
 	<RM_PowerRecycle>Computer and splitter</RM_PowerRecycle>
 	<RM_SetReset>Reset all</RM_SetReset>
+	<RM_PowerBio>Bioreplication</RM_PowerBio>
+	<RM_DnaHelpAnimals>Animal DNA is recorded by the bioscanner: "Scan..." on the bioscanner or a right click on the bioscanner with a colonist.\n"Scan" on a colony animal or a downed wild animal sends it to the bioscanner.\nA right click on a downed animal with a colonist carries it there at once.\nA fresh animal corpse split in the splitter is recorded the same way ("Scan" on the corpse carries it there).\nOne scan gives the DNA of the kind for the whole colony.</RM_DnaHelpAnimals>
+	<RM_DnaHelp>From people the bioscanner and the splitter collect only traits and genes into the colony base.\n"Scan" on a downed person carries them to the bioscanner, a fresh human corpse split in the splitter is recorded the same way.\nThe base only grows, even when templates are deleted.\nAppearance and skills need no collecting, they are always available.\nA person whose traits and genes are all in the base has nothing to scan and is not in the "Scan..." list.\n\n"Replicant" is in "People" from the start: skills at 0, no traits, no genes.\nWith it a person can be printed without a scanner.\nIt is an ordinary template: the editor edits it, and "Apply" changes the "Replicant" itself.\nRename at the top right of a person card renames the template at once.\nAn empty name brings back "Template N", for the "Replicant" it brings back "Replicant".\nCopy at the top right of a person card copies the whole person, without the name.\nPaste on any card puts the copied person into the editor as an edit of every block, the name stays: "Apply" saves it, "Reset" undoes it.\nA new template comes only from Paste at the right of the "People" header: it adds "Template N" with the copied person at once.\nTraits and genes from the base are in the "Traits" and "Genes" categories.</RM_DnaHelp>
+	<RM_DnaNone>No DNA recorded</RM_DnaNone>
+	<RM_NoScan>No one to scan</RM_NoScan>
+	<RM_ScanWaiting>Already waiting for a bioscanner</RM_ScanWaiting>
+	<RM_DnaKnown>DNA recorded</RM_DnaKnown>
+	<RM_TraitsNone>No traits recorded yet.</RM_TraitsNone>
+	<RM_GenesNone>No genes recorded yet.</RM_GenesNone>
+	<RM_TraitsVeryGood>Very good</RM_TraitsVeryGood>
+	<RM_TraitsGood>Good</RM_TraitsGood>
+	<RM_TraitsBad>Bad</RM_TraitsBad>
+	<RM_TraitsVeryBad>Very bad</RM_TraitsVeryBad>
+	<RM_GeneResistance>Resistance</RM_GeneResistance>
+	<RM_GeneSensitivity>Sensitivity</RM_GeneSensitivity>
+	<RM_MsgBase>Recorded to the people base: {0}.</RM_MsgBase>
+	<RM_BaseKnown>Traits and genes already recorded</RM_BaseKnown>
+	<RM_Scanning>Scanning: {0}</RM_Scanning>
+	<RM_MsgDna>DNA recorded: {0}</RM_MsgDna>
+	<RM_CatPeople>People</RM_CatPeople>
+	<RM_MsgAnimalPrinted>Animal printed: {0}.</RM_MsgAnimalPrinted>
+	<RM_BioOff>Bioreplication is off in the mod settings</RM_BioOff>
+	<!-- people: templates -->
+	<RM_MsgPersonPrinted>Person printed: {0}.</RM_MsgPersonPrinted>
+	<RM_TemplateN>Template {0}</RM_TemplateN>
+	<RM_Replicant>Replicant</RM_Replicant>
+	<RM_ValueFloor>Template value: at least {0}</RM_ValueFloor>
+	<RM_EdTemplate>Template</RM_EdTemplate>
+	<RM_Appearance>Appearance</RM_Appearance>
+	<RM_Body>Body</RM_Body>
+	<RM_Head>Head</RM_Head>
+	<RM_Hair>Hair</RM_Hair>
+	<RM_HairColor>Hair color</RM_HairColor>
+	<RM_Beard>Beard</RM_Beard>
+	<RM_ColTime>Time</RM_ColTime>
+	<RM_ColValue>Value</RM_ColValue>
+	<RM_TemplateHelp>The template is stored in the colony, bills print it exactly.\nEvery block of the template has its own Reset at the top right.\nThe bill's Reset undoes every unapplied edit: the bill goes back to the queued bill or to the defaults, the whole template to what it was.\nA template edit turns the bill's right button into "Apply": it saves the template, and the bill edit too when the bill is already in the queue.\nWithout an edit the button is "Add bill", or "Delete" when the bill is already in the queue.\nA printed person is a colonist of 18 with the template's genes and the childhood "replicant", no kin, no health conditions and no clothes.\nThe name comes from the game.\nValue is the game's price of the person with their skills and genes, plus traits and passions, times the bioreplication markup.\nValue is never below the person with all skills at 0: while it is at that floor, the bill says "min. value".\nThe template name is in the row above the bill: the bill is called by it and has no name of its own.\nRename is on the person card: the new name shows in this row at once.</RM_TemplateHelp>
+	<RM_SkillsHelp>Time is body growth (63 days, as in the vanilla growth vat) plus skill recording (4000 xp a day), scaled by 25 / 63.\nA blank template takes 25 days at 100% speed, 15 with the time slider all the way.\nPassions, traits and genes add no time.\nThe round arrow resets the skill row: level 0, no passion.\nThe Copy and Paste icons move a skill's level and passion to another skill.\nA skill's value is how much cheaper the person would be with that skill at 0.\nA passion is 175 silver (major passion 350).\nTrait and gene aptitudes (+N) add to the skill level, as in the game.</RM_SkillsHelp>
+	<RM_TraitsHelp>Traits come from the base, the "Traits" category on the left.\nThey are grouped by price: very good, good, bad, very bad.\nA click on a trait card adds it to the open template, another click removes it.\nA click on a trait in the template's Traits block removes it too.\nA trait's description shows with the mouse over its card.\nWith no template open the cards are faded and do nothing.\nAt most three traits.\nFaded ones conflict with chosen traits, passions or the template's genes.\nA trait is 175 silver per step: a useful or harmless one adds, a harmful one subtracts.</RM_TraitsHelp>
+	<RM_MetLimit>Metabolism cannot go below −5: a gene that would take it lower is faded.
+To raise metabolism, remove a gene with a minus to metabolism or add a gene with a plus.</RM_MetLimit>
+	<RM_GenesHelp>Genes come from the base, the "Genes" category on the left.\nThey are grouped as in the gene assembler.\nA click on a gene card adds it to the open template, another click removes it.\nA click on a gene in the template's Genes block removes it too.\nA gene's price, complexity, metabolism, archites and description show with the mouse over its card.\nWith no template open the cards are faded and do nothing.\nThe number of genes and the complexity are not limited.\nThe template's metabolism is not below −5, as in the game: below 0 hunger rises.\nFaded ones in the middle conflict with chosen genes or traits, need a gene not chosen, or take the metabolism below −5.\nA faded gene in the Genes block cannot be removed: another gene needs it, or the metabolism would fall below −5.\nWhen the −5 limit gets in the way, a yellow line at the top of the Genes block says what to do.\nA gene is a genepack (100 silver), archite capsules (700 silver each) and 175 silver per metabolism point: a useful gene (metabolism below 0) adds, a harmful one subtracts.\nNo genepacks or capsules are needed: their cost is in the price.\nUnder the genes are the totals, as in the gene assembler: complexity, metabolism with hunger rate.\nA printed person is born with the template's genes.\nThe xenotype is the game's one with exactly these genes, otherwise a custom one named after the template.</RM_GenesHelp>
 
 </LanguageData>

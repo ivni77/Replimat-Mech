@@ -11,7 +11,7 @@
     <NoWarn>CS0649;CS0169;CS0414</NoWarn>
     <!-- пути к игре, Harmony и Multiplayer можно переопределить: dotnet build -p:RimWorld=... -p:Harmony=... -p:Multiplayer=... -->
     <RimWorld Condition="'$(RimWorld)' == ''">$(HOME)/Library/Application Support/Steam/steamapps/common/RimWorld/RimWorldMac.app/Contents/Resources/Data/Managed</RimWorld>
-    <Harmony Condition="'$(Harmony)' == ''">$(HOME)/Library/Application Support/Steam/steamapps/workshop/content/294100/2009463077/Current/Assemblies</Harmony>
+    <Harmony Condition="'$(Harmony)' == ''">$(HOME)/Library/Application Support/Steam/steamapps/workshop/content/294100/2009463077/1.6/Assemblies</Harmony>
     <Multiplayer Condition="'$(Multiplayer)' == ''">$(HOME)/Library/Application Support/Steam/steamapps/workshop/content/294100/2606448745/1.6/Assemblies</Multiplayer>
   </PropertyGroup>
   <ItemGroup>

@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
 
+	<!-- Own category under Buildings instead of the inherited BuildingsFurniture: bulk goods traders and settlements stock that one;
+	     mod buildings are sold only by exotic goods traders (Patches/Patches.xml) -->
+	<ThingCategoryDef>
+		<defName>RM_Buildings</defName>
+		<label>replimat</label>
+		<parent>Buildings</parent>
+	</ThingCategoryDef>
+
 	<ThingDef Name="RM_Base" ParentName="FurnitureBase" Abstract="True">
+		<thingCategories Inherit="False">
+			<li>RM_Buildings</li>
+		</thingCategories>
 		<designationCategory>RM_Replimat</designationCategory>
 		<drawerType>MapMeshAndRealTime</drawerType>
 		<tickerType>Normal</tickerType>
@@ -37,7 +48,8 @@
 	<ThingDef ParentName="RM_Base">
 		<defName>RM_Replicator</defName>
 		<label>replicator</label>
-		<description>Prints items and mechs from the computer's patterns, paying time, mass and value from the tanks.\nPrints in batches of up to a stack; mechs and single items one at a time.\nThe queue is set up at the computer; finished items are placed nearby.\nThe first queue prints before the second; a bill that currently lacks mass or value is skipped and the next one is taken.</description>
+		<uiOrder>2040</uiOrder>
+		<description>Prints items and mechanoids from patterns, paying time, mass and value from the tanks of its power network.\nLike a workbench: bills are added in the replicator itself, on its Bills tab; drag a bill to reorder it, copy and paste it into any replicator.\nThe replicator takes the first bill it can print; a bill that lacks mass or value right now is skipped.\nPrints only while the computer of its power network has an operator: the operator's links set what prints and how fast.\nPrints in batches of up to a stack; mechanoids and single items one at a time.\nFinished items are placed nearby.</description>
 		<graphicData>
 			<texPath>Things/Building/replimatTerminal</texPath>
 			<graphicClass>Graphic_Multi</graphicClass>
@@ -61,7 +73,7 @@
 		<hasInteractionCell>true</hasInteractionCell>
 		<interactionCellOffset>(0,0,-1)</interactionCellOffset>
 		<statBases><Beauty>5</Beauty><Mass>75</Mass></statBases>
-		<inspectorTabs><li>ReplimatMech.ITab_Queue</li></inspectorTabs>
+		<inspectorTabs><li>ReplimatMech.ITab_RMBills</li></inspectorTabs>
 		<comps>
 			<li Class="ReplimatMech.CompProperties_Printer"/>
 		</comps>
@@ -71,7 +83,8 @@
 	<ThingDef ParentName="RM_Base">
 		<defName>RM_ReplicatorWall</defName>
 		<label>wall replicator</label>
-		<description>A replicator built into a wall.\nPrints the same as the regular one.\nThe first queue prints before the second; a bill that currently lacks mass or value is skipped and the next one is taken.</description>
+		<uiOrder>2050</uiOrder>
+		<description>A replicator built into a wall.\nPrints the same as the regular one.</description>
 		<graphicData>
 			<texPath>Things/Building/replimatTerminalWall</texPath>
 			<graphicClass>Graphic_Multi</graphicClass>
@@ -100,7 +113,7 @@
 			<isEdifice>false</isEdifice>
 			<isAttachment>true</isAttachment>
 		</building>
-		<inspectorTabs><li>ReplimatMech.ITab_Queue</li></inspectorTabs>
+		<inspectorTabs><li>ReplimatMech.ITab_RMBills</li></inspectorTabs>
 		<comps>
 			<li Class="ReplimatMech.CompProperties_Printer"/>
 		</comps>
@@ -113,7 +126,8 @@
 	<ThingDef ParentName="RM_Base">
 		<defName>RM_Feeder</defName>
 		<label>animal replicator</label>
-		<description>Prints feed into itself from its own queue.\nAnimals eat straight from it.\nHaulers neither bring anything here nor take anything away.\nThe first queue prints before the second; a bill that currently lacks mass or value is skipped and the next one is taken.</description>
+		<uiOrder>2060</uiOrder>
+		<description>A replicator that prints feed into itself from its own bills.\nAnimals eat straight from it.\nHaulers neither bring anything here nor take anything away.</description>
 		<thingClass>ReplimatMech.Building_RMFeeder</thingClass>
 		<graphicData>
 			<texPath>Things/Building/replimatAnimalFeeder</texPath>
@@ -130,7 +144,7 @@
 		<pathCost>40</pathCost>
 		<surfaceType>Item</surfaceType>
 		<statBases><MaxHitPoints>80</MaxHitPoints><Mass>15</Mass></statBases>
-		<inspectorTabs><li>ReplimatMech.ITab_Queue</li></inspectorTabs>
+		<inspectorTabs><li>ReplimatMech.ITab_RMBills</li></inspectorTabs>
 		<building>
 			<maxItemsInCell>2</maxItemsInCell>
 			<preventDeteriorationOnTop>true</preventDeteriorationOnTop>
@@ -165,7 +179,8 @@
 
 	<ThingDef ParentName="RM_TankBase">
 		<defName>RM_Tank</defName>
-		<label>replimat tank</label>
+		<label>tank</label>
+		<uiOrder>2010</uiOrder>
 		<description>Stores matter: mass (up to its capacity) and value (no limit).\nMatter is split between the network's tanks by capacity.\nWithout power it keeps its stock, but nothing prints from it.\nDeconstructed or destroyed, it loses its matter.</description>
 		<graphicData>
 			<texPath>Things/Building/replimatMatterTank</texPath>
@@ -185,7 +200,8 @@
 
 	<ThingDef ParentName="RM_TankBase">
 		<defName>RM_TankLarge</defName>
-		<label>replimat tank (large)</label>
+		<label>large tank</label>
+		<uiOrder>2020</uiOrder>
 		<description>A tank four times bigger than the regular one: it takes four times more matter.</description>
 		<graphicData>
 			<texPath>Things/Building/replimatMatterTankLarge</texPath>
@@ -203,11 +219,12 @@
 		<statBases><Mass>200</Mass><WorkToBuild>12000</WorkToBuild></statBases>
 	</ThingDef>
 
-	<!-- Matter splitter -->
+	<!-- Splitter -->
 	<ThingDef ParentName="RM_Base">
 		<defName>RM_Hopper</defName>
-		<label>matter splitter</label>
-		<description>Instantly splits whatever is brought in into matter for the tanks: items (recording their patterns) and corpses of people, animals and mechs with everything on them.\nA corpse works like cremation, without mood penalties: a fresh one gives meat and leather by the 50% rule plus body mass, a rotting one or a skeleton gives only mass, a mech gives its pattern if the player can gestate it.\nAn item with no value (stone blocks) gives 60% of its mass.\nNever takes anything queued for printing.\nWhat to accept is set in its filter, like a stockpile; everything is off by default.\nThe "Scan" button on an item: a hauler brings one piece here and its pattern is recorded, even if the filter does not accept it.\nBuild as many as you like, each with its own filter.</description>
+		<label>splitter</label>
+		<uiOrder>2030</uiOrder>
+		<description>Like a crematorium: bills with a filter, hit points, quality and whether taken from the dead.\nHaulers bring what fits a bill, and it is split into matter for the tanks at once; items have their patterns recorded.\nA corpse works like cremation, without mood penalties: a fresh one gives meat and leather by the 50% rule plus body mass, a rotting one or a skeleton gives only mass, a mechanoid gives its pattern if the player can gestate it.\nA fresh corpse of an animal or a person also records its DNA, if bioreplication is on.\nAn item with no value (stone blocks) gives 60% of its mass.\nThe "Surplus" checkbox in a replicator bill adds a bill here: haulers bring what is in stock above that bill's target.\nThe "Scan" button on an item: a hauler brings one piece here and its pattern is recorded, even if no bill takes it; on a fresh corpse of an animal or a person whose DNA is not recorded — the corpse itself, for its DNA.</description>
 		<thingClass>ReplimatMech.Building_RMHopper</thingClass>
 		<graphicData>
 			<texPath>Things/Building/replimatMatterHopper</texPath>
@@ -228,21 +245,8 @@
 			<ComponentIndustrial>10</ComponentIndustrial>
 		</costList>
 		<size>(3,1)</size>
-		<surfaceType>Item</surfaceType>
 		<statBases><Mass>150</Mass><WorkToBuild>12000</WorkToBuild></statBases>
-		<inspectorTabs><li>ITab_Storage</li></inspectorTabs>
-		<building>
-			<preventDeteriorationOnTop>true</preventDeteriorationOnTop>
-			<ignoreStoredThingsBeauty>true</ignoreStoredThingsBeauty>
-			<fixedStorageSettings>
-				<filter>
-					<categories><li>Root</li></categories>
-				</filter>
-			</fixedStorageSettings>
-			<defaultStorageSettings>
-				<priority>Important</priority>
-			</defaultStorageSettings>
-		</building>
+		<inspectorTabs><li>ReplimatMech.ITab_RMSplitter</li></inspectorTabs>
 		<comps>
 			<li Class="CompProperties_Glower">
 				<glowRadius>5</glowRadius>
@@ -263,9 +267,11 @@
 	<!-- Computer -->
 	<ThingDef ParentName="RM_Base">
 		<defName>RM_Computer</defName>
-		<label>replimat computer</label>
-		<description>Print queues and patterns.\nTalk to it through a comms console, like summoning the diabolus.\nWithout a computer on the network printing stops, but queues and patterns are kept.</description>
+		<label>computer</label>
+		<uiOrder>2000</uiOrder>
+		<description>Binds the operator's links to the replicators of its power network.\nA colonist with a replink, mechlink or biolink: right-click the computer, "Contact the computer".\nThis is done once, after that the operator is not needed at the computer; a computer has one operator, a new one replaces the old.\nA bound link lets its group print, the link level sets the speed.\nIf the operator dies or leaves the map, printing stops.\nThe computer window shows matter, buildings, the operator's links and the bills of all replicators of the network.</description>
 		<thingClass>ReplimatMech.Building_RMComputer</thingClass>
+		<inspectorTabs><li>ReplimatMech.ITab_RMComputer</li></inspectorTabs>
 		<graphicData>
 			<texPath>Things/Building/replimatComputer</texPath>
 			<graphicClass>Graphic_Multi</graphicClass>
@@ -278,15 +284,102 @@
 		</graphicData>
 		<uiIconPath>UI/Icons/replimatComputer</uiIconPath>
 		<costList>
-			<Steel>170</Steel>
-			<Plasteel>10</Plasteel>
-			<ComponentIndustrial>10</ComponentIndustrial>
-			<RM_IsolinearModule>1</RM_IsolinearModule>
+			<Steel>680</Steel>
+			<Plasteel>30</Plasteel>
+			<ComponentIndustrial>30</ComponentIndustrial>
+			<Gold>50</Gold>
 		</costList>
 		<size>(2,1)</size>
 		<fillPercent>0.99</fillPercent>
 		<pathCost>200</pathCost>
-		<statBases><MaxHitPoints>400</MaxHitPoints><Mass>100</Mass><WorkToBuild>15000</WorkToBuild></statBases>
+		<statBases><MaxHitPoints>400</MaxHitPoints><Mass>100</Mass><WorkToBuild>35000</WorkToBuild></statBases>
+		<constructionSkillPrerequisite>8</constructionSkillPrerequisite>
+	</ThingDef>
+
+	<!-- Bioscanner: like the vanilla gene extractor, the creature lies on the table, the bioscanner block rides over it -->
+	<ThingDef ParentName="RM_Base">
+		<defName>RM_Bioscanner</defName>
+		<label>bioscanner</label>
+		<uiOrder>2070</uiOrder>
+		<description>Records DNA for bioreplication: of an animal (a colony animal or a downed wild one) or of a person (a colonist, slave or prisoner of the colony, or anyone downed).\nThe "Scan..." button is one list of people and animals: a colonist with Handling work leads an animal on a rope, a downed one is carried; a colonist walks in, a prisoner or a downed person is carried by a hauler.\nA right click on the bioscanner with a colonist sends them in.\nThe "Scan" button on a colony animal or a downed wild animal whose DNA is not recorded, or on a downed person with traits or genes not yet in the colony base, sends them to the nearest free bioscanner.\nA right click on a downed animal with a colonist carries it to the bioscanner at once.\nThe scan takes 3 hours with power; the creature lies on the table and comes out unchanged.\nThe DNA of an animal's kind is recorded once for the whole colony.\nFrom a person only traits and genes go into the colony base, and a person with nothing new is not offered.\nThe bioreplicator's add-bill window shows the recorded DNA, traits and templates.\nWith bioreplication off in the mod settings the bioscanner is not built and takes nobody.</description>
+		<thingClass>ReplimatMech.Building_RMBioscanner</thingClass>
+		<graphicData>
+			<texPath>Things/Building/replimatBioscanner</texPath>
+			<graphicClass>Graphic_Multi</graphicClass>
+			<drawSize>(3,3)</drawSize>
+			<shadowData><volume>(2.6,0.5,0.8)</volume></shadowData>
+			<damageData>
+				<rectN>(0.2,-0.25,2.6,1.5)</rectN>
+				<rectS>(0.2,-0.25,2.6,1.5)</rectS>
+				<rectE>(0.06,0.25,0.88,2.55)</rectE>
+				<rectW>(0.06,0.25,0.88,2.55)</rectW>
+			</damageData>
+		</graphicData>
+		<uiIconPath>UI/Icons/replimatBioscanner</uiIconPath>
+		<costList>
+			<Steel>200</Steel>
+			<Plasteel>20</Plasteel>
+			<ComponentIndustrial>8</ComponentIndustrial>
+		</costList>
+		<size>(3,1)</size>
+		<hasInteractionCell>true</hasInteractionCell>
+		<interactionCellOffset>(0,0,-1)</interactionCellOffset>
+		<statBases><MaxHitPoints>350</MaxHitPoints><Mass>100</Mass><WorkToBuild>9000</WorkToBuild></statBases>
+		<comps>
+			<li Class="ReplimatMech.CompProperties_SecondLayer">
+				<graphicData>
+					<texPath>Things/Building/replimatBioscannerBlock</texPath>
+					<graphicClass>Graphic_Multi</graphicClass>
+					<drawSize>(3,3)</drawSize>
+				</graphicData>
+				<altitudeLayer>ItemImportant</altitudeLayer>
+			</li>
+		</comps>
+	</ThingDef>
+
+	<!-- Bioreplicator (defName RM_Incubator kept for saves): rectangular glass with two stripes over a base with a screen; the creature grows lying behind the glass -->
+	<ThingDef ParentName="RM_Base">
+		<defName>RM_Incubator</defName>
+		<label>bioreplicator</label>
+		<uiOrder>2080</uiOrder>
+		<description>Prints the living from the matter of its power network's tanks, without food: adult tame animals by recorded DNA and colonists by templates.\nLike a replicator: bills are added on its Bills tab; it is the only one that prints the living.\nPrints while the operator of the computer has a biolink: the biolink level sets the speed.\nThe creature grows behind the glass from a baby to an adult.\nAn animal comes out tame, with no master and no training; the bill chooses the sex, "Repeat until" counts colony animals of that kind and sex on the map.\nA person comes out a colonist of 18 with no kin and no clothes, exactly as the template says.\nWith bioreplication off in the mod settings the bioreplicator is not built and prints nothing.</description>
+		<graphicData>
+			<texPath>Things/Building/replimatIncubator</texPath>
+			<graphicClass>Graphic_Multi</graphicClass>
+			<drawSize>(3,3)</drawSize>
+			<shadowData><volume>(2.8,0.5,1.8)</volume></shadowData>
+			<damageData>
+				<rectN>(0.07,-0.06,2.87,2.43)</rectN>
+				<rectS>(0.07,-0.06,2.87,2.43)</rectS>
+				<rectE>(-0.12,0.07,2.23,2.87)</rectE>
+				<rectW>(-0.11,0.07,2.23,2.87)</rectW>
+			</damageData>
+		</graphicData>
+		<uiIconPath>UI/Icons/replimatIncubator</uiIconPath>
+		<costList>
+			<Steel>200</Steel>
+			<Plasteel>20</Plasteel>
+			<ComponentIndustrial>8</ComponentIndustrial>
+		</costList>
+		<size>(3,2)</size>
+		<fillPercent>0.99</fillPercent>
+		<pathCost>200</pathCost>
+		<hasInteractionCell>true</hasInteractionCell>
+		<interactionCellOffset>(0,0,-1)</interactionCellOffset>
+		<statBases><MaxHitPoints>350</MaxHitPoints><Mass>100</Mass><WorkToBuild>9000</WorkToBuild></statBases>
+		<inspectorTabs><li>ReplimatMech.ITab_RMBills</li></inspectorTabs>
+		<comps>
+			<li Class="ReplimatMech.CompProperties_Printer"><incubator>true</incubator></li>
+			<li Class="ReplimatMech.CompProperties_SecondLayer">
+				<graphicData>
+					<texPath>Things/Building/replimatIncubatorGlass</texPath>
+					<graphicClass>Graphic_Multi</graphicClass>
+					<shaderType>Transparent</shaderType>
+					<drawSize>(3,3)</drawSize>
+				</graphicData>
+				<altitudeLayer>ItemImportant</altitudeLayer>
+			</li>
+		</comps>
 	</ThingDef>
 
 </Defs>

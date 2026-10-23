@@ -10,10 +10,10 @@ namespace ReplimatMech;
 /// Цена печати за штуку: время (тики при скорости 100%), стоимость (серебро), масса (кг).
 public static class Pricing
 {
-    const float WorkPerSilver = 14f, MechMassPerBodySize = 60f;
+    const float WorkPerSilver = 14f, MassPerBodySize = 60f;
     static readonly Dictionary<ThingDef, RecipeDef> gestation = new();
     static readonly Dictionary<(ThingDef, ThingDef), float> workCache = new();
-    static readonly Dictionary<ThingDef, RecipeDef> fixedRecipe = new();
+    static readonly Dictionary<ThingDef, float?> sourceCache = new();
 
     public static RecipeDef Gestation(ThingDef race)
     {
@@ -23,61 +23,105 @@ public static class Pricing
     }
 
     /// Ванильная работа на штуку при скорости 1,0: явный рецепт (работа / сколько штук даёт, пеммикан — 16 за раз),
-    /// иначе «работа изготовления», иначе по стоимости, как у плавильни.
+    /// иначе «работа изготовления» (и у построек: скульптуры делают на верстаке), иначе «работа строительства», иначе по стоимости, как у плавильни.
     public static float Work(ThingDef def, ThingDef stuff)
     {
         if (workCache.TryGetValue((def, stuff), out float w)) return w;
         RecipeDef r = def.category == ThingCategory.Building ? null
             : DefDatabase<RecipeDef>.AllDefs.FirstOrDefault(x => x.products.Count == 1 && x.products[0].thingDef == def && x.workAmount > 0f);
-        if (def.category == ThingCategory.Building) w = def.GetStatValueAbstract(StatDefOf.WorkToBuild, stuff);
-        else if (r != null) w = r.workAmount / r.products[0].count;
+        if (r != null) w = r.workAmount / r.products[0].count;
         else if (def.statBases?.StatListContains(StatDefOf.WorkToMake) == true) w = def.GetStatValueAbstract(StatDefOf.WorkToMake, stuff);
+        else if (def.category == ThingCategory.Building) w = def.GetStatValueAbstract(StatDefOf.WorkToBuild, stuff);
         else w = def.GetStatValueAbstract(StatDefOf.MarketValue, stuff) * WorkPerSilver;
         return workCache[(def, stuff)] = w;
     }
 
-    static IEnumerable<(ThingDef def, int count)> MechMaterials(ThingDef race)
-    {
-        RecipeDef r = Gestation(race);
-        if (r == null) yield break;
-        foreach (IngredientCount ing in r.ingredients)
-            if (ing.filter.AnyAllowedDef is { } d) yield return (d, Mathf.RoundToInt(ing.GetBaseCount()));
-    }
+    static List<RecipeDef> resurrect;
 
-    /// Мех = его материалы по цене их печати (наценка только на чипы и субъядра).
-    public static float Value(Pattern p, QualityCategory q)
-    {
-        if (!p.IsMech) return Rules.NoValue(p.def) ? 0f : p.MarketValue(q) * Rules.Markup(p.def);
-        return MechMaterials(p.def).Sum(m => m.count * m.def.BaseMarketValue * Rules.Markup(m.def));
-    }
+    /// Рецепты воскрешения ванили по весу механоида, от самого дешёвого (лёгкий).
+    public static List<RecipeDef> ResurrectRecipes => resurrect ??= DefDatabase<RecipeDef>.AllDefs.Where(r => r.mechResurrection)
+        .OrderBy(r => Fixed(r).Sum(m => m.count * m.def.BaseMarketValue)).ToList();
 
-    public static float Mass(Pattern p) =>
-        p.IsMech ? MechMassPerBodySize * p.def.race.baseBodySize : p.def.GetStatValueAbstract(StatDefOf.Mass, p.stuff);
+    /// Труп механоида колонии, которого ваниль умеет воскрешать.
+    public static bool Resurrectable(Corpse c) => c.InnerPawn is { } p && p.RaceProps.IsMechanoid && p.Faction == Faction.OfPlayer && ResurrectRecipes.Any(r => r.fixedIngredientFilter.Allows(c.def));
 
-    /// Время штуки в тиках при скорости печати 100%. Механоид: материалы + циклы гестации.
-    public static float Ticks(Pattern p)
+    static IEnumerable<(ThingDef def, int count)> Fixed(RecipeDef r) =>
+        r == null ? Enumerable.Empty<(ThingDef, int)>() : r.ingredients.Where(i => i.IsFixedIngredient).Select(i => (i.FixedIngredient, Mathf.RoundToInt(i.GetBaseCount())));
+
+    /// Материалы механоида: рецепт гестации; воскрешение — сталь рецепта ванили (сам труп не в счёт).
+    static IEnumerable<(ThingDef def, int count)> Materials(Pattern p, Corpse c)
     {
-        if (!p.IsMech) return Work(p.def, p.stuff);
+        if (p.resurrect) return Fixed(p.recipe);
         RecipeDef r = Gestation(p.def);
-        return MechMaterials(p.def).Sum(m => m.count * Work(m.def, null)) + r.gestationCycles * (r.formingTicks + r.workAmount);
+        return r == null ? Enumerable.Empty<(ThingDef, int)>()
+            : r.ingredients.Where(i => i.filter.AnyAllowedDef != null).Select(i => (i.filter.AnyAllowedDef, Mathf.RoundToInt(i.GetBaseCount())));
     }
 
-    /// Скорость печати — скорость гестации механитора (ремесло + гестационные процессоры); его нет — 100%.
-    public static float Speed(Pawn editor) => editor != null ? editor.GetStatValue(RMDefOf.MechFormingSpeed) : 1f;
+    /// Мех = его материалы по цене их печати (наценка только на чипы и субъядра); животное — цена взрослого с наценкой биорепликации,
+    /// человек — цена шаблона (Human.Value) с ней же.
+    public static float Value(Pattern p, QualityCategory q, Corpse c = null)
+    {
+        if (p.IsAnimal) return p.def.GetStatValueAbstract(StatDefOf.MarketValue) * Rules.BioMarkup;
+        if (p.IsHuman) return p.human.Value * Rules.BioMarkup;
+        if (!p.IsMech) return Rules.NoValue(p.def) ? 0f : p.MarketValue(q) * Rules.Markup(p.def);
+        return Materials(p, c).Sum(m => m.count * m.def.BaseMarketValue * Rules.Markup(m.def));
+    }
 
-    public static float Bandwidth(Pattern p) => p.def.GetStatValueAbstract(StatDefOf.BandwidthCost);
+    public static float Mass(Pattern p, Corpse c = null) =>
+        p.resurrect ? Materials(p, c).Sum(m => m.count * m.def.GetStatValueAbstract(StatDefOf.Mass))
+        : p.IsPawn ? MassPerBodySize * p.def.race.baseBodySize : p.def.GetStatValueAbstract(StatDefOf.Mass, p.stuff);
 
-    /// Материалы вещи: costList + материал, иначе фиксированные ингредиенты рецепта, иначе сама вещь. Без работы и качества.
+    /// Время штуки в тиках при скорости печати 100%. Механоид и воскрешение: материалы + циклы гестации своего рецепта.
+    public static float Ticks(Pattern p, Corpse c = null)
+    {
+        if (p.IsAnimal) return GrowDays(p.def) / 2f * GenDate.TicksPerDay;
+        if (p.IsHuman) return p.human.Ticks;
+        if (!p.IsMech) return Work(p.def, p.stuff);
+        RecipeDef r = p.resurrect ? p.recipe : Gestation(p.def);
+        return r == null ? 0f : Materials(p, c).Sum(m => m.count * Work(m.def, null)) + r.gestationCycles * (r.formingTicks + r.workAmount);
+    }
+
+    /// Рост тела, как в капсуле роста ванили: половина вынашивания (у несушек его нет) + 3 дня на год до взрослого.
+    /// Печать — вдвое быстрее («средне»): курица 7 ч, корова 2,2 дня, трумбо 7 дней.
+    public static float GrowDays(ThingDef race) =>
+        (race.HasComp(typeof(CompEggLayer)) ? 0f : Mathf.Max(0f, race.race.gestationPeriodDays) / 2f) + 3f * AdultAge(race);
+
+    /// Возраст начала взрослой стадии, лет.
+    public static float AdultAge(ThingDef race) => race.race.lifeStageAges.Last().minAge;
+
+    public static float Bandwidth(Pattern p, Corpse c = null) =>
+        p.resurrect ? c?.InnerPawn.GetStatValue(StatDefOf.BandwidthCost) ?? 0f : p.def.GetStatValueAbstract(StatDefOf.BandwidthCost);
+
+    /// Материалы вещи — самый дешёвый способ её получить, без работы и качества: costList + материал, иначе источник (Source), иначе сама вещь.
+    /// Так по кругу «печать → верстак или бочка → расщепитель» стоимость не растёт.
     static float MaterialsValue(Thing inner)
     {
         List<ThingDefCountClass> cost = inner.CostListAdjusted();
         if (cost.Count > 0) return cost.Sum(c => c.count * c.thingDef.BaseMarketValue);
-        if (!fixedRecipe.TryGetValue(inner.def, out RecipeDef r))
-            fixedRecipe[inner.def] = r = DefDatabase<RecipeDef>.AllDefs.FirstOrDefault(x => x.products.Count == 1 && x.products[0].thingDef == inner.def
-                                                                                   && x.ingredients.Count > 0 && x.ingredients.All(i => i.IsFixedIngredient));
-        if (r != null) return r.ingredients.Sum(i => i.GetBaseCount() * i.FixedIngredient.BaseMarketValue) / r.products[0].count;
-        return inner.def.GetStatValueAbstract(StatDefOf.MarketValue, inner.Stuff);
+        return Source(inner.def) ?? inner.def.GetStatValueAbstract(StatDefOf.MarketValue, inner.Stuff);
     }
+
+    /// Пиво — из сусла в бочке, один к одному; паста — из сырья в раздатчике; остальное — самый дешёвый рецепт, где ингредиент
+    /// «любое из» — самое дешёвое из разрешённых (еда — за питательность). null — получить не из чего.
+    static float? Source(ThingDef def)
+    {
+        if (sourceCache.TryGetValue(def, out float? v)) return v;
+        if (def == ThingDefOf.Beer) v = ThingDefOf.Wort.BaseMarketValue;
+        else if (def == ThingDefOf.MealNutrientPaste)
+            v = ThingDefOf.NutrientPasteDispenser.building.nutritionCostPerDispense * DefDatabase<ThingDef>.AllDefs
+                .Where(d => Building_NutrientPasteDispenser.IsAcceptableFeedstock(d) && d.BaseMarketValue > 0f)
+                .Select(d => d.BaseMarketValue / d.ingestible.CachedNutrition).DefaultIfEmpty(0f).Min();
+        else
+        {
+            var recipes = DefDatabase<RecipeDef>.AllDefs.Where(r => !r.IsSurgery && r.products.Count == 1 && r.products[0].thingDef == def && r.ingredients.Count > 0).ToList();
+            if (recipes.Count > 0) v = recipes.Min(r => r.ingredients.Sum(i => Cheapest(r, i)) / r.products[0].count);
+        }
+        return sourceCache[def] = v;
+    }
+
+    static float Cheapest(RecipeDef r, IngredientCount i) =>
+        i.filter.AllowedThingDefs.Where(d => r.fixedIngredientFilter?.Allows(d) != false && d.BaseMarketValue > 0f && r.IngredientValueGetter.ValuePerUnitOf(d) > 0f)
+            .Select(d => i.GetBaseCount() / r.IngredientValueGetter.ValuePerUnitOf(d) * d.BaseMarketValue).DefaultIfEmpty(0f).Min();
 
     /// Разборка одной штуки (до процента возврата): меньшее из материалов и рыночной цены.
     public static float DematValue(Thing t) => Rules.NoValue(t.GetInnerIfMinified().def) ? 0f : Mathf.Min(MaterialsValue(t.GetInnerIfMinified()), t.MarketValue);
@@ -88,9 +132,9 @@ public static class Demat
     static Settings S => ReplimatMechMod.S;
 
     /// Вещь: масса и стоимость — процентом из настроек, шаблон. Сама вещь исчезает.
-    public static void Item(Thing t, PowerNet net)
+    public static void Item(Thing t, PowerNet net, Thing splitter)
     {
-        GameComponent_RM.Get.Record(t);
+        GameComponent_RM.Get.Record(t, splitter);
         // без стоимости (каменные блоки) — масса как у самой дешёвой печати, см. Order.Cap
         float mass = t.GetStatValue(StatDefOf.Mass) * t.stackCount * (Rules.NoValue(t.GetInnerIfMinified().def) ? 1f - Order.Cap / 100f : 1f);
         float value = Pricing.DematValue(t) * t.stackCount;
@@ -99,17 +143,19 @@ public static class Demat
         t.Destroy();
     }
 
-    /// Труп как кремация: вещи на нём — каждая как отдельная вещь; свежий — мясо и кожа по правилу 50%; мех — продукты разборки и шаблон.
-    public static void Corpse(Corpse corpse, PowerNet net)
+    /// Труп как кремация: вещи на нём — каждая как отдельная вещь; свежий — мясо и кожа по правилу 50%; мех — продукты разборки и шаблон;
+    /// свежее животное — ДНК вида.
+    public static void Corpse(Corpse corpse, PowerNet net, Thing splitter)
     {
         Pawn pawn = corpse.InnerPawn;
         var gear = new List<Thing>();
         if (pawn.apparel != null) gear.AddRange(pawn.apparel.WornApparel);
         if (pawn.equipment != null) gear.AddRange(pawn.equipment.AllEquipmentListForReading);
         if (pawn.inventory != null) gear.AddRange(pawn.inventory.innerContainer);
-        foreach (Thing g in gear) Item(g, net);
+        foreach (Thing g in gear) Item(g, net, splitter);
 
-        GameComponent_RM.Get.Record(corpse);
+        GameComponent_RM.Get.Record(corpse, splitter);
+        if (Bio.CorpseDna(corpse)) GameComponent_RM.Get.RecordDna(pawn, splitter);
         float value = 0f;
         if (pawn.RaceProps.IsMechanoid || corpse.GetRotStage() == RotStage.Fresh)
             value = pawn.ButcherProducts(null, 1f).Sum(p => Pricing.DematValue(p) * p.stackCount);

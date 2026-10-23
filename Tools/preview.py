@@ -60,22 +60,26 @@ def put(base, cx, bottom, layers=(), glows=(), cells=3):
         img.paste(ImageChops.add(img.convert('RGB'), rgb).convert('RGBA'))
 
 
+B = 'Things/Building/replimat'
 back, front = 150, 222
-put('Things/Building/replimatMatterTankLarge', 100, back, [('Things/Building/replimatMatterTankLargeAccent', ACC)])
-put('Things/Building/replimatMatterTank', 180, back, [('Things/Building/replimatMatterTankAccent', ACC)])
-put('Things/Building/replimatComputer_north', 320, back - 14, glows=[('FX/replimatComputerScreenGlow_north', 1.4)])
-put('Things/Building/replimatMatterHopper_north', 522, back,
-    [('Things/Building/replimatMatterHopperAccent_north', ACC), ('Things/Building/replimatMatterHopperLid_north', None),
-     ('Things/Building/replimatMatterHopperLidAccent_north', ACC)],
+put(B + 'MatterTankLarge', 62, back, [(B + 'MatterTankLargeAccent', ACC)])
+put(B + 'MatterTank', 140, back, [(B + 'MatterTankAccent', ACC)])
+put(B + 'Computer_north', 250, back - 14, glows=[('FX/replimatComputerScreenGlow_north', 1.4)])
+put(B + 'MatterHopper_north', 400, back,
+    [(B + 'MatterHopperAccent_north', ACC), (B + 'MatterHopperLid_north', None), (B + 'MatterHopperLidAccent_north', ACC)],
     glows=[('FX/replimatHopperScreenGlow_north', 1.4), ('FX/replimatHopperGlow1_north', 1.2)])
-put('Things/Building/replimatTerminalWall_north', 230, front, glows=[('FX/replimatTerminalWallScreenGlow_north', 1.4), ('FX/replimatTerminalWallGlow_north', 1.2)])
-put('Things/Building/replimatTerminal_north', 320, front, glows=[('FX/replimatTerminalScreenGlow_north', 1.4), ('FX/replimatTerminalGlow_north', 1.4)])
-put('Things/Building/replimatAnimalFeeder', 410, front, glows=[('FX/replimatAnimalFeederGlow', 1.2)], cells=1)
+put(B + 'Incubator_north', 560, back - 6, [(B + 'IncubatorGlass_north', None), (B + 'IncubatorGlassAccent_north', ACC)],
+    glows=[('FX/replimatIncubatorScreenGlow_north', 1.4)])
+put(B + 'TerminalWall_north', 190, front, glows=[('FX/replimatTerminalWallScreenGlow_north', 1.4), ('FX/replimatTerminalWallGlow_north', 1.2)])
+put(B + 'Terminal_north', 280, front, glows=[('FX/replimatTerminalScreenGlow_north', 1.4), ('FX/replimatTerminalGlow_north', 1.4)])
+put(B + 'AnimalFeeder', 370, front, glows=[('FX/replimatAnimalFeederGlow', 1.2)], cells=1)
+put(B + 'Bioscanner_north', 500, front, [(B + 'BioscannerAccent_north', ACC), (B + 'BioscannerBlock_north', None),
+    (B + 'BioscannerBlockAccent_north', ACC)], glows=[('FX/replimatBioscannerGlow_north', 1.2)])
 
 d = ImageDraw.Draw(img)
 title, sub = ImageFont.truetype(DIN, 66), ImageFont.truetype(DIN, 30)
 x, y = 22, 300
 d.text((x, y), 'REPLIMAT', font=title, fill=(40, 40, 42), anchor='ls')
 d.text((x + d.textlength('REPLIMAT ', font=title), y), 'MECH', font=title, fill=(45, 105, 235), anchor='ls')
-d.text((x + 2, y + 40), 'PATTERN PRINTING  ·  MECHANOIDS  ·  MATTER SPLITTER', font=sub, fill=(120, 120, 124), anchor='ls')
+d.text((x + 2, y + 40), 'PATTERN PRINTING  ·  MECHANOIDS  ·  BIOREPLICATION', font=sub, fill=(120, 120, 124), anchor='ls')
 img.convert('RGB').save(OUT, optimize=True)

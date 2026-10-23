@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+	<!-- Линки: импланты в мозг, как мехлинк ванили. Цена — как гарнитура механитора (airwire headset). -->
+	<ThingDef Name="RM_LinkBase" Abstract="True">
+		<thingClass>ThingWithComps</thingClass>
+		<category>Item</category>
+		<drawerType>MapMeshOnly</drawerType>
+		<techLevel>Spacer</techLevel>
+		<useHitPoints>true</useHitPoints>
+		<pathCost>14</pathCost>
+		<selectable>true</selectable>
+		<altitudeLayer>Item</altitudeLayer>
+		<tickerType>Never</tickerType>
+		<alwaysHaulable>true</alwaysHaulable>
+		<rotatable>false</rotatable>
+		<resourceReadoutPriority>Middle</resourceReadoutPriority>
+		<thingCategories>
+			<li>BodyPartsMechtech</li>
+		</thingCategories>
+		<statBases>
+			<MaxHitPoints>100</MaxHitPoints>
+			<Beauty>-4</Beauty>
+			<Mass>1</Mass>
+			<DeteriorationRate>0</DeteriorationRate>
+			<WorkToMake>2100</WorkToMake>
+		</statBases>
+		<costList>
+			<Steel>50</Steel>
+			<ComponentIndustrial>4</ComponentIndustrial>
+		</costList>
+		<recipeMaker>
+			<unfinishedThingDef>UnfinishedHealthItemProsthetic</unfinishedThingDef>
+			<recipeUsers>
+				<li>TableMachining</li>
+			</recipeUsers>
+			<researchPrerequisite>RM_Replication</researchPrerequisite>
+			<useIngredientsForColor>false</useIngredientsForColor>
+			<workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+			<workSkill>Crafting</workSkill>
+			<effectWorking>Smith</effectWorking>
+			<soundWorking>Recipe_Machining</soundWorking>
+			<skillRequirements>
+				<Crafting>4</Crafting>
+			</skillRequirements>
+			<displayPriority>650</displayPriority>
+		</recipeMaker>
+		<comps>
+			<li Class="CompProperties_Forbiddable"/>
+			<li Class="CompProperties_UseEffectPlaySound">
+				<soundOnUsed>MechlinkInstalled</soundOnUsed>
+			</li>
+			<li Class="CompProperties_UseEffectDestroySelf"/>
+		</comps>
+	</ThingDef>
+
+	<ThingDef ParentName="RM_LinkBase">
+		<defName>RM_Replink</defName>
+		<label>replink</label>
+		<description>A brain implant for working with the replimat.\nA colonist with a replink, mechlink or biolink can contact the computer (right-click it) and become its operator.\nThe replicators of the computer's power network print by the operator's links: a link lets its group print, the link level sets the speed.\nThe replink prints items; mechanoids, mechanoid chips and subcores need the vanilla mechlink, bioreplication needs a biolink.\nIt gains experience from the value of items printed by its owner's computer: 6 levels, speed from 100% to 175%.\nSelf-installed, cannot be removed.</description>
+		<descriptionHyperlinks><HediffDef>RM_ReplinkImplant</HediffDef></descriptionHyperlinks>
+		<graphicData>
+			<texPath>Things/Item/Replink</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+			<drawSize>0.65</drawSize>
+		</graphicData>
+		<comps>
+			<li Class="CompProperties_Usable">
+				<compClass>CompUsableImplant</compClass>
+				<useJob>UseItem</useJob>
+				<useLabel>Install {0_label}</useLabel>
+			</li>
+			<li Class="CompProperties_UseEffectInstallImplant">
+				<hediffDef>RM_ReplinkImplant</hediffDef>
+				<bodyPart>Brain</bodyPart>
+			</li>
+		</comps>
+	</ThingDef>
+
+	<ThingDef ParentName="RM_LinkBase">
+		<defName>RM_Biolink</defName>
+		<label>biolink</label>
+		<description>A brain implant for bioreplication.\nA colonist with a replink, mechlink or biolink can contact the computer (right-click it) and become its operator.\nThe replicators of the computer's power network print by the operator's links: a link lets its group print, the link level sets the speed.\nThe biolink prints bioreplication: all genetics, archotech parts, resurrector and healer serums.\nIt gains experience from the value of bioreplication printed by its owner's computer: 6 levels, speed from 100% to 175%.\nSelf-installed, cannot be removed.</description>
+		<descriptionHyperlinks><HediffDef>RM_BiolinkImplant</HediffDef></descriptionHyperlinks>
+		<graphicData>
+			<texPath>Things/Item/Biolink</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+			<drawSize>0.65</drawSize>
+		</graphicData>
+		<comps>
+			<li Class="CompProperties_Usable">
+				<compClass>CompUsableImplant</compClass>
+				<useJob>UseItem</useJob>
+				<useLabel>Install {0_label}</useLabel>
+			</li>
+			<li Class="CompProperties_UseEffectInstallImplant">
+				<hediffDef>RM_BiolinkImplant</hediffDef>
+				<bodyPart>Brain</bodyPart>
+			</li>
+		</comps>
+	</ThingDef>
+
+	<!-- Уровень (1–6) растёт от опыта печати: Hediff_RMLink. -->
+	<HediffDef Name="RM_LinkHediffBase" ParentName="ImplantHediffBase" Abstract="True">
+		<hediffClass>ReplimatMech.Hediff_RMLink</hediffClass>
+		<duplicationAllowed>false</duplicationAllowed>
+		<keepOnBodyPartRestoration>true</keepOnBodyPartRestoration>
+		<initialSeverity>1</initialSeverity>
+		<maxSeverity>6</maxSeverity>
+	</HediffDef>
+
+	<HediffDef ParentName="RM_LinkHediffBase">
+		<defName>RM_ReplinkImplant</defName>
+		<label>replink</label>
+		<description>A brain implant for working with the replimat.\nA colonist with a replink, mechlink or biolink can contact the computer (right-click it) and become its operator.\nThe replicators of the computer's power network print by the operator's links: a link lets its group print, the link level sets the speed.\nThe replink prints items; mechanoids, mechanoid chips and subcores need the vanilla mechlink, bioreplication needs a biolink.\nIt gains experience from the value of items printed by its owner's computer: 6 levels, speed from 100% to 175%.\nCannot be removed.</description>
+		<descriptionShort>A bionic implant that allows printing items with the replimat.\nCannot be removed.</descriptionShort>
+		<descriptionHyperlinks><ThingDef>RM_Replink</ThingDef></descriptionHyperlinks>
+	</HediffDef>
+
+	<HediffDef ParentName="RM_LinkHediffBase">
+		<defName>RM_BiolinkImplant</defName>
+		<label>biolink</label>
+		<description>A brain implant for bioreplication.\nA colonist with a replink, mechlink or biolink can contact the computer (right-click it) and become its operator.\nThe replicators of the computer's power network print by the operator's links: a link lets its group print, the link level sets the speed.\nThe biolink prints bioreplication: all genetics, archotech parts, resurrector and healer serums.\nIt gains experience from the value of bioreplication printed by its owner's computer: 6 levels, speed from 100% to 175%.\nCannot be removed.</description>
+		<descriptionShort>A bionic implant that allows printing bioreplication with the replimat.\nCannot be removed.</descriptionShort>
+		<descriptionHyperlinks><ThingDef>RM_Biolink</ThingDef></descriptionHyperlinks>
+	</HediffDef>
+
+</Defs>

@@ -12,21 +12,24 @@ namespace ReplimatMech;
 [DefOf]
 public static class RMDefOf
 {
-    public static ThingDef RM_Replicator, RM_ReplicatorWall, RM_Feeder, RM_Tank, RM_TankLarge, RM_Hopper, RM_Computer, RM_IsolinearModule;
+    public static ThingDef RM_Replicator, RM_ReplicatorWall, RM_Feeder, RM_Tank, RM_TankLarge, RM_Hopper, RM_Computer, RM_Biolink, RM_Bioscanner, RM_Incubator;
+    public static HediffDef RM_ReplinkImplant, RM_BiolinkImplant, RM_Replicant;
+    public static RecipeDef RM_Split;
     public static DesignationDef RM_Scan;
-    public static JobDef RM_ScanItem, RM_UseComputer;
+    public static JobDef RM_Carry, RM_UseComputer, RM_RopeToScanner;
     public static SoundDef RM_Replicate, RM_Dematerialize;
     public static ResearchProjectDef RM_Replication;
     public static StatDef MechFormingSpeed;
+    public static BackstoryDef RM_Bioreplicated;
 
     static RMDefOf() => DefOfHelper.EnsureInitializedInCtor(typeof(RMDefOf));
 }
 
 public class Settings : ModSettings
 {
-    public static readonly string[] PowerDefs = { "RM_Replicator", "RM_ReplicatorWall", "RM_Feeder", "RM_Tank", "RM_TankLarge", "RM_Computer", "RM_Hopper" };
+    public static readonly string[] PowerDefs = { "RM_Replicator", "RM_ReplicatorWall", "RM_Feeder", "RM_Tank", "RM_TankLarge", "RM_Computer", "RM_Hopper", "RM_Bioscanner", "RM_Incubator" };
     /// Группы мощности в окне настроек: подпись и сколько подряд идущих PowerDefs в группе.
-    public static readonly (string key, int count)[] PowerGroups = { ("RM_PowerPrint", 3), ("RM_PowerStore", 2), ("RM_PowerRecycle", 2) };
+    public static readonly (string key, int count)[] PowerGroups = { ("RM_PowerPrint", 3), ("RM_PowerStore", 2), ("RM_PowerRecycle", 2), ("RM_PowerBio", 2) };
     public static readonly string[] Groups = { "RM_GroupChips", "RM_GroupBio", "RM_GroupUnique" };
     /// Поменялись умолчания — сохранённые настройки сбрасываются на новые.
     const int Version = 6;
@@ -45,7 +48,7 @@ public class Settings : ModSettings
     public bool moveTanks = true;
     public List<bool> groupAllowed = new() { true, true, true };
     public List<int> groupMarkup = new() { 2, 2, 2 };
-    public List<int> power = new() { 200, 200, 200, 50, 200, 300, 200 };
+    public List<int> power = new() { 200, 200, 200, 50, 200, 300, 200, 200, 200 };
 
     public override void ExposeData()
     {
@@ -62,6 +65,8 @@ public class Settings : ModSettings
         Scribe_Collections.Look(ref power, "power", LookMode.Value);
         if (Scribe.mode != LoadSaveMode.PostLoadInit) return;
         valueReturn = Mathf.Clamp(valueReturn, MinValueReturn, MaxValueReturn);
+        // новые здания — в конце списка мощности: сохранённые значения остаются, новым — по умолчанию
+        while (power != null && power.Count < d.power.Count) power.Add(d.power[power.Count]);
         if (version != Version || groupAllowed?.Count != d.groupAllowed.Count || groupMarkup?.Count != d.groupMarkup.Count || power?.Count != d.power.Count) Reset();
         version = Version;
     }
@@ -226,7 +231,8 @@ public class ReplimatMechMod : Mod
                     S.groupAllowed[i] = allowed;
                 },
             });
-            lines.Add(new Line { wide = true, color = RMUI.Muted, left = (Settings.Groups[i] + "Desc").Translate() });
+            foreach (string help in (Settings.Groups[i] + "Desc").Translate().ToString().Split('\n'))
+                lines.Add(new Line { wide = true, color = RMUI.Muted, left = help });
         }
         return lines;
     }
@@ -303,11 +309,13 @@ public static class Startup
     {
         AccentIcons.Init();
         ReplimatMechMod.S.Apply();
-        // расщепитель берёт всё, что можно принести: что именно — решает игрок фильтром; животных и растений в фильтре нет — их не носят
-        ThingFilter hopper = RMDefOf.RM_Hopper.building.fixedStorageSettings.filter;
-        foreach (ThingDef d in DefDatabase<ThingDef>.AllDefs.Where(d => d.category is ThingCategory.Pawn or ThingCategory.Plant).ToList()) hopper.SetAllow(d, false);
-        hopper.RecalculateDisplayRootCategory();
+        // расщепитель берёт всё, что можно принести: что именно — решает игрок заданиями; животных и растений в фильтре нет — их не носят
+        ThingFilter split = RMDefOf.RM_Split.fixedIngredientFilter;
+        foreach (ThingDef d in DefDatabase<ThingDef>.AllDefs.Where(d => d.category is ThingCategory.Pawn or ThingCategory.Plant).ToList()) split.SetAllow(d, false);
+        split.RecalculateDisplayRootCategory();
         (StatDefOf.Mass.parts ??= new List<StatPart>()).Add(new StatPart_TankMass { parentStat = StatDefOf.Mass });
+        // «Открывает» у исследования — в порядке меню построек: ваниль сортирует по названию, а список кэширует один раз
+        RMDefOf.RM_Replication.UnlockedDefs.SortBy(d => (d as BuildableDef)?.uiOrder ?? 0f);
         // в осмотре строки печати — первыми, над ванильными про мощность, как у компьютера и бака
         foreach (ThingDef d in DefDatabase<ThingDef>.AllDefs.Where(d => d.HasComp(typeof(CompPrinter))))
         {
@@ -345,15 +353,8 @@ public static class Fmt
         return Ru ? s.Replace(',', ' ') : s;
     }
 
-    public static string Time(float ticks)
-    {
-        float h = ticks / 2500f;
-        // меньше минуты — секундами: двигаешь ползунок — число меняется
-        if (h * 60f < 1f) return "RM_Seconds".Translate(Dec(h * 3600f));
-        if (h < 1f) return "RM_Minutes".Translate(Dec(h * 60f));
-        if (h < 48f) return "RM_Hours".Translate(Dec(h));
-        return "RM_Days".Translate(Dec(h / 24f));
-    }
+    /// Время — как в ванили (гестатор, верстаки): секунды, до суток — часы, дальше дни.
+    public static string Time(float ticks) => Mathf.RoundToInt(ticks).ToStringTicksToPeriod();
 
     public static string MassNum(float kg) => kg < 1f ? Dec(kg, "0.##") : kg < 100f ? Dec(kg) : Num(kg);
 

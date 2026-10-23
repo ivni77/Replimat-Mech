@@ -9,4 +9,6 @@ out="Release/Replimat Mech"
 mkdir -p "$out"
 # системный rsync с обеих сторон: rsync 3.5.1 из Homebrew (2026-10-09) не заходит в папку внутри «Документов» — Operation not permitted
 /usr/bin/rsync -a --delete --exclude .DS_Store --rsync-path=/usr/bin/rsync About Assemblies Defs Languages Patches Sounds Textures LICENSE.md "$out/"
+# .DS_Store от Finder — не в Steam (--delete не трогает исключённое и корень копии)
+find "$out" -name .DS_Store -delete
 echo "$out: $(du -sh "$out" | cut -f1)"

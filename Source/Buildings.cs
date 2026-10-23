@@ -2,124 +2,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Multiplayer.API;
 using RimWorld;
 using UnityEngine;
 using Verse;
 using Verse.AI;
-using Verse.Sound;
 
 namespace ReplimatMech;
-
-/// Расщепитель материи: мгновенно разбирает принесённые вещи и трупы. Никогда не стоит, кроме «Нет баков».
-/// Пока идёт разборка — светится в цвет реплимата (свечение + свет).
-public class Building_RMHopper : Building_Storage, IThingGlower
-{
-    public static readonly HashSet<Building_RMHopper> Spawned_ = new();
-    const int GlowTime = 120;
-    CompPowerTrader power;
-    int glowTicks;
-    HashSet<ThingDef> suppressed = new();
-
-    public PowerNet Net => power?.PowerNet;
-    public bool Working => Spawned && power.PowerOn && Tanks.All(Net).Count > 0;
-    public int GlowTicks => glowTicks;
-    public bool ShouldBeLitNow() => glowTicks > 0;
-
-    /// Свет — в цвет реплимата; цвет ставится, пока свет выключен, без лишней перестройки освещения.
-    void SetGlow(int ticks)
-    {
-        bool was = glowTicks > 0, now = ticks > 0;
-        CompGlower g = was != now && Spawned ? GetComp<CompGlower>() : null;
-        if (now && g != null) g.GlowColor = new ColorInt(Settings.GlowColor) { a = 0 };
-        glowTicks = ticks;
-        g?.UpdateLit(Map);
-    }
-
-    public override void SpawnSetup(Map map, bool respawningAfterLoad)
-    {
-        base.SpawnSetup(map, respawningAfterLoad);
-        power = GetComp<CompPowerTrader>();
-        Spawned_.Add(this);
-        // при загрузке репликаторы ещё не все на карте — сверка в GameComponent_RM.FinalizeInit
-        if (!respawningAfterLoad) SyncQueued();
-    }
-
-    public override void DeSpawn(DestroyMode mode = DestroyMode.Vanish)
-    {
-        Spawned_.Remove(this);
-        base.DeSpawn(mode);
-    }
-
-    /// Правила приёма поверх фильтра (патч Building_Storage.Accepts). Что брать — решает фильтр игрока: в нём всё, что можно принести (Startup).
-    public bool Allows(Thing t) => Working && CompPrinter.QueuedIn(t.GetInnerIfMinified().def, t is MinifiedThing) == null;
-
-    public static void SyncAll()
-    {
-        foreach (Building_RMHopper h in Spawned_) h.SyncQueued();
-    }
-
-    /// То, что стоит в очереди, расщепитель не берёт: снять галку и запомнить. Задание ушло — галка возвращается.
-    public void SyncQueued()
-    {
-        HashSet<ThingDef> queued = CompPrinter.QueuedDefs().ToHashSet();
-        foreach (ThingDef d in queued)
-            if (settings.filter.Allows(d))
-            {
-                settings.filter.SetAllow(d, false);
-                suppressed.Add(d);
-            }
-        foreach (ThingDef d in suppressed.Where(d => !queued.Contains(d)).ToList())
-        {
-            suppressed.Remove(d);
-            settings.filter.SetAllow(d, true);
-        }
-    }
-
-    public override void ExposeData()
-    {
-        base.ExposeData();
-        Scribe_Collections.Look(ref suppressed, "suppressed", LookMode.Def);
-        suppressed ??= new HashSet<ThingDef>();
-    }
-
-    protected override void Tick()
-    {
-        base.Tick();
-        if (glowTicks > 0) SetGlow(glowTicks - 1);
-        if (this.IsHashIntervalTick(250)) SyncQueued();
-        if (!this.IsHashIntervalTick(15) || !Working) return;
-        bool any = false;
-        foreach (IntVec3 c in AllSlotCells())
-            foreach (Thing t in c.GetThingList(Map).ToList())
-                if (t.def.category == ThingCategory.Item && Accepts(t))
-                {
-                    Process(t);
-                    any = true;
-                }
-        if (any) RMDefOf.RM_Dematerialize.PlayOneShot(new TargetInfo(Position, Map));
-    }
-
-    public void Process(Thing t)
-    {
-        if (t is Corpse c) Demat.Corpse(c, Net);
-        else Demat.Item(t, Net);
-        SetGlow(GlowTime);
-    }
-
-    protected override void DrawAt(Vector3 drawLoc, bool flip = false)
-    {
-        base.DrawAt(drawLoc, flip);
-        Glow.Hopper(this);
-    }
-
-    public override string GetInspectString()
-    {
-        string s = base.GetInspectString();
-        if (Spawned && Tanks.All(Net).Count == 0) s = "RM_NoTanks".Translate() + "\n" + s;
-        return s.Trim();
-    }
-}
 
 /// Репликатор для животных (кормушка): корм только печатается в неё. Носильщики сюда не носят и отсюда не уносят
 /// (принимает лишь то, что уже лежит в ней, приоритет «Критический»), вкладки и кнопок склада нет.
@@ -134,13 +22,21 @@ public class Building_RMFeeder : Building_Storage
     public override IEnumerable<Gizmo> GetGizmos() => base.GetGizmos().Where(g => !(g is Command c && StorageIcons.Contains(c.icon)));
 }
 
-/// Компьютер: очереди и шаблоны, условие печати в своей сети. Связь — только через консоль связи.
+/// Компьютер: помнит оператора — его линки решают, какие группы печатают репликаторы сети и как быстро. Окно — только смотреть.
 public class Building_RMComputer : Building
 {
     CompPowerTrader power;
     public bool collectValue = true;
+    public Pawn operatorPawn;
     public bool Powered => power?.PowerOn == true;
     public PowerNet Net => power?.PowerNet;
+
+    /// Оператор, пока он жив и на карте компьютера: сон и ранение не мешают.
+    public Pawn Operator => operatorPawn is { Dead: false } p && p.MapHeld == Map ? p : null;
+
+    /// Оператор сети — у первого запитанного компьютера, где он есть (по номеру вещи: у всех игроков Multiplayer один).
+    public static Pawn OperatorOf(PowerNet net) =>
+        Tanks.On<Building_RMComputer>(net).Where(c => c.Powered).OrderBy(c => c.thingIDNumber).Select(c => c.Operator).FirstOrDefault(p => p != null);
 
     public override void SpawnSetup(Map map, bool respawningAfterLoad)
     {
@@ -148,32 +44,37 @@ public class Building_RMComputer : Building
         power = GetComp<CompPowerTrader>();
     }
 
-    /// Пункты меню консоли связи: по строке на каждый компьютер карты, сразу после вызова дьявола.
-    public static IEnumerable<FloatMenuOption> ConsoleOptions(Building_CommsConsole console, Pawn p)
+    /// Линки поселенца списком: «риплинк, мехлинк».
+    public static string LinkList(Pawn p) => string.Join(", ", Links.All.Where(l => Links.Has(p, l)).Select(l => Links.Def(l).label));
+
+    /// Правый клик поселенцем: связаться — стать оператором. Нужен хоть один линк; новый оператор заменяет старого.
+    public override IEnumerable<FloatMenuOption> GetFloatMenuOptions(Pawn p)
     {
-        List<Building_RMComputer> computers = console.Map.listerBuildings.AllBuildingsColonistOfClass<Building_RMComputer>().ToList();
-        for (int i = 0; i < computers.Count; i++)
-        {
-            Building_RMComputer c = computers[i];
-            string label = computers.Count == 1 ? "RM_UseComputer".Translate() : "RM_UseComputerN".Translate(i + 1);
-            string why = !MechanitorUtility.IsMechanitor(p) ? "RM_NeedMechanitor"
-                : !c.Powered ? "RM_ComputerNoPower"
-                : !p.CanReach(console, PathEndMode.InteractionCell, Danger.Some) ? "CannotUseNoPath" : null;
-            // Иконка — компьютер: без своей меню ставит иконку консоли.
-            yield return why != null
-                ? new FloatMenuOption(label + " (" + why.Translate() + ")", null, c.def)
-                : new FloatMenuOption(label, () =>
-                {
-                    JobDriver_RMUseComputer.Requested = p;
-                    p.jobs.TryTakeOrderedJob(JobMaker.MakeJob(RMDefOf.RM_UseComputer, console, c), JobTag.Misc);
-                }, c.def, priority: MenuOptionPriority.SummonThreat, orderInPriority: -1);
-        }
+        foreach (FloatMenuOption o in base.GetFloatMenuOptions(p)) yield return o;
+        string label = "RM_UseComputer".Translate();
+        string why = !Links.Any(p) ? "RM_NeedLink".Translate()
+            : p == Operator ? "RM_AlreadyOperator".Translate()
+            : !Powered ? "RM_ComputerNoPower".Translate()
+            : !p.CanReach(this, PathEndMode.Touch, Danger.Deadly) ? "NoPath".Translate() : null;
+        yield return why != null
+            ? new FloatMenuOption(label + " (" + why + ")", null)
+            : FloatMenuUtility.DecoratePrioritizedTask(new FloatMenuOption(RMUI.Tr("RM_UseComputerLinks", label, LinkList(p)),
+                () => p.jobs.TryTakeOrderedJob(JobMaker.MakeJob(RMDefOf.RM_UseComputer, this), JobTag.Misc)), p, this);
+    }
+
+    /// Связь состоялась: оператор — этот поселенец, репликаторы сети сразу пересчитывают статусы.
+    public void Bind(Pawn p)
+    {
+        operatorPawn = p;
+        Messages.Message(RMUI.Tr("RM_MsgOperator", p.LabelShort, LinkList(p)), this, MessageTypeDefOf.PositiveEvent);
+        foreach (CompPrinter c in CompPrinter.All.Where(c => c.Net == Net).OrderBy(c => c.parent.thingIDNumber)) c.Refresh();
     }
 
     public override void ExposeData()
     {
         base.ExposeData();
         Scribe_Values.Look(ref collectValue, "collectValue", true);
+        Scribe_References.Look(ref operatorPawn, "operator");
     }
 
     public override string GetInspectString()
@@ -181,8 +82,10 @@ public class Building_RMComputer : Building
         var sb = new StringBuilder();
         if (Spawned)
         {
+            sb.AppendLine(Operator is { } op ? RMUI.Tr("RM_OperatorLine", op.LabelShort, LinkList(op)) : "RM_StNoOperatorFull".Translate().ToString());
             List<CompPrinter> printers = CompPrinter.All.Where(c => c.Net == Net && Net != null).ToList();
-            int tanks = Tanks.All(Net).Count, reps = printers.Count(c => !c.Feeder), feeders = printers.Count - reps;
+            int tanks = Tanks.All(Net).Count, feeders = printers.Count(c => c.Feeder), incubators = printers.Count(c => c.Incubator),
+                reps = printers.Count - feeders - incubators;
             if (tanks == 0) sb.AppendLine("RM_NoTanks".Translate());
             else
             {
@@ -192,6 +95,7 @@ public class Building_RMComputer : Building
             }
             if (reps > 0) sb.AppendLine("RM_PrintersCount".Translate(reps));
             if (feeders > 0) sb.AppendLine("RM_FeedersCount".Translate(feeders));
+            if (incubators > 0) sb.AppendLine("RM_IncubatorsCount".Translate(incubators));
             if (!collectValue) sb.AppendLine("RM_ValueOff".Translate());
         }
         sb.Append(base.GetInspectString());
@@ -205,139 +109,19 @@ public class Building_RMComputer : Building
     }
 }
 
-/// Механитор идёт к консоли связи (A) и открывает окно компьютера (B). В Multiplayer работа идёт у всех игроков,
-/// окно — только у того, кто отдал приказ (Requested — у каждого свой).
+/// Поселенец с линком подходит к компьютеру и связывается с ним: становится оператором.
 public class JobDriver_RMUseComputer : JobDriver
 {
-    public static Pawn Requested;
+    Building_RMComputer Computer => TargetThingA as Building_RMComputer;
 
     public override bool TryMakePreToilReservations(bool errorOnFailed) => true;
 
     protected override IEnumerable<Toil> MakeNewToils()
     {
-        this.FailOnDespawnedOrNull(TargetIndex.A);
-        this.FailOnDespawnedOrNull(TargetIndex.B);
-        yield return Toils_Goto.GotoCell(TargetIndex.A, PathEndMode.InteractionCell)
-            .FailOn(() => !((Building_CommsConsole)TargetThingA).CanUseCommsNow);
-        Toil open = ToilMaker.MakeToil("RM_OpenComputer");
-        open.initAction = () =>
-        {
-            if (MP.IsInMultiplayer && Requested != pawn) return;
-            Requested = null;
-            Find.WindowStack.Add(new Dialog_Computer((Building_RMComputer)TargetThingB, pawn));
-        };
-        yield return open;
-    }
-}
-
-// ---- сканирование ----
-
-public class Designator_RMScan : Designator
-{
-    protected override DesignationDef Designation => RMDefOf.RM_Scan;
-    public override DrawStyleCategoryDef DrawStyleCategory => DrawStyleCategoryDefOf.FilledRectangle;
-    public override bool Visible => RMDefOf.RM_Replication.IsFinished && base.Visible;
-
-    public Designator_RMScan()
-    {
-        defaultLabel = "RM_DesignatorScan".Translate();
-        icon = ContentFinder<Texture2D>.Get("UI/Designators/ReplimatScanPattern");
-        soundDragSustain = SoundDefOf.Designate_DragStandard;
-        soundDragChanged = SoundDefOf.Designate_DragStandard_Changed;
-        soundSucceeded = SoundDefOf.Designate_Haul;
-        useMouseIcon = true;
-    }
-
-    public override AcceptanceReport CanDesignateCell(IntVec3 c)
-    {
-        if (!c.InBounds(Map) || c.Fogged(Map)) return false;
-        Thing t = c.GetThingList(Map).FirstOrDefault(x => CanDesignateThing(x).Accepted);
-        return t != null;
-    }
-
-    public override void DesignateSingleCell(IntVec3 c)
-    {
-        foreach (Thing t in c.GetThingList(Map).ToList())
-            if (CanDesignateThing(t).Accepted) DesignateThing(t);
-    }
-
-    /// Сканировать — только то, чего нет в шаблонах, или вещь лучше шаблона по качеству. Кнопка есть и на самой вещи.
-    public override AcceptanceReport CanDesignateThing(Thing t)
-    {
-        if (!RMDefOf.RM_Replication.IsFinished || t.def.category != ThingCategory.Item || !t.def.EverHaulable || t is Corpse
-            || Map.designationManager.DesignationOn(t, Designation) != null) return false;
-        Pattern fresh = Pattern.From(t, out QualityCategory q);
-        if (fresh == null) return false;
-        Pattern known = GameComponent_RM.Get.ByKey(fresh.Key);
-        return known == null || known.HasQuality && q > known.Best;
-    }
-
-    public override void DesignateThing(Thing t) => Map.designationManager.AddDesignation(new Designation(t, Designation));
-
-    public override void SelectedUpdate() => GenUI.RenderMouseoverBracket();
-}
-
-public class WorkGiver_RMScan : WorkGiver_Scanner
-{
-    public override PathEndMode PathEndMode => PathEndMode.ClosestTouch;
-    public override Danger MaxPathDanger(Pawn pawn) => Danger.Deadly;
-
-    public override IEnumerable<Thing> PotentialWorkThingsGlobal(Pawn pawn) =>
-        pawn.Map.designationManager.SpawnedDesignationsOfDef(RMDefOf.RM_Scan).Select(d => d.target.Thing).ToList();
-
-    public override bool ShouldSkip(Pawn pawn, bool forced = false) => !pawn.Map.designationManager.AnySpawnedDesignationOfDef(RMDefOf.RM_Scan);
-
-    public override bool HasJobOnThing(Pawn pawn, Thing t, bool forced = false)
-    {
-        if (pawn.Map.designationManager.DesignationOn(t, RMDefOf.RM_Scan) == null || t.IsForbidden(pawn) || t.IsBurning()
-            || !pawn.CanReserve(t, 1, -1, null, forced)) return false;
-        if (FindHopper(pawn, t) != null) return true;
-        JobFailReason.Is("RM_NoHopper".Translate());
-        return false;
-    }
-
-    public override Job JobOnThing(Pawn pawn, Thing t, bool forced = false)
-    {
-        Building_RMHopper hopper = FindHopper(pawn, t);
-        if (hopper == null) return null;
-        Job job = JobMaker.MakeJob(RMDefOf.RM_ScanItem, t, hopper);
-        job.count = 1;
-        return job;
-    }
-
-    static Building_RMHopper FindHopper(Pawn pawn, Thing t) =>
-        Building_RMHopper.Spawned_.Where(h => h.Map == pawn.Map && h.Working && !h.IsForbidden(pawn)
-                                               && pawn.CanReach(h, PathEndMode.Touch, Danger.Deadly))
-            .OrderBy(h => h.Position.DistanceToSquared(t.Position)).ThenBy(h => h.thingIDNumber).FirstOrDefault();
-}
-
-/// Носильщик несёт одну штуку в расщепитель, тот её сканирует (разбор + шаблон), даже если фильтр её не берёт.
-public class JobDriver_RMScan : JobDriver
-{
-    Building_RMHopper Hopper => (Building_RMHopper)job.GetTarget(TargetIndex.B).Thing;
-
-    public override bool TryMakePreToilReservations(bool errorOnFailed) => pawn.Reserve(job.GetTarget(TargetIndex.A), job, 1, 1, null, errorOnFailed);
-
-    protected override IEnumerable<Toil> MakeNewToils()
-    {
-        this.FailOnDespawnedNullOrForbidden(TargetIndex.B);
-        this.FailOn(() => !Hopper.Working);
-        yield return Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.ClosestTouch).FailOnDespawnedNullOrForbidden(TargetIndex.A)
-            .FailOn(() => Map.designationManager.DesignationOn(job.GetTarget(TargetIndex.A).Thing, RMDefOf.RM_Scan) == null);
-        yield return Toils_General.DoAtomic(() => Map.designationManager.TryRemoveDesignationOn(job.GetTarget(TargetIndex.A).Thing, RMDefOf.RM_Scan));
-        yield return Toils_Haul.StartCarryThing(TargetIndex.A, false, true).FailOnDestroyedNullOrForbidden(TargetIndex.A);
-        yield return Toils_Goto.GotoThing(TargetIndex.B, PathEndMode.Touch);
-        Toil scan = ToilMaker.MakeToil("RM_Scan");
-        scan.initAction = () =>
-        {
-            if (pawn.carryTracker.CarriedThing is { } t)
-            {
-                pawn.carryTracker.innerContainer.Remove(t);
-                Hopper.Process(t);
-                RMDefOf.RM_Dematerialize.PlayOneShot(new TargetInfo(Hopper.Position, Map));
-            }
-        };
-        yield return scan;
+        this.FailOn(() => Computer is not { Spawned: true, Powered: true });
+        yield return Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.Touch);
+        yield return Toils_General.Wait(120, TargetIndex.A).WithProgressBarToilDelay(TargetIndex.A);
+        yield return Toils_General.DoAtomic(() => Computer.Bind(pawn));
     }
 }
 
@@ -350,7 +134,7 @@ public class CompProperties_SecondLayer : CompProperties
     public CompProperties_SecondLayer() => compClass = typeof(CompSecondLayer);
 }
 
-/// Крышка расщепителя поверх лежащих в нём вещей (и её полосы цвета реплимата).
+/// Слой поверх того, что внутри (и его полосы цвета реплимата): крышка расщепителя над вещами, блок биосканера над существом — он ездит.
 public class CompSecondLayer : ThingComp
 {
     Graphic graphic;
@@ -358,9 +142,10 @@ public class CompSecondLayer : ThingComp
 
     public override void PostDraw()
     {
+        Vector3 off = parent is Building_RMBioscanner s ? s.BlockOffset : Vector3.zero;
         (graphic ??= Props.graphicData.GraphicColoredFor(parent))
-            .Draw(GenThing.TrueCenter(parent.Position, parent.Rotation, parent.def.size, Props.altitudeLayer.AltitudeFor()), parent.Rotation, parent);
-        CompAccent.DrawLayer(parent, Props.graphicData, Props.altitudeLayer);
+            .Draw(GenThing.TrueCenter(parent.Position, parent.Rotation, parent.def.size, Props.altitudeLayer.AltitudeFor()) + off, parent.Rotation, parent);
+        CompAccent.DrawLayer(parent, Props.graphicData, Props.altitudeLayer, off);
     }
 }
 
@@ -418,7 +203,7 @@ public class CompAccent : ThingComp
 {
     static readonly Dictionary<GraphicData, Graphic> Layers = new();
 
-    public static void DrawLayer(Thing t, GraphicData gd, AltitudeLayer layer)
+    public static void DrawLayer(Thing t, GraphicData gd, AltitudeLayer layer, Vector3 offset = default)
     {
         if (!Layers.TryGetValue(gd, out Graphic g))
         {
@@ -428,7 +213,7 @@ public class CompAccent : ThingComp
                 : GraphicDatabase.Get(gd.graphicClass, path, ShaderDatabase.Transparent, gd.drawSize, Color.white, Color.white);
         }
         g?.GetColoredVersion(ShaderDatabase.Transparent, ReplimatMechMod.S.accent, Color.white)
-            .Draw(GenThing.TrueCenter(t.Position, t.Rotation, t.def.size, layer.AltitudeFor(2f)), t.Rotation, t);
+            .Draw(GenThing.TrueCenter(t.Position, t.Rotation, t.def.size, layer.AltitudeFor(2f)) + offset, t.Rotation, t);
     }
 
     public override void PostDraw() => DrawLayer(parent, parent.def.graphicData, parent.def.altitudeLayer);
@@ -444,13 +229,14 @@ public static class Glow
     static readonly Graphic TermScreen = G("FX/replimatTerminalScreenGlow_north", false), TermPrint = G("FX/replimatTerminalGlow"),
         WallScreen = G("FX/replimatTerminalWallScreenGlow_north", false), WallPrint = G("FX/replimatTerminalWallGlow"),
         Feeder = G("FX/replimatAnimalFeederGlow", false), HopperScreen = G("FX/replimatHopperScreenGlow"),
-        ComputerScreen = G("FX/replimatComputerScreenGlow_north", false);
+        ComputerScreen = G("FX/replimatComputerScreenGlow_north", false), Scanner = G("FX/replimatBioscannerGlow"),
+        IncubatorScreen = G("FX/replimatIncubatorScreenGlow"), IncubatorGlass = G("FX/replimatIncubatorGlow");
 
     static readonly Graphic[] HopperWork = { G("FX/replimatHopperGlow0"), G("FX/replimatHopperGlow1"), G("FX/replimatHopperGlow2") };
 
-    static void Draw(Thing t, Graphic g, float alpha = 1f, AltitudeLayer layer = AltitudeLayer.MoteOverhead)
+    static void Draw(Thing t, Graphic g, float alpha = 1f, AltitudeLayer layer = AltitudeLayer.MoteOverhead, Vector3 offset = default)
     {
-        Vector3 pos = t.DrawPos + t.Graphic.DrawOffset(t.Rotation);
+        Vector3 pos = t.DrawPos + t.Graphic.DrawOffset(t.Rotation) + offset;
         pos.y = layer.AltitudeFor() + 0.03f;
         g = g.GetColoredVersion(g.Shader, Settings.GlowColor, Color.white);
         Graphics.DrawMesh(g.MeshAt(t.Rotation), pos, Quaternion.identity, FadedMaterialPool.FadedVersionOf(g.MatAt(t.Rotation), alpha), 0);
@@ -461,6 +247,15 @@ public static class Glow
         Thing t = c.parent;
         if (t.TryGetComp<CompPowerTrader>()?.PowerOn != true) return;
         bool wall = t.def == RMDefOf.RM_ReplicatorWall, running = c.Running != null;
+        // инкубатор: экран базы горит при питании, стекло — пока печатает
+        if (c.Incubator)
+        {
+            Draw(t, IncubatorScreen, 1f, t.def.altitudeLayer);
+            if (!running) return;
+            Draw(t, IncubatorGlass);
+            Progress(t, c.Running.progress / Mathf.Max(1f, c.Running.batchTicks));
+            return;
+        }
         if (c.Feeder)
         {
             if (running) Draw(t, Feeder);
@@ -470,12 +265,35 @@ public static class Glow
         if (running) Draw(t, wall ? WallPrint : TermPrint, 1f, t.def.altitudeLayer);
     }
 
+    /// Экран биорепликатора — полоса готовности (2026-10-21): одна тусклая полоса в 1/3 длины здания (128 точек текстуры из 384),
+    /// по ходу печати заливается синим слева направо, на боковом экране — снизу вверх. Полоса — как STRIP_N/STRIP_E в Tools/textures.py;
+    /// у южного вида экрана нет.
+    static readonly (float x0, float y0, float x1, float y1) StripN = (39f, 257f, 167f, 281f), StripE = (65f, 35f, 87f, 163f);
+    static readonly Material Bar = SolidColorMaterials.SimpleSolidColorMaterial(new Color(91f / 255f, 147f / 255f, 1f));
+
+    static void Progress(Thing t, float done)
+    {
+        if (t.Rotation == Rot4.South || done <= 0f) return;
+        done = Mathf.Min(1f, done);
+        var (x0, y0, x1, y1) = t.Rotation == Rot4.North ? StripN : StripE;
+        if (t.Rotation == Rot4.North) x1 = x0 + (x1 - x0) * done;
+        else y0 = y1 - (y1 - y0) * done;
+        float cx = ((x0 + x1) / 2f - 192f) / 128f, cz = (192f - (y0 + y1) / 2f) / 128f;
+        if (t.Rotation == Rot4.West) cx = -cx;  // запад — отражённый восток
+        Vector3 pos = t.DrawPos + t.Graphic.DrawOffset(t.Rotation) + new Vector3(cx, 0f, cz);
+        pos.y = t.def.altitudeLayer.AltitudeFor() + 0.025f;
+        Graphics.DrawMesh(MeshPool.plane10, Matrix4x4.TRS(pos, Quaternion.identity, new Vector3((x1 - x0) / 128f, 1f, (y1 - y0) / 128f)), Bar, 0);
+    }
+
     public static void Hopper(Building_RMHopper h)
     {
         if (!h.Working) return;
         Draw(h, HopperScreen, 1f, h.def.altitudeLayer);
         if (h.GlowTicks > 0) Draw(h, HopperWork[Find.TickManager.TicksGame / 5 % HopperWork.Length], Mathf.Min(1f, h.GlowTicks / 30f));
     }
+
+    /// Луч и экран блока биосканера — вместе с блоком.
+    public static void Bioscanner(Building_RMBioscanner s) => Draw(s, Scanner, 1f, AltitudeLayer.MoteOverhead, s.BlockOffset);
 
     public static void Computer(Building_RMComputer c)
     {

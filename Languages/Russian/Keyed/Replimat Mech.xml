@@ -4,10 +4,6 @@
 	<!-- единицы -->
 	<RM_Kg>{0} кг</RM_Kg>
 	<RM_SilverN>{0} серебра</RM_SilverN>
-	<RM_Minutes>{0} мин</RM_Minutes>
-	<RM_Seconds>{0} с</RM_Seconds>
-	<RM_Hours>{0} ч</RM_Hours>
-	<RM_Days>{0} дн.</RM_Days>
 	<RM_None>нет</RM_None>
 	<RM_Packed>(упак.)</RM_Packed>
 
@@ -18,15 +14,16 @@
 	<RM_TanksCount>Баков: {0}</RM_TanksCount>
 	<RM_PrintersCount>Репликаторов: {0}</RM_PrintersCount>
 	<RM_FeedersCount>Репликаторов для животных: {0}</RM_FeedersCount>
+	<RM_IncubatorsCount>Биорепликаторов: {0}</RM_IncubatorsCount>
 	<RM_ValueOff>Сбор стоимости выключен</RM_ValueOff>
 	<RM_TankContents>Содержимое бака: +{0}</RM_TankContents>
 	<RM_NoTanks>Нет баков</RM_NoTanks>
 	<RM_NoComputer>Нет компьютера в сети</RM_NoComputer>
 	<RM_FeederFood>Корм: {0}</RM_FeederFood>
 	<RM_Printing>Печатает: {0}, осталось {1}</RM_Printing>
-	<RM_InQueue>В очереди: {0}</RM_InQueue>
-	<RM_QueueEnd>До конца очереди: ≈ {0}</RM_QueueEnd>
 	<RM_WaitsMechanitor>Ждёт механитора: {0}</RM_WaitsMechanitor>
+	<RM_HeldCorpse>Внутри труп: {0}</RM_HeldCorpse>
+	<RM_QueueLeft>Заданий в очереди: {0} · время ≈ {1}</RM_QueueLeft>
 
 	<!-- статусы заданий: коротко (осмотр здания) и полностью (окна) -->
 	<RM_StDone>готово</RM_StDone>
@@ -34,11 +31,11 @@
 	<RM_StMechWaits>ждёт механитора</RM_StMechWaits>
 	<RM_StMechWaitsFull>Напечатан, ждёт механитора</RM_StMechWaitsFull>
 	<RM_StWait>ждёт</RM_StWait>
-	<RM_StWaitFull>Ждёт: впереди другие задания</RM_StWaitFull>
+	<RM_StWaitFull>Ждёт: печатается другое</RM_StWaitFull>
 	<RM_StLowMass>мало массы</RM_StLowMass>
 	<RM_StLowSilver>мало стоимости</RM_StLowSilver>
 	<RM_StNoMechanitor>нет механитора</RM_StNoMechanitor>
-	<RM_StNoMechanitorFull>Нет механитора: выберите его в компьютере</RM_StNoMechanitorFull>
+	<RM_StNoMechanitorFull>Нет механитора: выберите его в задании</RM_StNoMechanitorFull>
 	<RM_StNoBandwidth>мало пропускной способности</RM_StNoBandwidth>
 	<RM_StNoBandwidthFull>Не хватает пропускной способности механитора</RM_StNoBandwidthFull>
 	<RM_StForbidden>запрещено</RM_StForbidden>
@@ -51,115 +48,143 @@
 	<RM_StOffFull>Выключен: нет питания или компьютера в сети</RM_StOffFull>
 	<RM_StSuspended>пауза</RM_StSuspended>
 	<RM_StPrinting>Печатает {0}% ({1} / {2})</RM_StPrinting>
+	<RM_StNoOperator>нет оператора</RM_StNoOperator>
+	<RM_StNoOperatorFull>Нет оператора: поселенец с линком должен связаться с компьютером</RM_StNoOperatorFull>
+	<RM_StNoLink>нет линка</RM_StNoLink>
+	<RM_StNoLinkFull>Нет линка у оператора: {0}</RM_StNoLinkFull>
+	<RM_StNoCorpse>ждёт труп</RM_StNoCorpse>
+	<RM_StNoCorpseFull>Ждёт труп механоида: носильщики принесут</RM_StNoCorpseFull>
 
 	<!-- очередь и блок «План» -->
-	<RM_TabQueue>Очередь</RM_TabQueue>
 	<RM_TotTime>Время: {0}</RM_TotTime>
 	<RM_TotMass>Масса: {0}</RM_TotMass>
 	<RM_TotValue>Стоимость: {0}</RM_TotValue>
 	<RM_PlanNothing>нечего печатать</RM_PlanNothing>
 	<RM_PlanEnough>хватает</RM_PlanEnough>
 	<RM_Short>не хватает {0}</RM_Short>
-	<RM_InTanks>Накоплено в баках</RM_InTanks>
-	<RM_MassInTanks>Масса в баках</RM_MassInTanks>
-	<RM_ValueInTanks>Стоимость в баках</RM_ValueInTanks>
-	<RM_ColBills>Заданий</RM_ColBills>
-	<RM_Always>Всегда</RM_Always>
-	<RM_ColBill>Задание</RM_ColBill>
-	<RM_ColHave>Есть / нужно</RM_ColHave>
-	<RM_ColPause>Пауза</RM_ColPause>
-	<RM_ColDetails>Настройки</RM_ColDetails>
-	<RM_TotalAll>Все репликаторы</RM_TotalAll>
-	<RM_GroupImportant>Первая очередь</RM_GroupImportant>
-	<RM_GroupNormal>Вторая очередь</RM_GroupNormal>
-	<RM_GroupDesc>Очередь — определяет порядок печати, приоритет у Первой очереди.</RM_GroupDesc>
-	<RM_GroupEmpty>Пусто — перетащите задание сюда</RM_GroupEmpty>
 
 	<!-- компьютер: общее -->
-	<RM_UseComputer>Связаться с компьютером реплимата</RM_UseComputer>
-	<RM_UseComputerN>Связаться с компьютером реплимата №{0}</RM_UseComputerN>
-	<RM_NeedMechanitor>нужен механитор</RM_NeedMechanitor>
+	<RM_UseComputer>Связаться с компьютером</RM_UseComputer>
 	<RM_ComputerNoPower>компьютер без питания</RM_ComputerNoPower>
-	<RM_ComputerTitle>Компьютер реплимата · на связи {0}</RM_ComputerTitle>
+	<RM_UseComputerLinks>{0} ({1})</RM_UseComputerLinks>
+	<RM_NeedLink>нужен риплинк, мехлинк или биолинк</RM_NeedLink>
+	<RM_AlreadyOperator>уже оператор</RM_AlreadyOperator>
+	<RM_MsgOperator>{0} — оператор компьютера ({1}).</RM_MsgOperator>
+	<RM_OperatorLine>Оператор: {0} ({1})</RM_OperatorLine>
 	<RM_TabHome>Главная</RM_TabHome>
-	<RM_TabPatternsN>Шаблоны ({0})</RM_TabPatternsN>
-	<RM_TabQueueN>Очередь ({0})</RM_TabQueueN>
+	<RM_TabQueues>Очереди</RM_TabQueues>
+	<RM_TabComputer>Компьютер</RM_TabComputer>
+	<RM_QueuesHelp>Клик по репликатору — его задания ниже, двойной клик — перейти к нему.\nКнопка репликатора в строке задания переносит задание в другой репликатор той же электросети.</RM_QueuesHelp>
+	<RM_WorkerAll>Все</RM_WorkerAll>
+	<RM_WorkerColonist>Любой поселенец</RM_WorkerColonist>
+	<RM_ColPrinter>Репликатор</RM_ColPrinter>
+	<RM_ColBills>Заданий</RM_ColBills>
 
 	<!-- компьютер: «Главная» -->
 	<RM_CardMatter>Материя</RM_CardMatter>
 	<RM_CardGear>Оборудование</RM_CardGear>
 	<RM_CardHelp>Справка</RM_CardHelp>
-	<RM_CardPrinters>Репликаторы</RM_CardPrinters>
 	<RM_ColBuilding>Здание</RM_ColBuilding>
 	<RM_Mass>Масса</RM_Mass>
 	<RM_Value>Стоимость</RM_Value>
 	<RM_TanksOff>Без питания: {0} — из них не печатается</RM_TanksOff>
-	<RM_TanksExplain>Материя — материал для печати: масса (кг) и стоимость (серебро), делится между баками по объёму.\nКомпьютер — хранит шаблоны и очереди печати, управляет расщепителями материи и репликаторами.\nРасщепитель материи — расщепляет предметы и трупы на материю и всегда записывает шаблоны.\nРепликатор — печатает предметы и механоидов из материи.\nБак — хранит материю, если баки заполнены, то масса копиться не будет.\nСтоимость — у каждого предмета своя, как у торговцев, и копить её можно бесконечно.\nМасса — у каждого предмета своя, копится, сколько влезет в баки.\nПечать — забирает из баков массу и стоимость предмета.</RM_TanksExplain>
-	<RM_SpeedExplain>Скорость печати задания — растёт с навыком ремесла и гестационными процессорами.</RM_SpeedExplain>
+	<RM_TanksExplain>Материя — материал для печати: масса (кг) и стоимость (серебро), делится между баками по объёму.\nБак — хранит материю, если баки заполнены, то масса копиться не будет.\nМасса — у каждого предмета своя, копится, сколько влезет в баки.\nСтоимость — у каждого предмета своя, как у торговцев, и копить её можно бесконечно.\nПечать — забирает из баков массу и стоимость предмета.\n\nСтоимость в баках влияет на богатство колонии.\nЕсли отключить «Собирать стоимость», то стоимость накапливаться не будет.</RM_TanksExplain>
+	<RM_SpeedExplain>Скорость печати — от линка оператора.\nРиплинк печатает предметы, мехлинк — механоидов, чипы механоидов и субъядра, биолинк — биорепликацию.\nРиплинк и биолинк: +15% за уровень, опыт — стоимость напечатанного.\nМехлинк: уровень — гестационные процессоры (имплант с верстака, до 6), скорость — гестация механоидов у оператора.</RM_SpeedExplain>
 	<RM_CollectValue>Собирать стоимость</RM_CollectValue>
-	<RM_CollectValueDesc>Стоимость влияет на богатство колонии.\nЕсли отключить, то стоимость накапливаться не будет.</RM_CollectValueDesc>
 	<RM_CollectValueWarn>Для печати предметов и механоидов нужна накопленная стоимость.</RM_CollectValueWarn>
 	<RM_LackMass>массы: {0}</RM_LackMass>
 	<RM_LackValue>стоимости: {0}</RM_LackValue>
 	<RM_Unpowered>без питания: {0}</RM_Unpowered>
-	<RM_GearExplain>Оборудование — здания реплимата в электросети этого компьютера.\nБез питания здания стоят, но баки сохраняют запас.</RM_GearExplain>
+	<RM_GearExplain>Оборудование — здания реплимата в электросети этого компьютера.\nКомпьютер — привязывает линки оператора к репликаторам своей электросети.\nРасщепитель — как крематорий: по своим заданиям расщепляет предметы и трупы на материю и записывает шаблоны.\nРепликатор — как верстак: по своим заданиям печатает предметы и механоидов из материи.\nБез питания здания стоят, но баки сохраняют запас.</RM_GearExplain>
 	<RM_NoPrinters>Нет репликаторов в сети</RM_NoPrinters>
-	<RM_Now>Сейчас: {0} — {1}%</RM_Now>
-	<RM_NowIdle>Сейчас ничего не печатает</RM_NowIdle>
 	<RM_QueueEmpty>Очередь пуста</RM_QueueEmpty>
-	<RM_QueueSummary>Заданий: {0} · время ≈ {1} · стоимость {2}</RM_QueueSummary>
-	<RM_QueueLow>Не хватает массы или стоимости: {0}</RM_QueueLow>
+	<RM_CardOperator>Оператор</RM_CardOperator>
+	<RM_OperatorName>Оператор: {0}</RM_OperatorName>
+	<RM_OperatorLost>Оператор {0} умер или ушёл с карты.</RM_OperatorLost>
+	<RM_NoOperatorHelp>Нет оператора — печать стоит.\nПоселенец с риплинком, мехлинком или биолинком: правый клик по компьютеру → «Связаться с компьютером».</RM_NoOperatorHelp>
+	<RM_LinkPrintsRep>предметы</RM_LinkPrintsRep>
+	<RM_LinkPrintsMech>механоидов, чипы механоидов и субъядра</RM_LinkPrintsMech>
+	<RM_LinkPrintsBio>биорепликацию: всю генетику, архотех-части, сыворотки воскрешения и исцеления</RM_LinkPrintsBio>
+	<RM_LinkMissing>{0}: нет — не напечатать {1}.</RM_LinkMissing>
+	<RM_ColLink>Линк</RM_ColLink>
+	<RM_ColLevel>Уровень</RM_ColLevel>
+	<RM_ColXp>Опыт</RM_ColXp>
+	<RM_ColSpeed>Скорость печати</RM_ColSpeed>
+	<RM_LinkBracket>ур. {0} — {1}%</RM_LinkBracket>
+	<RM_LinkLevelTip>Уровень: {0}</RM_LinkLevelTip>
+	<RM_PrintSpeedTip>Скорость печати: {0}%</RM_PrintSpeedTip>
+	<RM_LinkXpTip>Опыт: {0}</RM_LinkXpTip>
+	<RM_MsgLinkLevel>{0}: {1} — уровень {2}, скорость печати {3}%.</RM_MsgLinkLevel>
 
-	<!-- компьютер: «Шаблоны» -->
-	<RM_NoPatterns>Нет шаблонов: отсканируйте предмет в расщепителе материи</RM_NoPatterns>
+	<!-- задания: добавить и окно задания -->
+	<RM_NoPatterns>Нет шаблонов: отсканируйте предмет в расщепителе</RM_NoPatterns>
 	<RM_CatMechs>Механоиды</RM_CatMechs>
+	<RM_CatMechPrint>Печать механоидов</RM_CatMechPrint>
+	<RM_CatResurrect>Восстановление механоидов</RM_CatResurrect>
+	<RM_CatAll>Все</RM_CatAll>
 	<RM_CatOther>Прочее</RM_CatOther>
-	<RM_PickPattern>Выберите категорию или шаблон слева</RM_PickPattern>
+	<RM_TanksLine>Масса {0} · стоимость {1}</RM_TanksLine>
+	<RM_PickTile>Выберите шаблон</RM_PickTile>
+	<RM_ColCategories>Категории</RM_ColCategories>
+	<RM_ColPatterns>Шаблоны</RM_ColPatterns>
+	<RM_ColBill>Задание</RM_ColBill>
+	<RM_Apply>Применить</RM_Apply>
 	<RM_NothingFound>Ничего не найдено</RM_NothingFound>
-	<RM_InQueueMark>в очереди</RM_InQueueMark>
+	<RM_Trash>Корзина</RM_Trash>
+	<RM_TrashEmpty>Корзина пуста</RM_TrashEmpty>
+	<RM_TrashConfirm>По шаблону «{0}» есть задания: они удалятся.\nУбрать шаблон в корзину?</RM_TrashConfirm>
+	<RM_TrashConfirmPaid>По шаблону «{0}» есть задания: они удалятся, начатое вернётся в баки.\nУбрать шаблон в корзину?</RM_TrashConfirmPaid>
+	<RM_Restore>Вернуть</RM_Restore>
+	<RM_DeleteForever>Удалить шаблон {0} навсегда?\nВернуть его будет нельзя.</RM_DeleteForever>
+	<RM_TrashHelp>Значок «Удалить» справа вверху карточки убирает её в корзину.\nЕсть задания по шаблону — сначала вопрос: задания удалятся, начатое вернётся в баки.\n«Корзина» слева, сразу под «Все», — своё дерево категорий того, что в ней.\nШаблон в корзине не печатается.\nКруглая стрелка справа вверху карточки в корзине возвращает её.\nРасщепитель и биосканер не достают шаблон из корзины, лучшее качество предмета при этом записывается.</RM_TrashHelp>
+	<RM_TrashHelpBio>Шаблоны людей и «Репликант» тоже уходят в корзину.\nЧерта или ген в корзине не предлагаются для шаблонов, а в шаблонах, где они уже есть, остаются.\n«Удалить» на карточке человека в корзине удаляет шаблон навсегда, сначала вопрос.\nВсё остальное в корзине, «Репликант» тоже, только возвращается.</RM_TrashHelpBio>
+	<RM_TrashHelpMech>Карточки восстановления механоидов тоже уходят в корзину.</RM_TrashHelpMech>
 	<RM_Enough>хватит на {0}</RM_Enough>
 	<RM_PerUnit>За штуку: масса {0} · стоимость {1} · время {2}</RM_PerUnit>
-	<RM_InQueueEdit>Задание уже в очереди</RM_InQueueEdit>
+	<RM_PerUnitMin>За штуку: масса {0} · мин. стоимость {1} · время {2}</RM_PerUnitMin>
+	<RM_PatternsHelp>Клик по карточке — справа её задание.\n«Хватит на N» — сколько штук выйдет из того, что сейчас в баках.\n«Не изучено» или «запрещено» в настройках мода — карточка бледная и не выбирается.\n«Уже в заданиях» — у шаблона есть задание в этом репликаторе: справа его настройки и «Применить».\nШаблоны предметов записывает расщепитель, когда расщепляет предметы.\nМеханоиды — двумя разделами: «Печать механоидов» и «Восстановление механоидов».\nВосстановление — карточка рецепта воскрешения ванили со всеми механоидами, кого он воскрешает; какого — выбирается в задании.</RM_PatternsHelp>
 	<RM_NoMechanitors>В колонии нет механиторов</RM_NoMechanitors>
-	<RM_EdPrinter>Репликатор</RM_EdPrinter>
 	<RM_EdMode>Режим</RM_EdMode>
 	<RM_EdCount>Количество, шт.</RM_EdCount>
-	<RM_InStock>на складе: {0}</RM_InStock>
-	<RM_OnMap>на карте: {0}</RM_OnMap>
+	<RM_OnMap>На карте: {0}</RM_OnMap>
+	<RM_InStock>На складе: {0}</RM_InStock>
 	<RM_EdQuality>Качество</RM_EdQuality>
 	<RM_QualityBest>лучшее (сейчас {0})</RM_QualityBest>
 	<RM_EdMechanitor>Механитор</RM_EdMechanitor>
-	<RM_MechanitorOption>{0} (скорость печати {1}%)</RM_MechanitorOption>
+	<RM_EdMech>Механоид</RM_EdMech>
 	<RM_SliderTime>Время</RM_SliderTime>
 	<RM_SliderValue>Стоимость</RM_SliderValue>
 	<RM_SliderMass>Масса</RM_SliderMass>
 	<RM_SliderMassTip>У этого шаблона нет стоимости.\nЕсли уменьшить время печати, потратится больше массы, и наоборот.</RM_SliderMassTip>
-	<RM_EdGroup>Очередь</RM_EdGroup>
-	<RM_Apply>Применить</RM_Apply>
-	<RM_Create>Создать</RM_Create>
-	<RM_NotApplied>Изменения не применены</RM_NotApplied>
-	<RM_MsgApplied>Задание изменено: {0}</RM_MsgApplied>
-	<RM_MsgDeleted>Задание удалено: {0}</RM_MsgDeleted>
-	<RM_MsgAdded>Добавлено: {0} · {1} · {2}</RM_MsgAdded>
-
-	<!-- компьютер: «Очередь» -->
-	<RM_MsgMoved>{0} — перенесено на «{1}»</RM_MsgMoved>
-	<RM_NoOtherPrinters>Нет других репликаторов</RM_NoOtherPrinters>
+	<RM_InBill>уже в заданиях</RM_InBill>
+	<RM_Surplus>Излишки — в расщепитель</RM_Surplus>
+	<RM_SurplusNote>Расщепитель получит задание «{0}»: носильщики понесут в него то, что на складах сверх цели.\nУдалить это задание можно и в расщепителе — галка здесь снимется.</RM_SurplusNote>
+	<RM_RestartConfirm>Печать начнётся заново: начатое вернётся в баки.\nПродолжить?</RM_RestartConfirm>
+	<RM_PrintOnConfirm>Печать уже идёт: дальше она пойдёт с новыми настройками.\nПродолжить?</RM_PrintOnConfirm>
+	<RM_DeleteConfirm>Печать уже идёт: начатое вернётся в баки.\nУдалить задание?</RM_DeleteConfirm>
+	<RM_RestartNote>Правка качества, пола или ползунков начатого задания, а также сохранение его шаблона с правкой — печать заново: начатое возвращается в баки.\nКоличество, режим, излишки, механитор и название печать не сбрасывают.\nПока печать идёт, «Применить» и удаление задания всегда сначала спрашивают.</RM_RestartNote>
+	<RM_SurplusNoHopper>На карте нет расщепителя: излишки нести некуда.</RM_SurplusNoHopper>
+	<RM_SurplusBill>Излишки: {0} сверх {1}</RM_SurplusBill>
+	<RM_SurplusInfo>{0}: лишних {1}</RM_SurplusInfo>
+	<RM_RowSurplus>излишки — в расщепитель</RM_RowSurplus>
+	<RM_RowMech>Механитор {0}, группа {1}</RM_RowMech>
+	<RM_SpeedLevel>Печатает {0}: {1} уровня {2}, скорость {3}%</RM_SpeedLevel>
+	<RM_ResurrectHelp>Носильщики принесут в репликатор ближайший труп выбранного выше механоида колонии, если механитору хватит пропускной способности.\nМатерия — сталь из рецепта воскрешения ванили, время — как у воскрешения в гестаторе.</RM_ResurrectHelp>
 
 	<!-- репликатор: кнопки, сообщения, письма -->
 	<RM_Rename>Переименовать</RM_Rename>
 	<RM_MsgShort>«{0}»: {1} — {2}</RM_MsgShort>
-	<RM_MsgMechReady>{0} подключён к механитору {1}.</RM_MsgMechReady>
 	<RM_LetterMechWaitLabel>Механоид ждёт: {0}</RM_LetterMechWaitLabel>
 	<RM_LetterMechWait>{0} напечатан в «{1}», но у механитора {2} не хватает пропускной способности.\nМеханоид ждёт.\nОсвободите пропускную способность или смените механитора в задании.\nУдалите задание — в баки вернётся ровно то, что списали.</RM_LetterMechWait>
-	<RM_MsgHopperBlocked>Нельзя: «{0}» стоит в очереди «{1}».\nРасщепитель расщепил бы то, что напечатал репликатор.</RM_MsgHopperBlocked>
+	<RM_MsgMechPrinted>{0} напечатан и подключён к механитору {1}, группа {2}.</RM_MsgMechPrinted>
+	<RM_MsgMechResurrected>{0} воскрешён и подключён к механитору {1}, группа {2}.</RM_MsgMechResurrected>
 	<RM_MsgTankDeconstruct>Бак разберут — пропадёт его материя: масса {0} и стоимость {1}.</RM_MsgTankDeconstruct>
 
 	<!-- сканирование -->
 	<RM_DesignatorScan>Сканировать</RM_DesignatorScan>
 	<RM_MsgPatternNew>Новый шаблон: {0}</RM_MsgPatternNew>
 	<RM_MsgPatternBetter>Шаблон «{0}» — теперь до качества «{1}»</RM_MsgPatternBetter>
-	<RM_NoHopper>Нет работающего расщепителя материи</RM_NoHopper>
+	<RM_NoHopper>Нет работающего расщепителя</RM_NoHopper>
 
 	<!-- настройки мода -->
 	<RM_SetMassReturn>Сбор массы: {0}</RM_SetMassReturn>
@@ -173,11 +198,11 @@
 	<RM_ColPrint>печатать</RM_ColPrint>
 	<RM_ColMarkup>наценка, ×</RM_ColMarkup>
 	<RM_GroupChips>чипы и субъядра</RM_GroupChips>
-	<RM_GroupChipsDesc>Чипы механоидов и субъядра.</RM_GroupChipsDesc>
+	<RM_GroupChipsDesc>Чипы: сигнальный, энергофокусирующий, наноструктурирующий.\nСубъядра: стандартное, продвинутое.</RM_GroupChipsDesc>
 	<RM_GroupUnique>уникальное</RM_GroupUnique>
 	<RM_GroupUniqueDesc>Техпринты, ИИ-ядро, персональное и уникальное оружие.</RM_GroupUniqueDesc>
 	<RM_GroupBio>биорепликация</RM_GroupBio>
-	<RM_GroupBioDesc>Вся генетика, архотех-части, сыворотки воскрешения и исцеления.</RM_GroupBioDesc>
+	<RM_GroupBioDesc>Вся генетика, архотех-части, сыворотки воскрешения и исцеления, а также живое: биосканер и биорепликатор.</RM_GroupBioDesc>
 	<RM_SetMoveTanks>Переносить баки (вместе с содержимым)</RM_SetMoveTanks>
 	<RM_SetTankCapacity>Объём бака, кг (большой ×4)</RM_SetTankCapacity>
 	<RM_SetPower>Мощность, Вт</RM_SetPower>
@@ -185,5 +210,47 @@
 	<RM_PowerStore>Баки</RM_PowerStore>
 	<RM_PowerRecycle>Компьютер и расщепитель</RM_PowerRecycle>
 	<RM_SetReset>Сбросить всё</RM_SetReset>
+	<RM_PowerBio>Биорепликация</RM_PowerBio>
+	<RM_DnaHelpAnimals>ДНК животных записывает биосканер: «Сканировать...» на биосканере или правый клик колонистом по биосканеру.\n«Сканировать» на животном колонии или сбитом диком отправит его в биосканер.\nПравый клик колонистом по лежачему животному — колонист сразу несёт его туда.\nСвежий труп животного в расщепителе записывается так же («Сканировать» на трупе отнесёт его туда).\nОдин скан даёт ДНК вида на всю колонию.</RM_DnaHelpAnimals>
+	<RM_DnaHelp>У людей биосканер и расщепитель собирают в базу колонии только черты характера и гены.\n«Сканировать» на лежачем человеке отнесёт его в биосканер, свежий труп человека в расщепителе записывается так же.\nБаза только растёт, даже когда шаблоны удалены.\nВнешность и навыки собирать не надо, они есть всегда.\nЧеловека, чьи черты и гены уже в базе, сканировать незачем: его нет в списке «Сканировать...».\n\nВ «Людях» с начала игры есть «Репликант»: навыки 0, без черт и генов.\nС ним человека можно напечатать без сканера.\nЭто обычный шаблон: конструктор правит его, и «Применить» меняет сам «Репликант».\n«Переименовать» справа вверху карточки человека сразу меняет название шаблона.\nПустое название возвращает «Шаблон N», у «Репликанта» — «Репликант».\n«Копировать» справа вверху карточки человека копирует всего человека, без названия.\n«Вставить» на любой карточке кладёт скопированного в конструктор правкой всех блоков, название остаётся своим: «Применить» сохраняет, «Сбросить» откатывает.\nНовый шаблон — только «Вставить» справа в шапке «Люди»: она сразу добавляет «Шаблон N» со скопированным человеком.\nЧерты и гены из базы — в категориях «Черты характера» и «Гены».</RM_DnaHelp>
+	<RM_DnaNone>Записанных ДНК нет</RM_DnaNone>
+	<RM_NoScan>Некого сканировать</RM_NoScan>
+	<RM_ScanWaiting>Уже ждёт биосканер</RM_ScanWaiting>
+	<RM_DnaKnown>ДНК записана</RM_DnaKnown>
+	<RM_TraitsNone>Черт в базе пока нет.</RM_TraitsNone>
+	<RM_GenesNone>Генов в базе пока нет.</RM_GenesNone>
+	<RM_TraitsVeryGood>Очень полезные</RM_TraitsVeryGood>
+	<RM_TraitsGood>Полезные</RM_TraitsGood>
+	<RM_TraitsBad>Вредные</RM_TraitsBad>
+	<RM_TraitsVeryBad>Очень вредные</RM_TraitsVeryBad>
+	<RM_GeneResistance>Сопротивление</RM_GeneResistance>
+	<RM_GeneSensitivity>Чувствительность</RM_GeneSensitivity>
+	<RM_MsgBase>Записано в базу людей: {0}.</RM_MsgBase>
+	<RM_BaseKnown>Черты и гены уже в базе</RM_BaseKnown>
+	<RM_Scanning>Сканирование: {0}</RM_Scanning>
+	<RM_MsgDna>ДНК записана: {0}</RM_MsgDna>
+	<RM_CatPeople>Люди</RM_CatPeople>
+	<RM_MsgAnimalPrinted>Напечатано животное: {0}.</RM_MsgAnimalPrinted>
+	<RM_BioOff>Биорепликация выключена в настройках мода</RM_BioOff>
+	<!-- люди: шаблоны -->
+	<RM_MsgPersonPrinted>Напечатан человек: {0}.</RM_MsgPersonPrinted>
+	<RM_TemplateN>Шаблон {0}</RM_TemplateN>
+	<RM_Replicant>Репликант</RM_Replicant>
+	<RM_ValueFloor>Стоимость шаблона: не ниже {0}</RM_ValueFloor>
+	<RM_EdTemplate>Шаблон</RM_EdTemplate>
+	<RM_Appearance>Внешность</RM_Appearance>
+	<RM_Body>Тело</RM_Body>
+	<RM_Head>Голова</RM_Head>
+	<RM_Hair>Волосы</RM_Hair>
+	<RM_HairColor>Цвет волос</RM_HairColor>
+	<RM_Beard>Борода</RM_Beard>
+	<RM_ColTime>Время</RM_ColTime>
+	<RM_ColValue>Стоимость</RM_ColValue>
+	<RM_TemplateHelp>Шаблон хранится в колонии, задания печатают его ровно как есть.\nУ каждого блока шаблона своя «Сбросить» справа вверху.\n«Сбросить» задания откатывает всю неприменённую правку: задание — к заданию в очереди или к умолчаниям, весь шаблон — к тому, каким был.\nС правкой шаблона правая кнопка задания — «Применить»: она сохраняет шаблон, а если задание уже в очереди — и правку задания.\nБез правки кнопка — «Добавить задание», а если задание уже в очереди — «Удалить».\nНапечатанный — поселенец 18 лет с генами шаблона и детством «репликант», без родни, болезней и одежды.\nИмя даёт игра.\nСтоимость — цена человека с его навыками и генами по игре, черты и интересы, умноженные на наценку биорепликации.\nСтоимость не ниже цены человека с навыками 0: пока она на этом пороге, в задании — «мин. стоимость».\nНазвание шаблона — в строке над заданием: задание зовётся по нему, своего имени у задания нет.\n«Переименовать» — на карточке человека: новое название сразу и в этой строке.</RM_TemplateHelp>
+	<RM_SkillsHelp>Время — рост тела (63 дня, как в чане ванили) и запись навыков (4000 опыта в день) в доле 25 / 63.\nПустой шаблон — 25 дней при скорости 100%, с ползунком времени до упора — 15.\nИнтересы, черты и гены времени не добавляют.\nКруглая стрелка сбрасывает строку навыка: уровень 0, без интереса.\nЗначки «Копировать» и «Вставить» переносят уровень и интерес навыка на другой навык.\nСтоимость навыка — насколько дешевле был бы человек с этим навыком на 0.\nИнтерес — 175 серебра (●● — 350).\nСклонности черт и генов (+N) прибавляются к уровню навыка, как в игре.</RM_SkillsHelp>
+	<RM_TraitsHelp>Черты берутся из базы, категория «Черты характера» слева.\nОни разбиты на группы по цене: очень полезные, полезные, вредные, очень вредные.\nКлик по карточке черты добавляет её в открытый шаблон, ещё клик — убирает.\nКлик по черте в блоке «Черты характера» шаблона тоже убирает её.\nОписание черты — при наведении мыши на карточку.\nШаблон не открыт — карточки бледные и не нажимаются.\nНе больше трёх черт.\nБледные конфликтуют с выбранными чертами, интересами или генами шаблона.\nЧерта — 175 серебра за ступень: полезная или безвредная дороже, вредная дешевле.</RM_TraitsHelp>
+	<RM_MetLimit>Метаболизм не может быть ниже −5: ген, с которым он станет ниже, бледный.
+Чтобы поднять метаболизм, уберите ген с минусом к метаболизму или добавьте ген с плюсом.</RM_MetLimit>
+	<RM_GenesHelp>Гены берутся из базы, категория «Гены» слева.\nОни разбиты на группы, как в сборщике генов.\nКлик по карточке гена добавляет его в открытый шаблон, ещё клик — убирает.\nКлик по гену в блоке «Гены» шаблона тоже убирает его.\nСтоимость, сложность, метаболизм, архиты и описание гена — при наведении мыши на карточку.\nШаблон не открыт — карточки бледные и не нажимаются.\nЧисло генов и сложность не ограничены.\nМетаболизм шаблона — не ниже −5, как в игре: ниже 0 голод растёт.\nБледные посередине конфликтуют с выбранными генами или чертами, требуют невыбранного гена или опускают метаболизм ниже −5.\nБледный ген в блоке «Гены» не убрать: он нужен другому гену или метаболизм станет ниже −5.\nПредел −5 мешает — вверху блока «Гены» жёлтая строка: что сделать.\nГен — генпак (100 серебра), капсулы архитов (700 серебра каждая) и 175 серебра за единицу метаболизма: полезный ген (метаболизм ниже 0) дороже, вредный дешевле.\nГенпаки и капсулы не нужны: их цена — в стоимости.\nПод генами — итоги, как в сборщике генов: сложность, метаболизм и скорость голода.\nНапечатанный рождается с генами шаблона.\nКсенотип — игровой с ровно этими генами, иначе свой, с названием шаблона.</RM_GenesHelp>
 
 </LanguageData>
