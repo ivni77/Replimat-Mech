@@ -328,9 +328,10 @@ public class CompPrinter : ThingComp, IRenameable, IThingHolder
     /// Носильщик принёс труп для воскрешения.
     public void Hold(Thing t) => held.TryAddOrTransfer(t);
 
+    /// Свёрнутый (в руках, на складе) тикает внутри MinifiedThing без карты — стоит.
     public override void CompTick()
     {
-        if (parent.IsHashIntervalTick(60)) Work(60);
+        if (parent.Spawned && parent.IsHashIntervalTick(60)) Work(60);
     }
 
     void Work(int ticks)

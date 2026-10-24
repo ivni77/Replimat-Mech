@@ -126,6 +126,8 @@ public class Building_RMBioscanner : Building_Enterable, IThingHolderWithDrawnPa
     protected override void Tick()
     {
         base.Tick();
+        // свёрнутый тикает без карты — стоит
+        if (!Spawned) return;
         if (!Working)
         {
             // выбранное умерло, ушло с карты или перестало подходить (дикое встало) — выбор снимается

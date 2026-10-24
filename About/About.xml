@@ -3,7 +3,7 @@
 	<name>Replimat Mech</name>
 	<author>ivni77 (based on Replimat: sumghai, Dubwise, Omnot)</author>
 	<packageId>ivni77.ReplimatMech</packageId>
-	<modVersion>1.2.0</modVersion>
+	<modVersion>1.2.1</modVersion>
 	<url>https://github.com/ivni77/Replimat-Mech</url>
 	<supportedVersions>
 		<li>1.6</li>

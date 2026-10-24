@@ -556,6 +556,8 @@ public class JobDriver_RMCarry : JobDriver
     protected override IEnumerable<Toil> MakeNewToils()
     {
         this.FailOnDespawnedNullOrForbidden(TargetIndex.B);
+        // задание удалили, пока шёл (как у ванили): иначе сохранение ссылается на удалённое задание
+        this.FailOn(() => job.bill is { DeletedOrDereferenced: true });
         this.FailOn(() => Target is Building_RMHopper h ? !h.Working
             : Target.TryGetComp<CompPrinter>() is not { } c || c.Corpse != null || TargetThingA is Corpse cp && !c.orders.Any(o => o.Fits(cp)));
         // сканирование отменили, пока шёл
